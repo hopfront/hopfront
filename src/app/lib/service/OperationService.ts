@@ -1,0 +1,179 @@
+import { XHRFrontRequestMethod } from "@/app/lib/dto/XHRFrontRequest";
+import { ApiAuthenticationConfig, ApiAuthenticationStaticParameterData } from "@/app/lib/dto/ApiAuthenticationConfig";
+import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
+import { OperationInputs } from "@/app/lib/model/OperationInputs";
+import { OpenAPIV3 } from "openapi-types";
+import HttpMethods = OpenAPIV3.HttpMethods;
+
+import { ParameterWithValue } from "@/app/lib/model/ParameterWithValue";
+import { DefaultServerLocalStorage } from "@/app/lib/localstorage/DefaultServerLocalStorage";
+import { AuthLocalStorage } from "@/app/lib/localstorage/AuthLocalStorage";
+import { ProxyApi } from "@/app/lib/api/ProxyApi";
+import { ApiContext } from "../model/ApiContext";
+import { ApiConfig } from "../dto/ApiConfig";
+import { OpenAPIDocumentExtension } from "../dto/OpenApiExtensions";
+
+const buildUrl = (
+    parameters: ParameterWithValue[],
+    operation: StandaloneOperation,
+    authentication: ApiAuthenticationConfig | undefined,
+    extension: OpenAPIDocumentExtension | undefined): string => {
+
+    const baseUrl = DefaultServerLocalStorage.getDefaultServer(operation.apiSpec.id, operation.apiSpec.document, extension)?.url;
+    let url = `${baseUrl}${operation.path}`
+
+    parameters
+        .filter(p => p.value)
+        .filter(p => p.parameter.in === 'path')
+        .forEach(p => {
+            url = url.replace(`{${p.parameter.name}}`, p.value)
+        });
+
+    let queryParams = ''
+
+    parameters
+        .filter(p => p.value)
+        .filter(p => p.parameter.in === 'query')
+        .forEach((p, index) => {
+            if (index > 0) {
+                queryParams += '&'
+            } else {
+                queryParams += '?'
+            }
+
+            queryParams += `${p.parameter.name}=${p.value}`
+        });
+
+    url = url + queryParams;
+
+    if (authentication && authentication.authenticationType === "STATIC") {
+        const staticData =
+            authentication.data as ApiAuthenticationStaticParameterData;
+
+        if (staticData.parameterLocation === "QUERY") {
+            let authenticatedUrl = new URL(url);
+            authenticatedUrl.searchParams.append(
+                staticData.parameterName,
+                AuthLocalStorage.getStaticAuthCredentials(operation.apiSpec.id)?.secret ?? ''
+            );
+            return authenticatedUrl.toString();
+        } else {
+            return url;
+        }
+    } else {
+        return url;
+    }
+}
+
+export class OperationService {
+
+    public static async executeOperation(
+        inputs: OperationInputs,
+        operation: StandaloneOperation,
+        apiConfig: ApiConfig,
+        extension: OpenAPIDocumentExtension,
+        timeout: number = 30000): Promise<Response> {
+
+        const isCORSByPassed = apiConfig.isCorsByPassed;
+
+        const buildMethod = (): XHRFrontRequestMethod => {
+            switch (operation.method) {
+                case OpenAPIV3.HttpMethods.DELETE:
+                    return "DELETE";
+                case OpenAPIV3.HttpMethods.GET:
+                    return "GET";
+                case OpenAPIV3.HttpMethods.HEAD:
+                    return "HEAD";
+                case OpenAPIV3.HttpMethods.OPTIONS:
+                    return "OPTIONS";
+                case HttpMethods.PATCH:
+                    return "PATCH";
+                case OpenAPIV3.HttpMethods.POST:
+                    return "POST";
+                case HttpMethods.PUT:
+                    return "PUT";
+                case OpenAPIV3.HttpMethods.TRACE:
+                    return "TRACE";
+                default:
+                    throw new Error(`Non-handled HTTP method: ${operation.method}`);
+            }
+        }
+
+        const buildUrlWithParameters = (): string => {
+            return buildUrl(inputs.parameters, operation, apiConfig.authenticationConfig, extension);
+        }
+
+        const buildHeaders = (authentication: ApiAuthenticationConfig | undefined): HeadersInit => {
+            let headers: HeadersInit = {};
+
+            if (inputs.body?.contentType) {
+                headers['Content-Type'] = inputs.body.contentType;
+            }
+
+            if (authentication) {
+                if (authentication.authenticationType === "STATIC") {
+                    const staticData = authentication.data as ApiAuthenticationStaticParameterData;
+
+                    if (staticData.parameterLocation === "HEADER") {
+                        headers[staticData.parameterName] = AuthLocalStorage.getStaticAuthCredentials(operation.apiSpec.id)?.secret ?? '';
+                    }
+                } else if (authentication.authenticationType === "BASIC_AUTH") {
+                    const credentials = AuthLocalStorage.getBasicAuthCredentials(operation.apiSpec.id);
+                    const base64credentials = btoa(`${credentials?.username}:${credentials?.password}`)
+                    headers['Authorization'] = `Basic ${base64credentials}`;
+                } else if (authentication.authenticationType === "ACCESS_TOKEN") {
+                    headers['Authorization'] = `Bearer ${AuthLocalStorage.getAccessToken(operation.apiSpec.id)}`;
+                }
+            }
+
+            return headers;
+        };
+
+        const buildBody = (): BodyInit | null => {
+            if (!inputs.body?.contentType) {
+                return null;
+            }
+
+            if (inputs.body.contentType === "application/json") {
+                return inputs.body ? JSON.stringify(inputs.body.content) : null;
+            } else if (inputs.body.contentType === "application/x-www-form-urlencoded") {
+                const formBody = [];
+                for (const property in inputs.body) {
+                    const encodedKey = encodeURIComponent(property);
+                    const encodedValue = encodeURIComponent(inputs.body.content[property]);
+                    formBody.push(encodedKey + "=" + encodedValue);
+                }
+                return formBody.join("&");
+            } else if (inputs.body.contentType === "application/octet-stream") {
+                return inputs.body.content ? inputs.body.content : null
+            } else {
+                throw new Error(`Non-handled contentType: ${inputs.body.contentType}`);
+            }
+        }
+
+        const method = buildMethod();
+        const url = buildUrlWithParameters();
+        const headers = buildHeaders(apiConfig.authenticationConfig);
+        const body = buildBody();
+
+        if (isCORSByPassed) {
+            return ProxyApi.queryProxy({
+                method: method,
+                headers: headers,
+                path: url,
+                body: body,
+            },
+                timeout);
+        } else {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+            return fetch(url, {
+                method: method,
+                headers: headers,
+                body: body,
+                signal: controller.signal
+            }).finally(() => clearTimeout(timeoutId));
+        }
+    }
+}

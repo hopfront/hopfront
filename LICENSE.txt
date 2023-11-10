@@ -1,0 +1,3 @@
+Source code in this repository is licensed under the GNU Affero General Public License (AGPL).
+
+When built, binary files are generated for the AGPL source code. Binaries located at hub.docker.com/r/hopfront/hopfront are released under the AGPL.

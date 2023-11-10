@@ -1,0 +1,16 @@
+.checkbox .tree,
+.checkbox .tree-node,
+.checkbox .tree-node-group {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.checkbox .tree-node {
+    cursor: pointer;
+}
+
+.checkbox .arrow {
+    margin-left: 5px;
+    vertical-align: middle;
+}

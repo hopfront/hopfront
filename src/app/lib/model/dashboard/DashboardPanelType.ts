@@ -1,0 +1,1 @@
+export type DashboardPanelType = "Visualization" | "chart"

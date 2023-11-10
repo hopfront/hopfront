@@ -1,0 +1,40 @@
+{
+  "name": "pac",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start -p 8080",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/public-sans": "^5.0.15",
+    "@jonkoops/matomo-tracker-react": "^0.7.0",
+    "@mui/icons-material": "^5.14.16",
+    "@mui/joy": "^5.0.0-beta.14",
+    "@readme/openapi-parser": "^2.5.0",
+    "@types/node": "20.9.0",
+    "@types/react": "18.2.37",
+    "@types/react-dom": "18.2.15",
+    "allotment": "^1.19.3",
+    "eslint": "8.53.0",
+    "eslint-config-next": "14.0.2",
+    "i": "^0.3.7",
+    "jwt-decode": "^4.0.0",
+    "next": "14.0.2",
+    "npm": "^10.2.3",
+    "react": "18.2.0",
+    "react-accessible-treeview": "^2.8.0",
+    "react-dom": "18.2.0",
+    "react-form-stepper": "^2.0.3",
+    "react-markdown": "^9.0.0",
+    "recharts": "^2.9.3",
+    "slugify": "^1.6.6",
+    "swr": "^2.2.4",
+    "typescript": "5.2.2",
+    "use-debounce": "^10.0.0"
+  }
+}
