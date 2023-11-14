@@ -3,6 +3,18 @@ FROM node:18-alpine AS base
 ARG app_version
 ENV NEXT_PUBLIC_APP_VERSION=$app_version
 
+ARG matomo_url_base
+ENV NEXT_PUBLIC_MATOMO_URL_BASE=$matomo_url_base
+
+ARG matomo_site_id
+ENV NEXT_PUBLIC_MATOMO_SITE_ID=$matomo_site_id
+
+ARG matomo_disabled
+ENV NEXT_PUBLIC_MATOMO_DISABLED=$matomo_disabled
+
+ARG matomo_disable_cookies
+ENV NEXT_PUBLIC_MATOMO_DISABLE_COOKIES=$matomo_disable_cookies
+
 # Install dependencies only when needed
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.

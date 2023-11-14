@@ -33,3 +33,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            app_version=${{ github.ref_name }}
+            matomo_url_base=${{ secrets.MATOMO_URL_BASE }}
+            matomo_site_id=${{ secrets.MATOMO_SITE_ID }}
+            matomo_disabled=${{ secrets.MATOMO_DISABLED }}
+            matomo_disable_cookies=${{ secrets.MATOMO_DISABLE_COOKIES }}
