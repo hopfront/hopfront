@@ -1,11 +1,12 @@
 'use client'
 
-import { useApiContext } from "@/app/hooks/useApiContext";
-import { ApiConfigApi } from "@/app/lib/api/ApiConfigApi";
-import { fetcher } from "@/app/lib/api/utils";
-import { CircularProgress, Switch, Typography } from "@mui/joy";
-import { ChangeEvent, useEffect, useState } from "react";
+import {useApiContext} from "@/app/hooks/useApiContext";
+import {ApiConfigApi} from "@/app/lib/api/ApiConfigApi";
+import {fetcher} from "@/app/lib/api/utils";
+import {CircularProgress, Switch, Typography} from "@mui/joy";
+import {ChangeEvent, useEffect, useState} from "react";
 import useSWRMutation from 'swr/mutation';
+import {EventType, useSnackbar} from "@/app/hooks/useSnackbar";
 
 type CorsSwitchProps = {
     apiSpecId: string,
@@ -17,6 +18,7 @@ export default function CORSSwitch({ apiSpecId, onSwitch }: CorsSwitchProps) {
     const { trigger } = useSWRMutation(`/api/api-specs/${apiSpecId}/context`, fetcher);
     const [isCorsByPassed, setIsCorsByPassed] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const {showSnackbar, Snackbar} = useSnackbar();
 
     useEffect(() => {
         if (context?.config?.isCorsByPassed) {
@@ -29,27 +31,35 @@ export default function CORSSwitch({ apiSpecId, onSwitch }: CorsSwitchProps) {
         setIsCorsByPassed(isByPassed);
         setIsLoading(true);
 
-        ApiConfigApi.saveApiConfig(apiSpecId, { isCorsByPassed: isByPassed })
-            .then(() => onSwitch?.(isByPassed))
-            .finally(() => setIsLoading(false))
+        ApiConfigApi.saveApiConfig(apiSpecId, {isCorsByPassed: isByPassed})
+            .then(() => {
+                showSnackbar(EventType.Success, 'CORS configuration updated successfully');
+                return onSwitch?.(isByPassed);
+            })
+            .catch(reason => showSnackbar(EventType.Error, `Failed to update CORS configuration: ${reason.toLocaleString()}`))
+            .finally(() => setIsLoading(false));
     }
 
     return (
-        <Typography
-            startDecorator={<Switch
-                color={isCorsByPassed ? 'warning' : undefined}
-                checked={isCorsByPassed}
-                disabled={contextLoading || isLoading}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                    handleCheckboxClick(event)
-                }
-                slotProps={{
-                    thumb: {
-                        children: isLoading ? <CircularProgress size='sm' /> : undefined
+        <>
+            <Typography
+                startDecorator={<Switch
+                    color={isCorsByPassed ? 'warning' : undefined}
+                    checked={isCorsByPassed}
+                    disabled={contextLoading || isLoading}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                        handleCheckboxClick(event)
                     }
-                }}
-            />}>
-            Bypass browser CORS
-        </Typography>
+                    slotProps={{
+                        thumb: {
+                            children: isLoading ? <CircularProgress size='sm' /> : undefined
+                        }
+                    }}
+                />}>
+                Bypass browser CORS
+            </Typography>
+            {Snackbar}
+        </>
+
     )
 }
