@@ -7,6 +7,7 @@ import {useParams} from "next/navigation";
 import {useAnalytics} from "@/app/hooks/analytics/useAnalytics";
 import {DashboardApi} from "@/app/lib/api/DashboardApi";
 import {ErrorAlert} from "@/app/components/operation/response/ErrorAlert";
+import {EventType, useSnackbar} from "@/app/hooks/useSnackbar";
 
 export default function Page() {
     const params = useParams();
@@ -14,6 +15,7 @@ export default function Page() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<any | undefined>();
     const [dashboard, setDashboard] = useState<Dashboard | undefined>();
+    const {showSnackbar, Snackbar} = useSnackbar();
 
     const dashboardId = params['dashboardId'];
 
@@ -35,9 +37,11 @@ export default function Page() {
     const onSaveDashboard = (dashboard: Dashboard) => {
         DashboardApi.updateDashboard(dashboard)
             .then(() => {
+                showSnackbar(EventType.Success, 'Dashboard updated successfully');
                 setDashboard(dashboard);
             })
             .catch(error => {
+                showSnackbar(EventType.Error, `Failed to update dashboard: ${error.toLocaleString()}`)
                 setError(error);
             });
     }
@@ -45,7 +49,12 @@ export default function Page() {
     if (error) {
         return <ErrorAlert error={error} onClose={() => setError(undefined)}/>;
     } else {
-        return <DashboardPage dashboard={dashboard} loading={loading} onSave={onSaveDashboard}/>;
+        return (
+            <>
+                <DashboardPage dashboard={dashboard} loading={loading} onSave={onSaveDashboard}/>
+                {Snackbar}
+            </>
+        );
     }
 
 }

@@ -25,7 +25,7 @@ import {DashboardApi} from "@/app/lib/api/DashboardApi";
 import {ConfirmModal, ConfirmModalProps} from "@/app/components/modal/ConfirmModal";
 import {PanelCreationModal} from "@/app/dashboards/[dashboardId]/components/PanelCreationModal";
 
-export interface DashboardViewProps {
+export interface DashboardPageProps {
     dashboard?: Dashboard;
     loading: boolean
     onSave: (dashboard: Dashboard) => void,
@@ -46,7 +46,7 @@ const buildVariables = (dashboard: Dashboard | undefined) => {
         });
 }
 
-export const DashboardPage = ({dashboard, loading, onSave}: DashboardViewProps) => {
+export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) => {
     const router = useRouter();
     const {registerEvent} = useAnalytics();
     const [variables, setVariables] = useState<VariableWithValue[]>([]);
