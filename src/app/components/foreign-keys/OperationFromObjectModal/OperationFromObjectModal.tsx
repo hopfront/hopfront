@@ -8,10 +8,10 @@ import {StandaloneOperation} from "@/app/lib/model/StandaloneOperation";
 import {getReferenceObjectOrUndefined} from "@/app/lib/openapi/utils";
 import {Button} from "@mui/joy";
 import {ErrorAlert} from "@/app/components/operation/response/ErrorAlert";
+import {ParameterExtension, SchemaExtension} from "@/app/lib/dto/OpenApiExtensions";
 import {
-    ParameterExtension, SchemaExtension
-} from "@/app/lib/dto/OpenApiExtensions";
-import {SelectedObjectSchemaCard} from "@/app/components/foreign-keys/OperationFromObjectModal/SelectedObjectSchemaCard";
+    SelectedObjectSchemaCard
+} from "@/app/components/foreign-keys/OperationFromObjectModal/SelectedObjectSchemaCard";
 import {
     OperationToExecuteOnObjectCard
 } from "@/app/components/foreign-keys/OperationFromObjectModal/OperationToExecuteOnObjectCard";
@@ -20,6 +20,7 @@ import {
 } from "@/app/components/foreign-keys/OperationFromObjectModal/SchemaToOperationInputsMappingCard";
 import {ExtensionApi} from "@/app/lib/api/ExtensionApi";
 import {ButtonRow} from "@/app/components/button/ButtonRow";
+import {EventType, useSnackbar} from "@/app/hooks/useSnackbar";
 
 export interface OperationFromObjectModalProps {
     open: boolean
@@ -46,6 +47,7 @@ export const OperationFromObjectModal = ({
     const [parameterExtensions, setParameterExtensions] = useState<ParameterExtension[]>([]);
     const [schemaExtensions, setSchemaExtensions] = useState<SchemaExtension[]>([]);
     const [error, setError] = useState<any | undefined>();
+    const {showSnackbar, Snackbar} = useSnackbar();
 
     const saveOperationExtensions = async (operation: StandaloneOperation) => {
         return Promise.all(parameterExtensions.flatMap(parameterExtension => {
@@ -87,10 +89,12 @@ export const OperationFromObjectModal = ({
         ]).then(() => {
             setError(undefined);
             setSubmitting(false);
+            showSnackbar(EventType.Success, 'Configuration updated successfully');
             onConfigurationUpdate();
         }).catch(reason => {
             setError(reason);
             setSubmitting(false);
+            showSnackbar(EventType.Success, `Failed to update configuration: ${reason.toLocaleString()}`);
         })
     };
 
@@ -129,6 +133,7 @@ export const OperationFromObjectModal = ({
             </ButtonRow>
             <ErrorAlert error={error}/>
 
+            {Snackbar}
         </ResponsiveModal>
     );
 }

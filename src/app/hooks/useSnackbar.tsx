@@ -14,12 +14,6 @@ export const useSnackbar = () => {
     const [type, setType] = useState<EventType | undefined>();
     const [message, setMessage] = useState<string | undefined>();
 
-    const show = (type: EventType, message: string) => {
-        setType(type);
-        setMessage(message);
-        setOpen(true);
-    };
-
     const getStartDecorator = (): React.ReactNode => {
         switch (type) {
             case EventType.Success: return <Check/>;
@@ -29,8 +23,17 @@ export const useSnackbar = () => {
         }
     }
 
-    const snackbar = (
-        <>
+    return {
+        showSnackbar: (type: EventType, message: string) => {
+            setOpen(false);
+            setType(undefined);
+            setMessage(undefined);
+
+            setType(type);
+            setMessage(message);
+            setOpen(true);
+        },
+        Snackbar: (
             <Snackbar
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 open={open}
@@ -41,11 +44,6 @@ export const useSnackbar = () => {
             >
                 {message}
             </Snackbar>
-        </>
-    );
-
-    return {
-        showSnackbar: show,
-        Snackbar: snackbar
+        )
     };
 }

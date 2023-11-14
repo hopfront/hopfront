@@ -16,6 +16,7 @@ import {SchemaPropertyExtensionLabelInput} from "@/app/settings/schemas/SchemaPr
 import {ExtensionApi} from "@/app/lib/api/ExtensionApi";
 import {ErrorAlert} from "@/app/components/operation/response/ErrorAlert";
 import {InfoAlert} from "@/app/components/alert/InfoAlert";
+import {EventType, useSnackbar} from "@/app/hooks/useSnackbar";
 
 export interface SchemaExtensionConfigurerProps {
     schemaRef: string
@@ -44,8 +45,8 @@ export const SchemaExtensionConfigurer = ({
                                           }: SchemaExtensionConfigurerProps) => {
 
     const [updating, setUpdating] = useState(false);
-    const [error, setError] = useState<any | undefined>();
     const [schemaExtension, setSchemaExtension] = useState<SchemaExtension>(getSchemaExtension(schemaRef, apiContext));
+    const {showSnackbar, Snackbar} = useSnackbar();
 
     useEffect(() => {
         setSchemaExtension(getSchemaExtension(schemaRef, apiContext));
@@ -67,11 +68,11 @@ export const SchemaExtensionConfigurer = ({
 
         ExtensionApi.updateExtensionSchema(apiContext.apiSpec.id, schemaExtension)
             .then(() => {
-                setError(undefined);
+                showSnackbar(EventType.Success, 'Configuration updated successfully');
                 setUpdating(false);
             })
             .catch(reason => {
-                setError(reason);
+                showSnackbar(EventType.Error, `Failed to update configuration: ${reason.toLocaleString()}`);
                 setUpdating(false);
             });
     };
@@ -207,7 +208,7 @@ export const SchemaExtensionConfigurer = ({
                 })}
                 </tbody>
             </Table>
-            <ErrorAlert error={error}/>
+            {Snackbar}
         </>
     );
 }
