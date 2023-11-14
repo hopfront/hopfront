@@ -21,6 +21,14 @@ import {useDashboard} from "@/app/hooks/useDashboard";
 import {DashboardApi} from "@/app/lib/api/DashboardApi";
 import {ErrorAlert} from "@/app/components/operation/response/ErrorAlert";
 import {ConfirmModal, ConfirmModalProps} from "@/app/components/modal/ConfirmModal";
+import {Dashboard} from "@/app/lib/model/dashboard/Dashboard";
+import {
+    DashboardPanelInputSourceConfigDataVariable
+} from "@/app/lib/model/dashboard/DashboardPanelInputSourceConfigDataVariable";
+import {DashboardPanelInput} from "@/app/lib/model/dashboard/DashboardPanelInput";
+import {
+    DashboardPanelInputSourceConfigDataConstant
+} from "@/app/lib/model/dashboard/DashboardPanelInputSourceConfigDataConstant";
 
 export default function Page() {
     const router = useRouter();
@@ -96,8 +104,38 @@ export default function Page() {
                 setConfirmModalProps(undefined);
                 setSaving(true);
 
-                const updatedDashboard = {
+                const updatedDashboard: Dashboard = {
                     ...dashboard,
+                    panels: dashboard.panels.map(panel => {
+                        return {
+                            ...panel,
+                            config: {
+                                ...panel.config,
+                                inputs: panel.config.inputs.map(input => {
+                                    if (input.sourceConfig.type === "variable") {
+                                        const variableConfig = input.sourceConfig.data as DashboardPanelInputSourceConfigDataVariable;
+
+                                        if (variableConfig.variableName === initialVariable.name) {
+                                            // we re-configure the panel to not use the deleted variable anymore.
+                                            return {
+                                                    ...input,
+                                                    sourceConfig: {
+                                                        type: 'constant',
+                                                        data: {
+                                                            value: ''
+                                                        } as DashboardPanelInputSourceConfigDataConstant
+                                                    }
+                                                } as DashboardPanelInput;
+                                        } else {
+                                            return input
+                                        }
+                                    } else {
+                                        return input;
+                                    }
+                                }),
+                            }
+                        }
+                    }),
                     variables: dashboard.variables.flatMap(v => v.name === initialVariable.name ? [] : [v])
                 };
 
