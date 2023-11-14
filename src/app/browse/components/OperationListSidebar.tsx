@@ -87,7 +87,6 @@ export const OperationListSidebar = ({ selectedOperation, onOperationSelected }:
         <Stack sx={(theme) => ({
             '--operation-list-panel-padding-top': {
                 xs: `calc(${theme.spacing(2)} + var(--Header-height))`,
-                md: '24px',
             },
             pt: 'var(--operation-list-panel-padding-top)',
         })}>

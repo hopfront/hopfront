@@ -19,29 +19,24 @@ export const OperationListItem = ({ operation, selected, pinned, displayApiSpec,
 
     return (
         <ListItem
-            sx={{ width: '100%' }}
-            startAction={showPin || pinned ? <IconButton size="sm" onClick={onPin} title={pinned ? "Unpin" : "Pin"}><PushPin /></IconButton> : undefined}
+            endAction={showPin || pinned ? <IconButton size="sm" onClick={onPin} title={pinned ? "Unpin" : "Pin"}><PushPin /></IconButton> : undefined}
             onMouseEnter={() => setShowPin(true)}
-            onMouseLeave={() => setShowPin(false)}>
+            onMouseLeave={() => setShowPin(false)}
+        sx={{ml: 3, mr: 3}}>
             <ListItemButton
                 selected={selected}
-                onClick={onClick}
-                sx={{
-                    width: '100%',
-                    minWidth: 0,
-                    whiteSpace: 'nowrap',
-                }}>
-                <ListItemContent sx={{ width: '100%' }}>
-                    <Box display='flex' flexDirection='row' alignItems='baseline' overflow='visible' gap={2} width="100%">
+                onClick={onClick}>
+                <ListItemContent>
+                    <Box display='flex' flexDirection='row' alignItems='baseline' gap={2}>
                         {operation.operation.summary
                             ? <>
-                                <Typography noWrap overflow='visible'>{operation.operation.summary}</Typography>
+                                <Typography noWrap>{operation.operation.summary}</Typography>
                                 <OperationLabel operation={operation} mode="technical" level="body-xs" />
                             </>
                             :
                             <OperationLabel operation={operation} mode="human" alignPaths={true} />}
                         {displayApiSpec &&
-                            <Typography noWrap overflow='visible' level="body-xs" sx={{ ml: 2 }}>
+                            <Typography noWrap level="body-xs" sx={{ ml: 2 }}>
                                 {operation.apiSpec.document.info.title}
                             </Typography>}
                     </Box>

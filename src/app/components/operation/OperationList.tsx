@@ -142,18 +142,11 @@ export const OperationList = ({ operations, selectedOperation, onOperationSelect
 
     return <Box
         sx={{
-            overflowY: 'auto',
-            overflowX: 'auto',
             width: '100%',
             height: height,
         }}>
         <List
             size="sm"
-            sx={{ 
-                width: 'fit-content',
-                pb: 3,
-                px: 3
-            }}
         >
             {pinnedOperations
                 .sort(operationSorter)
