@@ -16,6 +16,7 @@ export interface OperationResponseSchemaPropertyPickerProps {
     contentType: string
     schemaPropertyPredicate: (schemaProperty: SchemaProperty) => boolean
     defaultSchemaProperty?: SchemaProperty,
+    disabled?: boolean
     onSchemaPropertySelected: (schemaPropertySelected: SchemaProperty) => void
 }
 
@@ -25,6 +26,7 @@ export const OperationResponseSchemaPropertyPicker = ({
                                                           contentType,
                                                           schemaPropertyPredicate,
                                                           defaultSchemaProperty,
+                                                          disabled = false,
                                                           onSchemaPropertySelected,
                                                       }: OperationResponseSchemaPropertyPickerProps) => {
 
@@ -47,5 +49,6 @@ export const OperationResponseSchemaPropertyPicker = ({
         schemaPropertyPredicate={schemaPropertyPredicate}
         defaultSchemaProperty={defaultSchemaProperty}
         onSchemaPropertySelected={onSchemaPropertySelected}
+        disabled={disabled}
         apiSpec={operation.apiSpec}/>;
 }

@@ -30,10 +30,11 @@ type FormData = {
 
 export interface AccessTokenAuthenticationFormProps {
     auth: UpdatableValue<ApiAuthenticationConfig>
+    disabled: boolean
     apiSpec: ApiSpec
 }
 
-export default function AccessTokenAuthConfigForm({auth, apiSpec}: AccessTokenAuthenticationFormProps) {
+export default function AccessTokenAuthConfigForm({auth, disabled, apiSpec}: AccessTokenAuthenticationFormProps) {
     const accessTokenData = auth.value?.data as ApiAuthenticationAccessTokenData | undefined
 
     const initialValues = useMemo(() => {
@@ -72,6 +73,7 @@ export default function AccessTokenAuthConfigForm({auth, apiSpec}: AccessTokenAu
             <FormControl sx={{...formControlCommonSx, mt: 1}}>
                 <ApiSpecSelect
                     defaultApiSpecId={formData.apiSpecId}
+                    disabled={disabled}
                     onApiSpecSelected={selectedApiSpec => {
                         if (selectedApiSpec) {
                             setFormData({
@@ -91,6 +93,7 @@ export default function AccessTokenAuthConfigForm({auth, apiSpec}: AccessTokenAu
             <FormControl sx={formControlCommonSx}>
                 <OperationSelect
                     defaultOperationId={formData.operationId}
+                    disabled={disabled}
                     onOperationSelected={selectedOperation => {
                         if (selectedOperation && selectedOperation.getOperationId()) {
                             setFormData({
@@ -132,6 +135,7 @@ export default function AccessTokenAuthConfigForm({auth, apiSpec}: AccessTokenAu
                         responseAccessTokenPropertyName: schemaProperty.propertyName,
                     })
                 }}
+                disabled={disabled}
                 operation={operation}/>}
         </>
     )

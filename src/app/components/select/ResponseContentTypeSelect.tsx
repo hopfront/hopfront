@@ -24,6 +24,7 @@ export interface ResponseContentTypeSelectProps {
     defaultContentType?: string
     operation: StandaloneOperation
     status: string
+    disabled?: boolean
     onChange: (contentType: string) => void
 }
 
@@ -33,6 +34,7 @@ export const ResponseContentTypeSelect = ({
                                               defaultContentType,
                                               operation,
                                               status,
+                                              disabled = false,
                                               onChange
                                           }: ResponseContentTypeSelectProps) => {
 
@@ -50,6 +52,7 @@ export const ResponseContentTypeSelect = ({
             <SchemaRefSelect
                 value={contentType}
                 schemaRefs={options}
+                disabled={disabled}
                 onChange={value => onChange(value as string)}
                 sx={{minWidth: MIN_WIDTH}}/>
         );

@@ -8,19 +8,20 @@ import StaticAuthConfigForm from "./StaticAuthConfigForm";
 interface AuthenticationTypeComponentProps {
     type: AuthenticationType,
     updateValue: UpdatableValue<ApiAuthenticationConfig>,
+    disabled: boolean
     apiSpec: ApiSpec
     sx?: {}
 }
 
-export default function AuthenticationTypeComponent({ type, updateValue, apiSpec, sx }: AuthenticationTypeComponentProps) {
+export default function AuthenticationTypeComponent({ type, updateValue, disabled, apiSpec, sx }: AuthenticationTypeComponentProps) {
     const authComponent = () => {
         switch (type) {
             case 'STATIC':
-                return <StaticAuthConfigForm updateValue={updateValue} />;
+                return <StaticAuthConfigForm updateValue={updateValue} disabled={disabled} />;
             case 'BASIC_AUTH':
                 return null;
             case "ACCESS_TOKEN":
-                return <AccessTokenAuthConfigForm auth={updateValue} apiSpec={apiSpec} />
+                return <AccessTokenAuthConfigForm auth={updateValue} disabled={disabled} apiSpec={apiSpec} />
             default:
                 return null;
         }

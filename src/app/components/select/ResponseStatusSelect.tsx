@@ -67,6 +67,7 @@ const getResponseStatusOptions = (operation: StandaloneOperation | undefined): s
 export interface ResponseStatusSelectProps {
     defaultStatus?: string
     operation: StandaloneOperation
+    disabled?: boolean
     onChange: (status: string) => void
 }
 
@@ -87,7 +88,7 @@ const statusTypography = (status: string) => {
     }
 }
 
-export const ResponseStatusSelect = ({defaultStatus, operation, onChange}: ResponseStatusSelectProps) => {
+export const ResponseStatusSelect = ({defaultStatus, operation, disabled = false, onChange}: ResponseStatusSelectProps) => {
     const options = getResponseStatusOptions(operation);
     const [status, setStatus] = useState<string | undefined>(defaultStatus);
 
@@ -108,6 +109,7 @@ export const ResponseStatusSelect = ({defaultStatus, operation, onChange}: Respo
                     onChange(value);
                 }
             }}
+            disabled={disabled}
             renderValue={option => option && statusTypography(option.value)}
             sx={{minWidth: 250}}>
             {options.map(responseStatusOption =>

@@ -135,7 +135,10 @@ class ResponseSchemaTree {
 
 const getResponseSchemaTree = (schemaRef: string, apiSpec: ApiSpec): ResponseSchemaTree => {
     const propertiesByNodeId = new Map<NodeId, SchemaProperty>();
-    const rootNode = buildNodeFromSchemaRef({schemaRef: schemaRef, propertyName: "root"}, schemaRef, propertiesByNodeId, apiSpec);
+    const rootNode = buildNodeFromSchemaRef({
+        schemaRef: schemaRef,
+        propertyName: "root"
+    }, schemaRef, propertiesByNodeId, apiSpec);
     return new ResponseSchemaTree([rootNode], propertiesByNodeId);
 }
 
@@ -144,6 +147,7 @@ export interface SchemaPropertyPickerProps {
     defaultSchemaProperty?: SchemaProperty,
     schemaPropertyPredicate: (schemaProperty: SchemaProperty) => boolean
     onSchemaPropertySelected: (schemaPropertySelected: SchemaProperty) => void
+    disabled?: boolean
     apiSpec: ApiSpec
 }
 
@@ -152,6 +156,7 @@ export const SchemaPropertyPicker = ({
                                          defaultSchemaProperty,
                                          schemaPropertyPredicate,
                                          onSchemaPropertySelected,
+                                         disabled = false,
                                          apiSpec
                                      }: SchemaPropertyPickerProps) => {
 
@@ -235,7 +240,7 @@ export const SchemaPropertyPicker = ({
                                                 ? <Radio
                                                     className="checkbox-icon"
                                                     value={schemaProperty.schemaRef + schemaProperty.propertyName}
-                                                    disabled={!isSelectable}
+                                                    disabled={!isSelectable || disabled}
                                                     checked={selectedSchemaProperty?.schemaRef === schemaProperty.schemaRef && selectedSchemaProperty.propertyName === schemaProperty.propertyName}
                                                     label={label}
                                                     onClick={(e) => {

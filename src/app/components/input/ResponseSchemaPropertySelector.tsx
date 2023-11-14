@@ -25,6 +25,7 @@ export interface ResponseSchemaPropertySelectorProps {
     defaultSchemaProperty?: ResponseSchemaProperty
     schemaPropertyPredicate: (schemaProperty: SchemaProperty) => boolean
     onResponseSchemaPropertySelected: (responseSchemaProperty: ResponseSchemaProperty) => void
+    disabled?: boolean
     operation: StandaloneOperation
 }
 
@@ -32,6 +33,7 @@ export const ResponseSchemaPropertySelector = ({
                                                    defaultSchemaProperty,
                                                    schemaPropertyPredicate,
                                                    onResponseSchemaPropertySelected,
+                                                   disabled = false,
                                                    operation
                                                }: ResponseSchemaPropertySelectorProps) => {
 
@@ -46,6 +48,7 @@ export const ResponseSchemaPropertySelector = ({
                     <ResponseStatusSelect
                         defaultStatus={responseStatus}
                         operation={operation}
+                        disabled={disabled}
                         onChange={status => setResponseStatus(status)}/>
                 </FormControl>
                 {responseStatus && <FormControl sx={{ml: 1}}>
@@ -54,6 +57,7 @@ export const ResponseSchemaPropertySelector = ({
                         defaultContentType={responseContentType}
                         operation={operation}
                         status={responseStatus}
+                        disabled={disabled}
                         onChange={contentType => setResponseContentType(contentType)}/>
                 </FormControl>}
             </Stack>
@@ -65,6 +69,7 @@ export const ResponseSchemaPropertySelector = ({
                     contentType={responseContentType}
                     schemaPropertyPredicate={schemaPropertyPredicate}
                     defaultSchemaProperty={defaultSchemaProperty}
+                    disabled={disabled}
                     onSchemaPropertySelected={schemaPropertySelected => {
                         onResponseSchemaPropertySelected({
                             status: responseStatus,

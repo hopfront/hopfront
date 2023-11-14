@@ -13,6 +13,7 @@ import { useEffect, useMemo, useState } from "react";
 
 export interface StaticAuthenticationFormProps {
     updateValue: UpdatableValue<ApiAuthenticationConfig>
+    disabled: boolean
 }
 
 type FormData = {
@@ -20,7 +21,7 @@ type FormData = {
     parameterLocation: string
 }
 
-export default function StaticAuthConfigForm({ updateValue }: StaticAuthenticationFormProps) {
+export default function StaticAuthConfigForm({ updateValue, disabled }: StaticAuthenticationFormProps) {
     const staticAuthData = updateValue.value?.data as ApiAuthenticationStaticParameterData | undefined;
 
     const initialValues = useMemo(() => {
@@ -56,6 +57,7 @@ export default function StaticAuthConfigForm({ updateValue }: StaticAuthenticati
                         const location = value ? value as StaticParamLocation : 'HEADER';
                         setFormData({ ...formData, parameterLocation: location });
                     }}
+                    disabled={disabled}
                     indicator={<KeyboardArrowDown />}
                     value={formData.parameterLocation}
                     sx={{ width: '15%', minWidth: '250px', mt: 1 }}
@@ -75,6 +77,7 @@ export default function StaticAuthConfigForm({ updateValue }: StaticAuthenticati
                     placeholder="Authorization"
                     value={formData.parameterName}
                     required
+                    disabled={disabled}
                 />
             </FormControl>
         </>
