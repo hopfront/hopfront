@@ -24,6 +24,7 @@ import {useAnalytics} from "@/app/hooks/analytics/useAnalytics";
 import {DashboardApi} from "@/app/lib/api/DashboardApi";
 import {ConfirmModal, ConfirmModalProps} from "@/app/components/modal/ConfirmModal";
 import {PanelCreationModal} from "@/app/dashboards/[dashboardId]/components/PanelCreationModal";
+import {DashboardVariable} from "@/app/lib/model/dashboard/DashboardVariable";
 
 export interface DashboardPageProps {
     dashboard?: Dashboard;
@@ -156,6 +157,13 @@ export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) 
         onSave({...dashboard, title: title});
     }
 
+    const onVariableCreated = (variable: DashboardVariable) => {
+        onSave({
+            ...dashboard,
+            variables: (dashboard?.variables || []).concat(variable)
+        } as Dashboard);
+    };
+
     return (
         <>
             <Breadcrumbs separator={<KeyboardArrowRight/>} sx={{p: 0, pb: 1}}>
@@ -247,6 +255,7 @@ export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) 
                 isOpen={panelConfigurationModalOpen.isOpen}
                 onSave={onSavePanel}
                 onClose={() => setPanelConfigurationModalOpen({isOpen: false, panelId: undefined})}
+                onVariableCreated={onVariableCreated}
             />}
 
             {(dashboard && !panelConfigurationModalOpen.panelId) && <PanelCreationModal
@@ -255,6 +264,7 @@ export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) 
                 isOpen={panelConfigurationModalOpen.isOpen}
                 onSave={onSavePanel}
                 onClose={() => setPanelConfigurationModalOpen({isOpen: false, panelId: undefined})}
+                onVariableCreated={onVariableCreated}
             />}
 
 

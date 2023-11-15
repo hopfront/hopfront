@@ -16,14 +16,16 @@ import {
     DashboardPanelInputSourceConfigDataVariable
 } from "@/app/lib/model/dashboard/DashboardPanelInputSourceConfigDataVariable";
 import {Dashboard} from "@/app/lib/model/dashboard/Dashboard";
+import {DashboardVariable} from "@/app/lib/model/dashboard/DashboardVariable";
 
 export interface DashboardPanelInputConfigurerProps {
     dashboard: Dashboard
     input: DashboardPanelInput
     onChange: (input: DashboardPanelInput) => void
+    onVariableCreated: (variable: DashboardVariable) => void
 }
 
-export const DashboardPanelInputConfigurer = ({dashboard, input, onChange}: DashboardPanelInputConfigurerProps) => {
+export const DashboardPanelInputConfigurer = ({dashboard, input, onChange, onVariableCreated}: DashboardPanelInputConfigurerProps) => {
     const [sourceConfigType, setSourceConfigType] =
         useState<DashboardPanelInputSourceConfigType>(input.sourceConfig.type);
 
@@ -62,8 +64,10 @@ export const DashboardPanelInputConfigurer = ({dashboard, input, onChange}: Dash
             case "variable":
                 return <DashboardPanelInputVariableSourceConfigurer
                     dashboard={dashboard}
+                    inputName={input.name}
                     data={input.sourceConfig.data as DashboardPanelInputSourceConfigDataVariable}
-                    onChange={onVariableSourceDataChange}/>
+                    onChange={onVariableSourceDataChange}
+                    onVariableCreated={onVariableCreated}/>
             default:
                 return null;
         }

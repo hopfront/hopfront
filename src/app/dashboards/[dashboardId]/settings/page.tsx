@@ -15,8 +15,8 @@ import {ManualInput, ManualInputValueType} from "@/app/components/input/ManualIn
 import {useAnalytics} from "@/app/hooks/analytics/useAnalytics";
 import {DashboardApi} from "@/app/lib/api/DashboardApi";
 import {useDashboard} from "@/app/hooks/useDashboard";
-import {ErrorAlert} from "@/app/components/operation/response/ErrorAlert";
 import {ConfirmModal, ConfirmModalProps} from "@/app/components/modal/ConfirmModal";
+import {EventType, useSnackbar} from "@/app/hooks/useSnackbar";
 
 export default function Page() {
     const router = useRouter();
@@ -25,9 +25,9 @@ export default function Page() {
 
     const dashboardId = params['dashboardId'] as string;
 
-    const [error, setError] = useState<any | undefined>();
-    const {dashboard, error: dashboardError, isLoading} = useDashboard(dashboardId);
+    const {dashboard, error: dashboardError, isLoading, mutate} = useDashboard(dashboardId);
     const [isTitleLoading, setTitleLoading] = useState(false);
+    const {showSnackbar, Snackbar} = useSnackbar();
     const [confirmModalProps, setConfirmModalProps] = useState<ConfirmModalProps | undefined>();
 
     usePageView("dashboard-settings-page");
@@ -43,6 +43,20 @@ export default function Page() {
 
         redirectToVariablePage(variable);
     };
+
+    const onVariableDeleted = (variable: DashboardVariable) => {
+        if (!dashboard) {
+            return;
+        }
+
+        DashboardApi.updateDashboard({
+            ...dashboard,
+            variables: (dashboard?.variables || []).flatMap(v => v.name === variable.name ? [] : [v]),
+        })
+            .then(() => mutate())
+            .then(() => showSnackbar(EventType.Success, 'Variable deleted successfully'))
+            .catch(error => showSnackbar(EventType.Error, `Failed to delete variable: ${error.toLocaleString()}`));
+    }
 
     const onVariableClick = (variable: DashboardVariable) => {
         redirectToVariablePage(variable);
@@ -67,30 +81,20 @@ export default function Page() {
             return;
         }
 
-        const updatedDashboard = {...dashboard, title: title as string};
-
-        saveDashboard(updatedDashboard);
-    }
-
-    const saveDashboard = (dashboard: Dashboard) => {
-        if (!dashboard) {
-            return;
-        }
-
         setTitleLoading(true);
         DashboardApi.updateDashboard(dashboard)
             .then(() => {
-                setError(undefined);
                 setTitleLoading(false);
+                showSnackbar(EventType.Success, 'Dashboard title updated successfully');
             })
             .catch(error => {
-                setError(error);
                 setTitleLoading(false);
+                showSnackbar(EventType.Error, `Failed to update dashboard title: ${error.toLocaleString()}`);
             });
     }
 
     return (
-        <Box>
+        <>
             <Breadcrumbs separator={<KeyboardArrowRight/>} sx={{p: 0, pb: 1}}>
                 <Link href='/dashboards' color='neutral'>
                     Dashboards
@@ -101,8 +105,6 @@ export default function Page() {
                 </Link>
                 <Typography>Settings</Typography>
             </Breadcrumbs>
-
-            {error && <ErrorAlert error={error} onClose={() => setError(undefined)}/>}
 
             <Typography level='h1' gutterBottom>Settings</Typography>
 
@@ -120,6 +122,7 @@ export default function Page() {
             <DashboardSettingsVariablesSection
                 dashboard={dashboard}
                 onVariableAdded={onVariableAdded}
+                onVariableDeleted={onVariableDeleted}
                 onVariableClick={onVariableClick}/>
 
             <Divider sx={{mt: 4}}/>
@@ -136,6 +139,8 @@ export default function Page() {
                 title={confirmModalProps?.title}
                 onConfirm={confirmModalProps?.onConfirm}
                 onCancel={confirmModalProps?.onCancel}/>
-        </Box>
+
+            {Snackbar}
+        </>
     );
 }

@@ -26,6 +26,7 @@ import {
     ResponseSchemaPropertySelector
 } from "@/app/components/input/ResponseSchemaPropertySelector";
 import {ButtonRow} from "@/app/components/button/ButtonRow";
+import {DashboardVariable} from "@/app/lib/model/dashboard/DashboardVariable";
 
 export interface DashboardPanelChartConfigurationPageProps {
     dashboard: Dashboard
@@ -33,6 +34,7 @@ export interface DashboardPanelChartConfigurationPageProps {
     isLoading: boolean
     onSave: (panel: DashboardPanel) => void
     onCancel: () => void
+    onVariableCreated: (variable: DashboardVariable) => void
 }
 
 export const DashboardPanelChartConfigurationPage = ({
@@ -41,6 +43,7 @@ export const DashboardPanelChartConfigurationPage = ({
                                                          isLoading,
                                                          onSave,
                                                          onCancel,
+                                                         onVariableCreated,
                                                      }: DashboardPanelChartConfigurationPageProps) => {
 
     const [panel, setPanel] = useState<DashboardPanel>(defaultPanel);
@@ -158,7 +161,8 @@ export const DashboardPanelChartConfigurationPage = ({
                                                         inputs: updatedInputs,
                                                     }
                                                 })
-                                            }}/>
+                                            }}
+                                            onVariableCreated={onVariableCreated}/>
                                     );
                                 })}
                                 </tbody>

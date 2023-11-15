@@ -15,12 +15,14 @@ import {getOperationDefaultInputs} from "@/app/lib/openapi/utils";
 import {
     DashboardPanelInputSourceConfigDataConstant
 } from "@/app/lib/model/dashboard/DashboardPanelInputSourceConfigDataConstant";
+import {DashboardVariable} from "@/app/lib/model/dashboard/DashboardVariable";
 
 export interface DashboardPanelTableConfigurationPageProps {
     dashboard: Dashboard
     defaultPanel: DashboardPanel
     isLoading: boolean
     onSave: (panel: DashboardPanel) => void
+    onVariableCreated: (variable: DashboardVariable) => void
 }
 
 export const DashboardPanelTableConfigurationPage = ({
@@ -28,6 +30,7 @@ export const DashboardPanelTableConfigurationPage = ({
                                                          defaultPanel,
                                                          isLoading,
                                                          onSave,
+                                                         onVariableCreated,
                                                      }: DashboardPanelTableConfigurationPageProps) => {
 
     const [currentPanel, setCurrentPanel] = useState(defaultPanel);
@@ -102,7 +105,8 @@ export const DashboardPanelTableConfigurationPage = ({
                                         ...currentPanel,
                                         config: {...currentPanel.config, inputs: updatedInputs}
                                     })
-                                }}/>
+                                }}
+                                onVariableCreated={onVariableCreated}/>
                         );
                     })}
                     </tbody>

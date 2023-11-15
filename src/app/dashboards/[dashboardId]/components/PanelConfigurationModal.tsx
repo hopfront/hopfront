@@ -12,6 +12,7 @@ import {ReactNode, useState} from "react";
 import {
     DashboardPanelChartConfigurationPage
 } from "@/app/dashboards/[dashboardId]/components/chart/DashboardPanelChartConfigurationPage";
+import {DashboardVariable} from "@/app/lib/model/dashboard/DashboardVariable";
 
 interface PanelTemplate {
     type: DashboardPanelType
@@ -41,6 +42,7 @@ export interface PanelConfigurationModalProps {
     isOpen: boolean
     onSave: (panel: DashboardPanel) => void
     onClose: () => void
+    onVariableCreated: (variable: DashboardVariable) => void
 }
 
 export default function PanelConfigurationModal({
@@ -49,7 +51,8 @@ export default function PanelConfigurationModal({
                                                     isLoading,
                                                     isOpen,
                                                     onSave,
-                                                    onClose
+                                                    onClose,
+                                                    onVariableCreated
                                                 }: PanelConfigurationModalProps) {
 
     const [panel, setPanel] = useState(defaultPanel);
@@ -140,6 +143,7 @@ export default function PanelConfigurationModal({
                         defaultPanel={panel}
                         onSave={onSave}
                         isLoading={isLoading}
+                        onVariableCreated={onVariableCreated}
                     />}
 
                 {panel.type === "chart" && <DashboardPanelChartConfigurationPage
@@ -148,6 +152,7 @@ export default function PanelConfigurationModal({
                     onSave={onSave}
                     onCancel={onClose}
                     isLoading={isLoading}
+                    onVariableCreated={onVariableCreated}
                 />}
             </Box>
         </ResponsiveModal>

@@ -6,6 +6,7 @@ import {
 } from "@/app/lib/model/dashboard/DashboardPanel";
 import {useState} from "react";
 import PanelConfigurationModal from "@/app/dashboards/[dashboardId]/components/PanelConfigurationModal";
+import {DashboardVariable} from "@/app/lib/model/dashboard/DashboardVariable";
 
 export interface PanelCreationModalProps {
     dashboard: Dashboard
@@ -13,9 +14,17 @@ export interface PanelCreationModalProps {
     isOpen: boolean
     onSave: (panel: DashboardPanel) => void
     onClose: () => void
+    onVariableCreated: (variable: DashboardVariable) => void
 }
 
-export const PanelCreationModal = ({dashboard, isLoading, isOpen, onSave, onClose}: PanelCreationModalProps) => {
+export const PanelCreationModal = ({
+                                       dashboard,
+                                       isLoading,
+                                       isOpen,
+                                       onSave,
+                                       onClose,
+                                       onVariableCreated
+                                   }: PanelCreationModalProps) => {
     const [panel, setPanel] =
         useState(buildNewVisualizationPanel(buildDashboardNewPanelId(dashboard), 'New panel'));
 
@@ -29,6 +38,7 @@ export const PanelCreationModal = ({dashboard, isLoading, isOpen, onSave, onClos
                 setPanel(savedPanel);
                 onSave(savedPanel);
             }}
-            onClose={onClose}/>
+            onClose={onClose}
+            onVariableCreated={onVariableCreated}/>
     );
 }

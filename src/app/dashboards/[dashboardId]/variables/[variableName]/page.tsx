@@ -33,9 +33,7 @@ export default function Page() {
 
     const {showSnackbar, Snackbar} = useSnackbar();
     const [saving, setSaving] = useState(false);
-
-    const {dashboard, error: dashboardError, isLoading} = useDashboard(dashboardId);
-
+    const {dashboard, error: dashboardError, isLoading, mutate} = useDashboard(dashboardId);
     const [variable, setVariable] = useState<DashboardVariable>(dashboard?.variables.find(v => v.name === variableName) || {name: variableName} as DashboardVariable);
 
     usePageView("dashboard-variable-page");
@@ -70,6 +68,7 @@ export default function Page() {
 
         DashboardApi.updateDashboard(updatedDashboard)
             .then(() => router.push(`/dashboards/${dashboardId}/settings`))
+            .then(() => mutate())
             .catch(error => showSnackbar(EventType.Error, `Failed to save variable: ${error.toLocaleString()}`))
             .finally(() => setSaving(false));
     };
@@ -120,6 +119,7 @@ export default function Page() {
 
         DashboardApi.updateDashboard(updatedDashboard)
             .then(() => router.push(`/dashboards/${dashboardId}/settings`))
+            .then(() => mutate())
             .catch(error => showSnackbar(EventType.Error, `Failed to delete variable: ${error.toLocaleString()}`))
             .finally(() => setSaving(false));
     }

@@ -12,7 +12,6 @@ import {
     FormControlDashboardVariableManual
 } from "@/app/dashboards/[dashboardId]/components/variable/FormControlDashboardVariableManual";
 import {ConfirmModal, ConfirmModalProps} from "@/app/components/modal/ConfirmModal";
-import {InfoAlert} from "@/app/components/alert/InfoAlert";
 import {WarningAlert} from "@/app/components/alert/WarningAlert";
 
 export interface DashboardVariableConfigProps {

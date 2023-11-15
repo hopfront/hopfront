@@ -1,16 +1,18 @@
 import {Dashboard} from "@/app/lib/model/dashboard/Dashboard";
 import Typography from "@mui/joy/Typography";
-import {Box, Button, LinearProgress, List, ListItem, ListItemButton} from "@mui/joy";
+import {Box, Button, IconButton, LinearProgress, List, ListItem, ListItemButton} from "@mui/joy";
 import {DashboardVariable} from "@/app/lib/model/dashboard/DashboardVariable";
 import {useState} from "react";
 import {InfoAlert} from "@/app/components/alert/InfoAlert";
 import {DashboardLocalStorage} from "@/app/lib/localstorage/DashboardLocalStorage";
 import {ErrorAlert} from "@/app/components/operation/response/ErrorAlert";
 import {TitledList} from "@/app/dashboards/[dashboardId]/components/chart/TitledList";
+import {Delete} from "@mui/icons-material";
 
 export interface DashboardSettingsVariablesListProps {
     dashboard?: Dashboard
     onVariableAdded: (variable: DashboardVariable) => void
+    onVariableDeleted: (variable: DashboardVariable) => void
     onVariableClick: (variable: DashboardVariable) => void
 }
 
@@ -27,8 +29,10 @@ export const buildNewVariableName = (dashboard: Dashboard): string => {
 export const DashboardSettingsVariablesSection = ({
                                                       dashboard,
                                                       onVariableAdded,
-                                                      onVariableClick
+                                                      onVariableDeleted,
+                                                      onVariableClick,
                                                   }: DashboardSettingsVariablesListProps) => {
+
     const [error, setError] = useState<any | undefined>();
     const [alertInfoVisible, setAlertInfoVisible] =
         useState(dashboard ? DashboardLocalStorage.getVariableAlertInfoVisible(dashboard.id) : false);
@@ -71,7 +75,9 @@ export const DashboardSettingsVariablesSection = ({
                 <TitledList title="Variables">
                     {!dashboard && <ListItem><LinearProgress/></ListItem>}
                     {dashboard && dashboard.variables.map(variable => (
-                        <ListItem key={variable.name}>
+                        <ListItem
+                            key={variable.name}
+                            endAction={<IconButton color="danger" size="sm" onClick={() => onVariableDeleted(variable)}><Delete/></IconButton>}>
                             <ListItemButton onClick={() => onVariableClick(variable)}>
                                 <Typography>
                                     <Typography

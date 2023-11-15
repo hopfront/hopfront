@@ -1,23 +1,41 @@
-import React from "react";
-import {Select, Option} from "@mui/joy";
+import React, {useState} from "react";
+import {Select, Option, Button, Stack} from "@mui/joy";
 import {
     DashboardPanelInputSourceConfigDataVariable
 } from "@/app/lib/model/dashboard/DashboardPanelInputSourceConfigDataVariable";
 import {Dashboard} from "@/app/lib/model/dashboard/Dashboard";
 import Typography from "@mui/joy/Typography";
+import {
+    CreateDashboardVariableModal
+} from "@/app/dashboards/[dashboardId]/components/variable/CreateDashboardVariableModal";
+import {DashboardVariable} from "@/app/lib/model/dashboard/DashboardVariable";
 
 export interface DashboardPanelInputVariableSourceConfigurerProps {
     dashboard: Dashboard
+    inputName: string
     data: DashboardPanelInputSourceConfigDataVariable
     onChange: (data: DashboardPanelInputSourceConfigDataVariable) => void
+    onVariableCreated: (variable: DashboardVariable) => void
 }
 
-export const DashboardPanelInputVariableSourceConfigurer = ({dashboard, data, onChange}: DashboardPanelInputVariableSourceConfigurerProps) => {
-    if (dashboard.variables.length > 0) {
-        return (
-            <>
+export const DashboardPanelInputVariableSourceConfigurer = ({
+                                                                dashboard,
+                                                                inputName,
+                                                                data,
+                                                                onChange,
+                                                                onVariableCreated
+                                                            }: DashboardPanelInputVariableSourceConfigurerProps) => {
+    const [variableCreationOpen, setVariableCreationOpen] = useState(false);
+
+
+    return (
+        <>
+            <Stack direction="row">
                 <Select
-                    value={data.variableName}
+                    sx={{
+                        minWidth: 200
+                    }}
+                    value={data.variableName || inputName}
                     onChange={(_, value) => {
                         if (value) {
                             onChange({
@@ -29,9 +47,15 @@ export const DashboardPanelInputVariableSourceConfigurer = ({dashboard, data, on
                         return (<Option key={v.name} value={v.name}>{v.name}</Option>);
                     })}
                 </Select>
-            </>
-        );
-    } else {
-        return <Typography>No dashboard variable has been configured.</Typography>
-    }
+                <Button sx={{ml: 1}} variant="outlined" onClick={() => setVariableCreationOpen(true)}><Typography noWrap>Create variable</Typography></Button>
+            </Stack>
+            <CreateDashboardVariableModal
+                open={variableCreationOpen}
+                onClose={() => setVariableCreationOpen(false)}
+                onSave={onVariableCreated}
+                dashboardTitle={dashboard.title}
+                inputName={inputName}/>
+        </>
+    );
+
 }
