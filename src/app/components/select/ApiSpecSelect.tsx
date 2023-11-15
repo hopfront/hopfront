@@ -1,19 +1,21 @@
 import { ApiSpec } from "@/app/lib/dto/ApiSpec";
 import { useApiSpecs } from "@/app/hooks/useApiSpecs";
-import {CircularProgress} from "@mui/joy";
+import { CircularProgress, Typography } from "@mui/joy";
 import Option from "@mui/joy/Option";
 import Select from "@mui/joy/Select";
 import { useState } from "react";
+import { WarningAlert } from "../alert/WarningAlert";
 
 export interface ApiSpecSelectProps {
     defaultApiSpecId?: string | undefined,
     isSelectionForced?: boolean,
     onApiSpecSelected: (apiSpec: ApiSpec | undefined) => void,
+    onComponentLoaded?: (apiSpec: ApiSpec | undefined) => void,
     disabled?: boolean
     sx?: {}
 }
 
-export const ApiSpecSelect = ({ onApiSpecSelected, isSelectionForced = true, defaultApiSpecId, disabled = false, sx }: ApiSpecSelectProps) => {
+export const ApiSpecSelect = ({ onApiSpecSelected, onComponentLoaded, isSelectionForced = true, defaultApiSpecId, disabled = false, sx }: ApiSpecSelectProps) => {
     const { data, error, isLoading } = useApiSpecs();
     const [apiSpecId, setApiSpecId] = useState<string | undefined | null>(defaultApiSpecId);
 
@@ -29,9 +31,24 @@ export const ApiSpecSelect = ({ onApiSpecSelected, isSelectionForced = true, def
         onApiSpecSelected(firstApiSpec);
     }
 
+    if (error) {
+        return (
+            <WarningAlert title='We were not able to load your API specifications'>
+                <Typography>
+                    {error.message}
+                </Typography>
+            </WarningAlert>
+        )
+    }
+
+    if (data) {
+        onComponentLoaded?.(data.apiSpecs.find(spec => spec.id === apiSpecId));
+    }
+
     return (
         <Select
-            disabled={disabled}
+            disabled={isLoading || disabled}
+            endDecorator={isLoading && <CircularProgress size="sm" />}
             value={apiSpecId ?? 'NO_OPTION'}
             onChange={(_, apiSpecId) => {
                 const selectedApiSpec = data?.apiSpecs.find(spec => spec.id === apiSpecId);
