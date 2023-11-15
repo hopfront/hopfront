@@ -31,7 +31,7 @@ export const DashboardPanelInputVariableSourceConfigurer = ({
     return (
         <>
             <Stack direction="row">
-                <Select
+                {(dashboard.variables || []).length > 0 && <Select
                     sx={{
                         minWidth: 200
                     }}
@@ -46,13 +46,17 @@ export const DashboardPanelInputVariableSourceConfigurer = ({
                     {dashboard.variables.map(v => {
                         return (<Option key={v.name} value={v.name}>{v.name}</Option>);
                     })}
-                </Select>
-                <Button sx={{ml: 1}} variant="outlined" onClick={() => setVariableCreationOpen(true)}><Typography noWrap>Create variable</Typography></Button>
+                </Select>}
+                <Button sx={{ml: 1}} variant="outlined" onClick={() => setVariableCreationOpen(true)}><Typography
+                    noWrap>Create variable</Typography></Button>
             </Stack>
             <CreateDashboardVariableModal
                 open={variableCreationOpen}
                 onClose={() => setVariableCreationOpen(false)}
-                onSave={onVariableCreated}
+                onSave={variable => {
+                    setVariableCreationOpen(false);
+                    onVariableCreated(variable);
+                }}
                 dashboardTitle={dashboard.title}
                 inputName={inputName}/>
         </>
