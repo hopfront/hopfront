@@ -4,7 +4,7 @@ import {ForeignKeyFormControlInput} from "@/app/components/input/ForeignKeyFormC
 import {Edit} from "@mui/icons-material";
 import {
     FormControlDashboardVariableManual
-} from "@/app/dashboards/[dashboardId]/components/FormControlDashboardVariableManual";
+} from "@/app/dashboards/[dashboardId]/components/variable/FormControlDashboardVariableManual";
 
 export interface DashboardVariableInputProps {
     variable: VariableWithValue

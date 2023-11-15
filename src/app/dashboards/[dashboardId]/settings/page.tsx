@@ -124,7 +124,11 @@ export default function Page() {
 
             <Divider sx={{mt: 4}}/>
             <Typography level='h4' sx={{mt: 1}} gutterBottom>Danger Zone</Typography>
-            <Button disabled={!dashboard} color="danger" onClick={onDeleteDashboardClick}>
+            <Button
+                disabled={!dashboard}
+                variant="outlined"
+                color="danger"
+                onClick={onDeleteDashboardClick}>
                 Delete Dashboard
             </Button>
 

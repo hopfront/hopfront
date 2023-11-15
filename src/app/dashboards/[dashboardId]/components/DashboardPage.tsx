@@ -2,7 +2,7 @@ import {RefreshObserverRegistry} from "@/app/lib/model/RefreshObserverRegistry";
 import {Dashboard, NEW_DASHBOARD_TITLE} from "@/app/lib/model/dashboard/Dashboard";
 import {DashboardPanel} from "@/app/lib/model/dashboard/DashboardPanel";
 import {VariableWithValue} from "@/app/lib/model/dashboard/VariableWithValue";
-import {DashboardVariablesPanel} from "@/app/dashboards/[dashboardId]/components/DashboardVariablesPanel";
+import {DashboardVariablesPanel} from "@/app/dashboards/[dashboardId]/components/variable/DashboardVariablesPanel";
 import {
     ArrowDropDown,
     KeyboardArrowRight,

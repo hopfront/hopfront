@@ -11,7 +11,7 @@ export interface ConfirmModalProps {
 
 export const ConfirmModal = ({title, onConfirm, onCancel}: ConfirmModalProps) => {
     return (
-        <ResponsiveModal open={!!title && !!onConfirm && !!onCancel} onClose={() => onCancel && onCancel()}>
+        <ResponsiveModal open={!!title && !!onConfirm} onClose={() => onCancel && onCancel()}>
             <Typography level="title-md">{title}</Typography>
             <ButtonRow align="right" sx={{mt: 2}}>
                 <Button

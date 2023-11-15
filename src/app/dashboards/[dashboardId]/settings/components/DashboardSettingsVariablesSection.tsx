@@ -1,11 +1,12 @@
 import {Dashboard} from "@/app/lib/model/dashboard/Dashboard";
 import Typography from "@mui/joy/Typography";
-import {Button, LinearProgress, List, ListItem, ListItemButton} from "@mui/joy";
+import {Box, Button, LinearProgress, List, ListItem, ListItemButton} from "@mui/joy";
 import {DashboardVariable} from "@/app/lib/model/dashboard/DashboardVariable";
 import {useState} from "react";
 import {InfoAlert} from "@/app/components/alert/InfoAlert";
 import {DashboardLocalStorage} from "@/app/lib/localstorage/DashboardLocalStorage";
 import {ErrorAlert} from "@/app/components/operation/response/ErrorAlert";
+import {TitledList} from "@/app/dashboards/[dashboardId]/components/chart/TitledList";
 
 export interface DashboardSettingsVariablesListProps {
     dashboard?: Dashboard
@@ -66,41 +67,32 @@ export const DashboardSettingsVariablesSection = ({
                     </Typography>
                 </InfoAlert>}
 
-            <Typography
-                id="decorated-variables-list"
-                level="body-xs"
-                textTransform="uppercase"
-                fontWeight="lg"
-                sx={{mt: 2}}
-            >
-                Variables
-            </Typography>
-            <List
-                aria-labelledby="decorated-variables-list"
-                variant='outlined'
-                sx={{borderRadius: '8px', maxWidth: '350px'}}>
-
-                {!dashboard && <ListItem><LinearProgress/></ListItem>}
-                {dashboard && dashboard.variables.map(variable => (
-                    <ListItem key={variable.name}>
-                        <ListItemButton onClick={() => onVariableClick(variable)}>
-                            <Typography>
-                                <Typography
-                                    fontFamily="monospace"
-                                    overflow='hidden'
-                                    textOverflow='ellipsis'>
-                                    {variable.name}
-                                </Typography></Typography>
-                            {variable.label && <Typography level="body-xs" sx={{ml: 1}}>({variable.label})</Typography>}
-                        </ListItemButton>
-                    </ListItem>
-                ))}
-            </List>
+            {(dashboard?.variables || []).length > 0 && <Box sx={{mt: 2}}>
+                <TitledList title="Variables">
+                    {!dashboard && <ListItem><LinearProgress/></ListItem>}
+                    {dashboard && dashboard.variables.map(variable => (
+                        <ListItem key={variable.name}>
+                            <ListItemButton onClick={() => onVariableClick(variable)}>
+                                <Typography>
+                                    <Typography
+                                        fontFamily="monospace"
+                                        overflow='hidden'
+                                        textOverflow='ellipsis'>
+                                        {variable.name}
+                                    </Typography></Typography>
+                                {variable.label &&
+                                    <Typography level="body-xs" sx={{ml: 1}}>({variable.label})</Typography>}
+                            </ListItemButton>
+                        </ListItem>
+                    ))}
+                </TitledList>
+            </Box>}
 
             <Button
+                variant="outlined"
                 disabled={!dashboard}
                 onClick={onAddClick}
-                sx={{mt: 2}}>
+                sx={{mt: 1}}>
                 Add Variable
             </Button>
         </>

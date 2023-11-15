@@ -11,7 +11,7 @@ import {
 } from "@/app/lib/model/dashboard/DashboardPanelInputSourceConfigDataConstant";
 import {
     DashboardPanelInputVariableSourceConfigurer
-} from "@/app/dashboards/[dashboardId]/components/DashboardPanelInputVariableSourceConfigurer";
+} from "@/app/dashboards/[dashboardId]/components/variable/DashboardPanelInputVariableSourceConfigurer";
 import {
     DashboardPanelInputSourceConfigDataVariable
 } from "@/app/lib/model/dashboard/DashboardPanelInputSourceConfigDataVariable";

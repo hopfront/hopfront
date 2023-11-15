@@ -1,4 +1,4 @@
-import { DashboardVariableInput } from "@/app/dashboards/[dashboardId]/components/DashboardVariableInput";
+import { DashboardVariableInput } from "@/app/dashboards/[dashboardId]/components/variable/DashboardVariableInput";
 import { VariableWithValue } from "@/app/lib/model/dashboard/VariableWithValue";
 import { SxProps } from "@mui/joy/styles/types";
 import {Box, Skeleton, Stack} from "@mui/joy";
