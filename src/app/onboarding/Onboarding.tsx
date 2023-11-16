@@ -162,18 +162,26 @@ export default function Onboarding({ steps: initialSteps, apiSpecs, onOnboarding
             action: "onboarding-completed-clicked",
         });
 
-        ApiSpecsApi.importApiSpecAsUrl('https://petstore3.swagger.io/api/v3/openapi.json', false)
-            .then(() => {
-                return Promise.all([
-                    importSampleDashboard('/sample-data/dashboards/petstore-sample-dashboard-1.json'),
-                    importSampleDashboard('/sample-data/dashboards/petstore-sample-dashboard-2.json')
-                ]);
-            })
-            .finally(() => {
-                updateStep(activeStep, 'DONE')
-                setSubmitOnboardingLoading(false);
-                onOnboardingCompleted();
-            });
+        if (apiContext) {
+            closeOnboarding();
+        } else { // We only import demo api spec if no api spec has been imported yet by the user.
+            ApiSpecsApi.importApiSpecAsUrl('https://petstore3.swagger.io/api/v3/openapi.json', false)
+                .then(() => {
+                    return Promise.all([
+                        importSampleDashboard('/sample-data/dashboards/petstore-sample-dashboard-1.json'),
+                        importSampleDashboard('/sample-data/dashboards/petstore-sample-dashboard-2.json')
+                    ]);
+                })
+                .finally(() => {
+                    closeOnboarding();
+                });
+        }
+    }
+
+    const closeOnboarding = () => {
+        updateStep(activeStep, 'DONE')
+        setSubmitOnboardingLoading(false);
+        onOnboardingCompleted();
     }
 
     const onApiImportSucceeded = (_: ImportMode, apiSpecId: string) => {
