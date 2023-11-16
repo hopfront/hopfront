@@ -20,7 +20,7 @@ export const ForeignKeySourceTableData = ({source}: ForeignKeySourceTableDataPro
         return (
             <td>
                 <Typography>
-                    {apiContext.apiSpec.document.info.title} {" > "}
+                    {apiContext.apiSpec.document.info.title || 'Untitled API'} {" > "}
                     <SchemaPropertyLabel schemaRef={source.schemaRef} propertyName={source.propertyName}/>
                 </Typography>
             </td>

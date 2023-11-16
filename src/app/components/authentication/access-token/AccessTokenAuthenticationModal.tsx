@@ -89,7 +89,7 @@ export const AccessTokenAuthenticationModal = ({
         <>
             <ResponsiveModal open={open} onClose={onClose}>
                 <Typography level="title-lg">Authentication</Typography>
-                <Typography level="title-md" sx={{mb: 2}}>{apiContext.apiSpec.document.info.title}</Typography>
+                <Typography level="title-md" sx={{mb: 2}}>{apiContext.apiSpec.document.info.title || 'Untitled API'}</Typography>
                 <OperationInputForm
                     operation={operation}
                     operationInputs={operationInputs}

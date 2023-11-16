@@ -66,7 +66,7 @@ export const ApiSpecSelect = ({ onApiSpecSelected, onComponentLoaded, isSelectio
             {(data?.apiSpecs || []).map(apiSpec =>
                 <Option key={apiSpec.id}
                     value={apiSpec.id}>
-                    {apiSpec.document.info.title}
+                    {apiSpec.document.info.title || 'Untitled API'}
                 </Option>)}
         </Select>
     );

@@ -86,7 +86,7 @@ export default function AccessTokenAuthConfigForm({ auth, apiSpec }: AccessToken
                         }
                     }} />
                 <FormHelperText>
-                    {`The API used as an authentication source for "${apiSpec.document.info.title}."`}
+                    {`The API used as an authentication source for "${apiSpec.document.info.title || 'Untitled API'}."`}
                 </FormHelperText>
             </FormControl>
             {selectedApiSpec &&

@@ -37,7 +37,7 @@ export const OperationListItem = ({ operation, selected, pinned, displayApiSpec,
                             <OperationLabel operation={operation} mode="human" alignPaths={true} />}
                         {displayApiSpec &&
                             <Typography noWrap level="body-xs" sx={{ ml: 2 }}>
-                                {operation.apiSpec.document.info.title}
+                                {operation.apiSpec.document.info.title || 'Untitled API'}
                             </Typography>}
                     </Box>
                 </ListItemContent>

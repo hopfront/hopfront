@@ -56,7 +56,7 @@ export default function ApiCard({
                         underline="none"
                         sx={{ color: 'text.primary' }}
                     >
-                        {api.document.info.title}
+                        {api.document.info.title || 'Untitled API'}
                     </Link>
                 </Box>
 

@@ -52,7 +52,7 @@ export default function Page() {
         )
     } else {
         const document = apiContext?.apiSpec.document;
-        const title = (document?.info.title) || 'API Spec Title';
+        const title = (document?.info.title) || 'Untitled API';
         const defaultServer = document && ServerLocalStorage.getApiServer(apiContext);
 
         return (
