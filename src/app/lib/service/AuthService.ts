@@ -58,7 +58,7 @@ export class AuthService  {
             } catch (error: any) {
                 return {
                     isAuthenticationRequired: true,
-                    isAuthenticated: true // just because we cannot decode a JWT does not mean the token is invalid.
+                    isAuthenticated: false
                 }
             }
         }
