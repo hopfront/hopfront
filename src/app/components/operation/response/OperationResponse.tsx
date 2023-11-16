@@ -7,33 +7,38 @@ import {ApiContext} from "@/app/lib/model/ApiContext";
 import {ResponseSchemaSelectedObserver} from "@/app/lib/model/ResponseSchemaSelectedObserver";
 import {EnhancedTable} from "@/app/components/table/EnhancedTable";
 import EmptyTable from "../../table/EmptyTable";
-import ResponsesObject = OpenAPIV3.ResponsesObject;
 import ResponseObject = OpenAPIV3.ResponseObject;
 import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
 import Typography from "@mui/joy/Typography";
 import {buildSuccessBodyOrProblem} from "@/app/components/operation/response/utils";
 import {ErrorAlert} from "@/app/components/operation/response/ErrorAlert";
 import {ProblemAlert} from "@/app/components/alert/ProblemAlert";
+import {StandaloneOperation} from "@/app/lib/model/StandaloneOperation";
+import {AuthService} from "@/app/lib/service/AuthService";
+import {ApiAuthenticationStatus} from "@/app/lib/model/ApiAuthenticationStatus";
 
 interface OperationResponseProps {
+    operation: StandaloneOperation
     response: Response
     onRefreshNeeded: () => void
     loading?: boolean
-    openAPIResponses: ResponsesObject
     responseSchemaSelectedObserver?: ResponseSchemaSelectedObserver
     apiContext: ApiContext
 }
 
 export const OperationResponse = ({
+                                      operation,
                                       response,
                                       onRefreshNeeded,
                                       loading,
-                                      openAPIResponses,
                                       responseSchemaSelectedObserver,
                                       apiContext
                                   }: OperationResponseProps) => {
 
+    const openAPIResponses = operation.operation.responses;
+
     const [responseText, setResponseText] = useState<string | undefined>();
+    const [authStatus, setAuthStatus] = useState<ApiAuthenticationStatus | undefined>();
 
     useEffect(() => {
         if (!response) {
@@ -42,18 +47,24 @@ export const OperationResponse = ({
 
         if (!response.bodyUsed) {
             response.text()
-                .then(text => setResponseText(text));
+                .then(text => {
+                    setAuthStatus(AuthService.getApiAuthenticationStatus(apiContext));
+                    setResponseText(text);
+                });
         }
     }, [response, responseText]);
 
     const {body, problem} = buildSuccessBodyOrProblem(response.status, responseText);
 
     if (problem) {
-        return <ProblemAlert problem={problem} onClose={() => setResponseText(undefined)}/>;
+        return <ProblemAlert problem={problem} authenticationContext={authStatus && {
+            authenticationStatus: authStatus,
+            apiSpecId: apiContext.apiSpec.id
+        }}/>;
     }
 
     if (!body) {
-        return <ResponseAlert response={response}/>
+        return <ResponseAlert response={response} operation={operation.operation}/>
     }
 
     const contentType = response.headers.get('content-type');
@@ -63,16 +74,7 @@ export const OperationResponse = ({
     }
 
     const openAPIResponse = openAPIResponses[response.status];
-    const openAPIResponseObject = openAPIResponse as ResponseObject;
-
-    if (!openAPIResponseObject && response.status === 200) {
-        return (<ResponseAlert response={response}/>)
-    }
-
-    if (!openAPIResponseObject) {
-        return <div>no open API reponse</div>
-    }
-
+    const openAPIResponseObject: ResponseObject | undefined = openAPIResponse as ResponseObject;
     const mediaType = getMediaType(openAPIResponseObject, contentType);
 
     if (!mediaType) {

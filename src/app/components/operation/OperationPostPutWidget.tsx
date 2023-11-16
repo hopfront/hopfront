@@ -89,9 +89,9 @@ export const OperationPostPutWidget = ({
                 <Box sx={{mt: 2}}>
                     <Card>
                         <OperationResponse
+                            operation={operation}
                             response={response}
                             onRefreshNeeded={() => null}
-                            openAPIResponses={operation.operation.responses}
                             loading={loading}
                             responseSchemaSelectedObserver={responseSchemaSelectedObserver}
                             apiContext={apiContext}

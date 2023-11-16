@@ -62,8 +62,8 @@ export const resolveApiBaseUrl = (server: ServerObject): string | undefined => {
     return url;
 }
 
-export const getMediaType = (openAPIResponseObject: OpenAPIV3.ResponseObject, contentType: string): MediaTypeObject | undefined => {
-    if (!openAPIResponseObject.content) {
+export const getMediaType = (openAPIResponseObject: OpenAPIV3.ResponseObject | undefined, contentType: string): MediaTypeObject | undefined => {
+    if (!openAPIResponseObject?.content) {
         return undefined;
     }
 

@@ -103,11 +103,11 @@ export const OperationGetWidget = ({
             {response &&
                 <Card sx={{mt: 2}}>
                     <OperationResponse
+                        operation={operation}
                         response={response}
                         onRefreshNeeded={() => {
                             setRefreshCounter(refreshCounter + 1);
                         }}
-                        openAPIResponses={operation.operation.responses}
                         loading={loading}
                         responseSchemaSelectedObserver={responseSchemaSelectedObserver}
                         apiContext={apiContext}/>

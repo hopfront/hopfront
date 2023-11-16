@@ -9,8 +9,8 @@ import {AlertPropsColorOverrides} from "@mui/joy/Alert/AlertProps";
 import ResponseObject = OpenAPIV3.ResponseObject;
 
 export interface ResponseAlertProps {
-    response?: Response
-    operation?: OpenAPIV3.OperationObject
+    response: Response
+    operation: OpenAPIV3.OperationObject
 }
 
 const getAlertColor = (response: Response): OverridableStringUnion<ColorPaletteProp, AlertPropsColorOverrides> => {
@@ -46,19 +46,23 @@ export const ResponseAlert = ({response, operation}: ResponseAlertProps) => {
         return null;
     }
 
+    let title = getTitle(response, operation);
+    let alertColor = getAlertColor(response);
+    let icon = getIcon(response);
+
     return (
         <Alert
             sx={{alignItems: 'flex-start'}}
-            startDecorator={React.cloneElement(getIcon(response), {
+            startDecorator={React.cloneElement(icon, {
                 sx: {mt: '2px', mx: '4px'},
                 fontSize: 'xl2',
             })}
             variant="soft"
-            color={getAlertColor(response)}
+            color={alertColor}
         >
             {operation && <div>
                 <Typography fontWeight="lg" mt={0.25}>
-                    {getTitle(response, operation)}
+                    {title}
                 </Typography>
             </div>}
             {!operation && <div>

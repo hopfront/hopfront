@@ -21,6 +21,7 @@ import {LoadingResponsiveContainer} from "@/app/dashboards/[dashboardId]/compone
 import {ChartDataConfig} from "@/app/lib/model/chart/ChartDataConfig";
 import {DashboardPanelChartConfig} from "@/app/lib/model/dashboard/DashboardPanelChartConfig";
 import ResponseObject = OpenAPIV3.ResponseObject;
+import {ApiAuthenticationStatus} from "@/app/lib/model/ApiAuthenticationStatus";
 
 const getChartDataFromObject = (
     object: any | undefined,
@@ -96,7 +97,9 @@ export const DashboardPanelChartContent = ({
                                                response: operationResponse,
                                                apiContext
                                            }: DashboardPanelChartContentProps) => {
+
     const [responseText, setResponseText] = useState<string | undefined>();
+    const [authStatus, setAuthStatus] = useState<ApiAuthenticationStatus | undefined>();
 
     const response = operationResponse.response;
 
@@ -117,7 +120,13 @@ export const DashboardPanelChartContent = ({
     const {body, problem} = buildSuccessBodyOrProblem(response.status, responseText);
 
     if (problem) {
-        return <ProblemAlert problem={problem} onClose={() => setResponseText(undefined)}/>;
+        return <ProblemAlert
+            problem={problem}
+            authenticationContext={authStatus && {
+                authenticationStatus: authStatus,
+                apiSpecId: apiContext.apiSpec.id
+            }}
+            onClose={() => setResponseText(undefined)}/>;
     }
 
     const contentType = response.headers.get('content-type');
@@ -129,7 +138,7 @@ export const DashboardPanelChartContent = ({
     const openAPIResponse = operation.operation.responses[response.status];
 
     if (!openAPIResponse) {
-        return <ResponseAlert response={response}/>;
+        return <ResponseAlert response={response} operation={operation.operation}/>;
     }
 
     const openAPIResponseObject = openAPIResponse as ResponseObject;

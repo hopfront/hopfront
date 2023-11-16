@@ -86,10 +86,10 @@ export const OperationDeleteWidget = ({
                 <Box sx={{mt: 1}}>
                     <Card>
                         <OperationResponse
+                            operation={operation}
                             response={response}
                             onRefreshNeeded={() => null}
                             loading={loading}
-                            openAPIResponses={operation.operation.responses}
                             responseSchemaSelectedObserver={responseSchemaSelectedObserver}
                             apiContext={apiContext}
                         />

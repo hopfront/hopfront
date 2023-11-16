@@ -156,7 +156,6 @@ export const DashboardPanelGridItem = ({
 
     if (apiContext && authStatus.isAuthenticationRequired && !authStatus.isAuthenticated) {
         onAuthRequired(apiContext);
-        return null;
     }
 
     const parameterWithoutRequiredValue = inputs.parameters.find(p => {

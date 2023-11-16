@@ -31,6 +31,28 @@ export const DashboardPanelInputConfigurer = ({dashboard, input, onChange, onVar
 
     const onSourceConfigTypeChange = (event: SyntheticEvent | null, newSourceConfigType: DashboardPanelInputSourceConfigType | null) => {
         if (newSourceConfigType) {
+            if (newSourceConfigType === "constant") {
+                onChange({
+                    name: input.name,
+                    sourceConfig: {
+                        type: 'constant',
+                        data: {
+                            value: ''
+                        } as DashboardPanelInputSourceConfigDataConstant
+                    }
+                });
+            } else if (newSourceConfigType === "variable") {
+                onChange({
+                    name: input.name,
+                    sourceConfig: {
+                        type: 'variable',
+                        data: {
+                            variableName: input.name
+                        } as DashboardPanelInputSourceConfigDataVariable
+                    }
+                });
+            }
+
             setSourceConfigType(newSourceConfigType);
         }
     };

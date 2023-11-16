@@ -21,10 +21,10 @@ export const DashboardPanelOperationResponseContent = ({
 
     return (
         <OperationResponse
+            operation={operation}
             response={operationResponse.response}
             onRefreshNeeded={() => null}
             loading={operationResponse.loading}
-            openAPIResponses={operation.operation.responses}
             apiContext={apiContext}/>
     );
 }
