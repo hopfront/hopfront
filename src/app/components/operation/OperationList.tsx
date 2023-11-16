@@ -142,6 +142,7 @@ export const OperationList = ({ operations, selectedOperation, onOperationSelect
 
     return <Box
         sx={{
+            overflowY: 'auto',
             width: '100%',
             height: height,
         }}>
