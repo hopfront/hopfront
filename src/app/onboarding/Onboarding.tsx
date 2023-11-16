@@ -17,7 +17,7 @@ import { OpenAPIV3 } from "openapi-types";
 import { useEffect, useState } from "react";
 import { useApiContext } from "../hooks/useApiContext";
 import { ApiSpec } from "../lib/dto/ApiSpec";
-import { DefaultServerLocalStorage } from "../lib/localstorage/DefaultServerLocalStorage";
+import { ServerLocalStorage } from "../lib/localstorage/ServerLocalStorage";
 import { InstanceSetup, InstanceSetupStatus } from "../lib/model/InstanceProperties";
 import { ImportMode } from "../settings/apis/imports/components/ImportApiSpec";
 import ApiAuthenticationOnboardingAccordion from "./ApiAuthenticationOnboardingAccordion";
@@ -84,7 +84,7 @@ export default function Onboarding({ steps: initialSteps, apiSpecs, onOnboarding
     useEffect(() => {
         if (apiContext) {
             setDefaultServer(
-                DefaultServerLocalStorage.getDefaultServer(apiSpecId, apiContext.apiSpec.document, apiContext.extension)
+                ServerLocalStorage.getApiServer(apiContext)
             )
         }
     }, [apiContext])

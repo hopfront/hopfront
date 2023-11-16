@@ -1,11 +1,10 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from "@mui/joy";
 import { SxProps } from "@mui/joy/styles/types";
-import { ReactNode, useState } from "react";
+import { OpenAPIV3 } from "openapi-types";
+import { ReactNode } from "react";
 import ServerConfiguration from "../api-specs/[apiSpecId]/settings/components/ServerConfiguration";
-import { DefaultServerLocalStorage } from "../lib/localstorage/DefaultServerLocalStorage";
 import { ApiContext } from "../lib/model/ApiContext";
 import ServerObject = OpenAPIV3.ServerObject;
-import { OpenAPIV3 } from "openapi-types"
 
 export interface ApiServersOnboardingAccordionProps {
     title: ReactNode

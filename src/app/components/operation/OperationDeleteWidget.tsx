@@ -56,7 +56,7 @@ export const OperationDeleteWidget = ({
         setResponse(undefined);
         setLoading(true);
 
-        OperationService.executeOperation(operationInputs, operation, apiContext.config, apiContext.extension)
+        OperationService.executeOperation(operationInputs, operation, apiContext)
             .then(response => {
                 setError(undefined);
                 setResponse(response);

@@ -1,22 +1,24 @@
+import { ServerLocalStorage } from "@/app/lib/localstorage/ServerLocalStorage";
+import { ApiContext } from "@/app/lib/model/ApiContext";
 import { getApiServers, resolveApiBaseUrl } from "@/app/lib/openapi/utils";
 import { Option, Select } from "@mui/joy";
 import { OpenAPIV3 } from "openapi-types";
 import { useEffect, useState } from "react";
-import { DefaultServerLocalStorage } from "@/app/lib/localstorage/DefaultServerLocalStorage";
-import { ApiContext } from "@/app/lib/model/ApiContext";
 import ServerObject = OpenAPIV3.ServerObject;
 
 interface ServerSelectProps {
     defaultServer: ServerObject,
     apiContext: ApiContext
+    onServerSelected?: (server: ServerObject) => void
 }
 
-export const ServerSelect = ({ defaultServer, apiContext }: ServerSelectProps) => {
+export const ServerSelect = ({ defaultServer, apiContext, onServerSelected }: ServerSelectProps) => {
     const [selectedServer, setSelectedServer] = useState<ServerObject | null | undefined>()
 
     useEffect(() => {
         if (selectedServer) {
-            DefaultServerLocalStorage.setDefaultServer(selectedServer, apiContext.apiSpec.id);
+            ServerLocalStorage.setApiServer(apiContext.apiSpec.id, selectedServer);
+            onServerSelected?.(selectedServer);
         }
     }, [selectedServer, apiContext.apiSpec.id])
     const servers = getApiServers(apiContext.apiSpec.document).concat(apiContext.extension.servers);

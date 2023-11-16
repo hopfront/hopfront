@@ -137,7 +137,7 @@ export const DashboardPanelGridItem = ({
             loading: true
         });
 
-        OperationService.executeOperation(inputs, operation, apiContext.config, apiContext.extension)
+        OperationService.executeOperation(inputs, operation, apiContext)
             .then(response => {
                 setOperationResponse({
                     response: response,

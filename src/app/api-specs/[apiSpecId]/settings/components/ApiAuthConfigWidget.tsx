@@ -31,7 +31,7 @@ export const ApiAuthConfigWidget = ({ apiContext, sx }: ApiAuthenticationProps) 
         ApiConfigApi.saveApiConfig(specId, { authenticationConfig: currentAuth })
             .then(() => {
                 if (currentAuth.authenticationType === 'ACCESS_TOKEN') {
-                    AuthLocalStorage.setAccessToken(specId, undefined);
+                    AuthLocalStorage.setAccessToken(apiContext, undefined);
                 }
             })
             .then(() => showSnackbar(EventType.Success, 'Authentication configuration saved successfully'))

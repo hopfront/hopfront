@@ -77,7 +77,7 @@ export const OperationGetWidget = ({
             name: operation.method,
         });
 
-        OperationService.executeOperation(operationInput, operation, apiContext.config, apiContext.extension)
+        OperationService.executeOperation(operationInput, operation, apiContext)
             .then(response => {
                 setResponse(response);
                 setLoading(false);

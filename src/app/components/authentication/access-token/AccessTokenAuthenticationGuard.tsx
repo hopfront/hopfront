@@ -12,14 +12,14 @@ export interface AccessTokenAuthenticationGuard {
 }
 
 export const AccessTokenAuthenticationGuard = ({apiContext, onAuthenticationHandled, onAuthenticationIgnored, children}: AccessTokenAuthenticationGuard) => {
-    const apiAuthenticationStatus = AuthService.getAccessTokenAuthenticationStatus(apiContext.apiSpec.id);
+    const apiAuthenticationStatus = AuthService.getAccessTokenAuthenticationStatus(apiContext);
 
     if (apiContext.config.authenticationConfig?.authenticationType === "ACCESS_TOKEN" && apiAuthenticationStatus.isAuthenticationRequired && !apiAuthenticationStatus.isAuthenticated) {
         return <AccessTokenAuthenticationModal
             open={true}
             onClose={onAuthenticationIgnored}
             onAccessToken={newAccessToken => {
-                AuthLocalStorage.setAccessToken(apiContext.apiSpec.id, newAccessToken);
+                AuthLocalStorage.setAccessToken(apiContext, newAccessToken);
                 onAuthenticationHandled();
             }}
             apiContext={apiContext}/>;

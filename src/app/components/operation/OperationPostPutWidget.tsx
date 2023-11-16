@@ -56,7 +56,7 @@ export const OperationPostPutWidget = ({
         setResponse(undefined);
         setLoading(true);
 
-        OperationService.executeOperation(operationInputs, operation, apiContext.config, apiContext.extension)
+        OperationService.executeOperation(operationInputs, operation, apiContext)
             .then(response => {
                 setError(null);
                 setResponse(response);

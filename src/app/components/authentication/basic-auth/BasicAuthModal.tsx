@@ -19,7 +19,7 @@ type FormData = {
 
 export default function BasicAuthModal({ apiContext, open, onClose, onBasicAuthSubmit }: BasicAuthModalProps) {
     const savedCredentials = useMemo(() => {
-        let saved = AuthLocalStorage.getBasicAuthCredentials(apiContext.apiSpec.id);
+        let saved = AuthLocalStorage.getBasicAuthCredentials(apiContext);
         if (saved?.password) {
             saved = { ...saved, password: '***************' };
         }

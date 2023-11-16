@@ -19,7 +19,7 @@ export default function StaticAuthenticationGuard({
     const authenticationConfig = apiContext.config.authenticationConfig;
     const [open, setOpen] = useState<boolean>(true);
     const defaultAuthentication = useMemo(() => {
-        return AuthLocalStorage.getStaticAuthCredentials(apiContext.apiSpec.id);
+        return AuthLocalStorage.getStaticAuthCredentials(apiContext);
     }, [apiContext.apiSpec.id]);
 
     if (authenticationConfig?.authenticationType === 'STATIC' && (!defaultAuthentication?.secret)) {
@@ -29,7 +29,7 @@ export default function StaticAuthenticationGuard({
                 open={open}
                 onClose={() => { setOpen(false); onAuthenticationIgnored(); }}
                 onStaticAuthenticationSubmit={(credentials) => {
-                    AuthLocalStorage.setStaticAuthCredentials(apiContext.apiSpec.id, credentials);
+                    AuthLocalStorage.setStaticAuthCredentials(apiContext, credentials);
                     setOpen(false);
                     onAuthenticationHandled();
                 }} />

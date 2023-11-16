@@ -53,7 +53,7 @@ export const ConnectivityTestOnboardingAccordion = ({
         const operationDefaultInputs = getOperationDefaultInputs(tryoutOperation, undefined);
 
         setConnectivityTestLoading(true);
-        OperationService.executeOperation(operationDefaultInputs, tryoutOperation, apiContext.config, apiContext.extension)
+        OperationService.executeOperation(operationDefaultInputs, tryoutOperation, apiContext)
             .then(() => {
                 setConnectivityTestSucceeded(true);
                 setConnectivityTestLoading(false);

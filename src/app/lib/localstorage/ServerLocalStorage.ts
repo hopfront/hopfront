@@ -1,13 +1,13 @@
-import {getApiServers} from "@/app/lib/openapi/utils";
-import {OpenAPIV3} from "openapi-types";
+import { getApiServers } from "@/app/lib/openapi/utils";
+import { OpenAPIV3 } from "openapi-types";
+import { ApiContext } from "../model/ApiContext";
 import ServerObject = OpenAPIV3.ServerObject;
-import { OpenAPIDocumentExtension } from "../dto/OpenApiExtensions";
 
 const DEFAULT_API_SERVER_KEY_PREFIX = 'com.hopfront.default-api-server:'
 
-export class DefaultServerLocalStorage {
+export class ServerLocalStorage {
 
-    public static setDefaultServer(server: ServerObject, apiSpecId: string) {
+    public static setApiServer(apiSpecId: string, server: ServerObject) {
         if (typeof window === "undefined") {
             return;
         }
@@ -15,15 +15,15 @@ export class DefaultServerLocalStorage {
         localStorage.setItem(`${DEFAULT_API_SERVER_KEY_PREFIX}${apiSpecId}`, JSON.stringify(server));
     }
 
-    public static getDefaultServer(apiSpecId: string, document: OpenAPIV3.Document, extension: OpenAPIDocumentExtension | undefined): ServerObject | undefined {
-        const fallback = getApiServers(document)[0] || extension?.servers[0];
+    public static getApiServer(apiContext: ApiContext): ServerObject | undefined {
+        const fallback = getApiServers(apiContext.apiSpec.document)[0] || apiContext.extension?.servers[0];
         if (typeof window === "undefined") {
             return fallback;
         }
 
         let savedServer: ServerObject | undefined;
 
-        const server = localStorage.getItem(`${DEFAULT_API_SERVER_KEY_PREFIX}${apiSpecId}`);
+        const server = localStorage.getItem(`${DEFAULT_API_SERVER_KEY_PREFIX}${apiContext.apiSpec.id}`);
         if (server) {
             try {
                 savedServer = JSON.parse(server) as ServerObject;
@@ -32,6 +32,4 @@ export class DefaultServerLocalStorage {
 
         return savedServer ? savedServer : fallback;
     }
-
-
 }

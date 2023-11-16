@@ -14,7 +14,7 @@ export interface BasicAuthFormProps {
 export default function BasicAuthAuthenticationGuard({ apiContext, onAuthenticationHandled, onAuthenticationIgnored, children }: BasicAuthFormProps) {
     const apiAuthenticationConfig = apiContext.config.authenticationConfig;
     const defaultCredentials = useMemo(() => {
-        return AuthLocalStorage.getBasicAuthCredentials(apiContext.apiSpec.id);
+        return AuthLocalStorage.getBasicAuthCredentials(apiContext);
     }, [apiContext.apiSpec.id]);
     const [open, setOpen] = useState<boolean>(true);
 
@@ -26,7 +26,7 @@ export default function BasicAuthAuthenticationGuard({ apiContext, onAuthenticat
                     open={open}
                     onClose={() => { setOpen(false); onAuthenticationIgnored(); }}
                     onBasicAuthSubmit={(credentials) => {
-                        AuthLocalStorage.setBasicAuthCredentials(apiContext.apiSpec.id, credentials);
+                        AuthLocalStorage.setBasicAuthCredentials(apiContext, credentials);
                         setOpen(false);
                         onAuthenticationHandled();
                     }}

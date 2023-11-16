@@ -9,7 +9,7 @@ import { useAnalytics } from "@/app/hooks/analytics/useAnalytics";
 import { useApiContext } from "@/app/hooks/useApiContext";
 import { ApiSpecsApi } from "@/app/lib/api/ApiSpecsApi";
 import { Problem } from "@/app/lib/dto/Problem";
-import { DefaultServerLocalStorage } from "@/app/lib/localstorage/DefaultServerLocalStorage";
+import { ServerLocalStorage } from "@/app/lib/localstorage/ServerLocalStorage";
 import { getRestrictedApiUrls } from "@/app/lib/openapi/utils";
 import {
     OperationsExtensionsConfigurerPage
@@ -53,9 +53,8 @@ export default function Page() {
         )
     } else {
         const document = apiContext?.apiSpec.document;
-        const extension = apiContext?.extension;
         const title = (document?.info.title) || 'API Spec Title';
-        const defaultServer = document && DefaultServerLocalStorage.getDefaultServer(apiSpecId, document, extension);
+        const defaultServer = document && ServerLocalStorage.getApiServer(apiContext);
 
         const restrictedImportUrls = getRestrictedApiUrls();
         const readOnly = restrictedImportUrls.length > 0;
@@ -90,7 +89,7 @@ export default function Page() {
                             </ListItemContent>
                         </AccordionSummary>
                         <AccordionDetails>
-                            {apiContext && <ServerConfiguration apiContext={apiContext} defaultServer={defaultServer} sx={{mt: 1}}/>}
+                            {apiContext && <ServerConfiguration apiContext={apiContext} defaultServer={defaultServer} sx={{ mt: 1 }} />}
                         </AccordionDetails>
                     </Accordion>
                     <Accordion>

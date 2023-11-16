@@ -56,7 +56,7 @@ export const AccessTokenAuthenticationModal = ({
         setLoading(true);
         setProblem(undefined);
 
-        OperationService.executeOperation(operationInputs, operation, apiContext.config, apiContext.extension)
+        OperationService.executeOperation(operationInputs, operation, apiContext)
             .then(response => {
                 setProblem(undefined);
                 setLoading(false);

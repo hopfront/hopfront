@@ -41,17 +41,17 @@ export const AuthenticationBadge = ({ apiContext }: AuthenticationBadgeProps) =>
     }
 
     const onBasicAuthSubmit = (basicAuth: BasicAuthCredentials) => {
-        AuthLocalStorage.setBasicAuthCredentials(apiContext.apiSpec.id, basicAuth);
+        AuthLocalStorage.setBasicAuthCredentials(apiContext, basicAuth);
         setOpen(false);
     }
 
     const onStaticAuthSubmit = (secret: StaticAuthCredentials) => {
-        AuthLocalStorage.setStaticAuthCredentials(apiContext.apiSpec.id, secret);
+        AuthLocalStorage.setStaticAuthCredentials(apiContext, secret);
         setOpen(false);
     }
 
     const onAccessTokenSubmit = (accessToken: string) => {
-        AuthLocalStorage.setAccessToken(apiContext.apiSpec.id, accessToken);
+        AuthLocalStorage.setAccessToken(apiContext, accessToken);
         setOpen(false);
     }
 

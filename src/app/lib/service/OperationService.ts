@@ -1,25 +1,24 @@
-import { XHRFrontRequestMethod } from "@/app/lib/dto/XHRFrontRequest";
 import { ApiAuthenticationConfig, ApiAuthenticationStaticParameterData } from "@/app/lib/dto/ApiAuthenticationConfig";
-import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
+import { XHRFrontRequestMethod } from "@/app/lib/dto/XHRFrontRequest";
 import { OperationInputs } from "@/app/lib/model/OperationInputs";
+import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
 import { OpenAPIV3 } from "openapi-types";
 import HttpMethods = OpenAPIV3.HttpMethods;
 
-import { ParameterWithValue } from "@/app/lib/model/ParameterWithValue";
-import { DefaultServerLocalStorage } from "@/app/lib/localstorage/DefaultServerLocalStorage";
-import { AuthLocalStorage } from "@/app/lib/localstorage/AuthLocalStorage";
 import { ProxyApi } from "@/app/lib/api/ProxyApi";
-import { ApiContext } from "../model/ApiContext";
+import { AuthLocalStorage } from "@/app/lib/localstorage/AuthLocalStorage";
+import { ServerLocalStorage } from "@/app/lib/localstorage/ServerLocalStorage";
+import { ParameterWithValue } from "@/app/lib/model/ParameterWithValue";
 import { ApiConfig } from "../dto/ApiConfig";
 import { OpenAPIDocumentExtension } from "../dto/OpenApiExtensions";
+import { ApiContext } from "../model/ApiContext";
 
 const buildUrl = (
     parameters: ParameterWithValue[],
     operation: StandaloneOperation,
-    authentication: ApiAuthenticationConfig | undefined,
-    extension: OpenAPIDocumentExtension | undefined): string => {
-
-    const baseUrl = DefaultServerLocalStorage.getDefaultServer(operation.apiSpec.id, operation.apiSpec.document, extension)?.url;
+    apiContext: ApiContext): string => {
+    const authentication = apiContext.config.authenticationConfig;
+    const baseUrl = ServerLocalStorage.getApiServer(apiContext)?.url;
     let url = `${baseUrl}${operation.path}`
 
     parameters
@@ -54,7 +53,7 @@ const buildUrl = (
             let authenticatedUrl = new URL(url);
             authenticatedUrl.searchParams.append(
                 staticData.parameterName,
-                AuthLocalStorage.getStaticAuthCredentials(operation.apiSpec.id)?.secret ?? ''
+                AuthLocalStorage.getStaticAuthCredentials(apiContext)?.secret ?? ''
             );
             return authenticatedUrl.toString();
         } else {
@@ -70,10 +69,10 @@ export class OperationService {
     public static async executeOperation(
         inputs: OperationInputs,
         operation: StandaloneOperation,
-        apiConfig: ApiConfig,
-        extension: OpenAPIDocumentExtension,
+        apiContext: ApiContext,
         timeout: number = 30000): Promise<Response> {
 
+        const apiConfig = apiContext.config;
         const isCORSByPassed = apiConfig.isCorsByPassed;
 
         const buildMethod = (): XHRFrontRequestMethod => {
@@ -100,7 +99,7 @@ export class OperationService {
         }
 
         const buildUrlWithParameters = (): string => {
-            return buildUrl(inputs.parameters, operation, apiConfig.authenticationConfig, extension);
+            return buildUrl(inputs.parameters, operation, apiContext);
         }
 
         const buildHeaders = (authentication: ApiAuthenticationConfig | undefined): HeadersInit => {
@@ -115,14 +114,14 @@ export class OperationService {
                     const staticData = authentication.data as ApiAuthenticationStaticParameterData;
 
                     if (staticData.parameterLocation === "HEADER") {
-                        headers[staticData.parameterName] = AuthLocalStorage.getStaticAuthCredentials(operation.apiSpec.id)?.secret ?? '';
+                        headers[staticData.parameterName] = AuthLocalStorage.getStaticAuthCredentials(apiContext)?.secret ?? '';
                     }
                 } else if (authentication.authenticationType === "BASIC_AUTH") {
-                    const credentials = AuthLocalStorage.getBasicAuthCredentials(operation.apiSpec.id);
+                    const credentials = AuthLocalStorage.getBasicAuthCredentials(apiContext);
                     const base64credentials = btoa(`${credentials?.username}:${credentials?.password}`)
                     headers['Authorization'] = `Basic ${base64credentials}`;
                 } else if (authentication.authenticationType === "ACCESS_TOKEN") {
-                    headers['Authorization'] = `Bearer ${AuthLocalStorage.getAccessToken(operation.apiSpec.id)}`;
+                    headers['Authorization'] = `Bearer ${AuthLocalStorage.getAccessToken(apiContext)}`;
                 }
             }
 

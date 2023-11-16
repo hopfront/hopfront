@@ -23,7 +23,7 @@ export default function StaticAuthenticationModal({
     onStaticAuthenticationSubmit
 }: StaticAuthenticationModalProps) {
     const savedAuthentication = useMemo(() => {
-        return AuthLocalStorage.getStaticAuthCredentials(apiContext.apiSpec.id);
+        return AuthLocalStorage.getStaticAuthCredentials(apiContext);
     }, [apiContext.apiSpec.id]);
     const [formData, setFormData] = useState<FormData>(savedAuthentication ? { secret: '***************' } : { secret: '' });
 
