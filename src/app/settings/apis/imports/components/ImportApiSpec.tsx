@@ -1,14 +1,15 @@
 'use client'
 
-import { ApiErrorCode } from "@/app/common/ApiErrorCode";
-import { ErrorAlert } from "@/app/components/operation/response/ErrorAlert";
+import {ApiErrorCode} from "@/app/common/ApiErrorCode";
+import {ErrorAlert} from "@/app/components/operation/response/ErrorAlert";
 import TextApiSpecImport from "@/app/settings/apis/imports/components/TextApiSpecImport";
 import UrlApiSpecImport from "@/app/settings/apis/imports/components/UrlApiSpecImport";
-import { KeyboardArrowDown } from "@mui/icons-material";
-import { Box, FormControl, FormLabel } from "@mui/joy";
+import {KeyboardArrowDown} from "@mui/icons-material";
+import {Box, FormControl, FormLabel} from "@mui/joy";
 import Option from '@mui/joy/Option';
-import Select, { selectClasses } from "@mui/joy/Select";
-import { useState } from "react";
+import Select, {selectClasses} from "@mui/joy/Select";
+import {useState} from "react";
+import {Problem} from "@/app/lib/dto/Problem";
 
 export type ImportMode = 'url' | 'file';
 
@@ -17,13 +18,14 @@ type ImportApiSpecProps = {
     sx?: any
 }
 
-export default function ImportApiSpec({ onImportSucceeded, sx }: ImportApiSpecProps) {
+export default function ImportApiSpec({onImportSucceeded, sx}: ImportApiSpecProps) {
     const [importMode, setImportMode] = useState<ImportMode>('url');
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<any>(undefined);
     const [showNoDefaultServersWarningModal, setShowNoDefaultServersWarningModal] = useState<boolean>(false);
 
-    const onImportFailed = (error: any) => {
-        if (error.status === 400 && error.code === ApiErrorCode.NoDefaultServersError) {
+    const onImportFailed = (problem: Problem) => {
+        if (problem.code === ApiErrorCode.NoDefaultServersError) {
             setShowNoDefaultServersWarningModal(true);
         } else {
             setError(error);
@@ -35,15 +37,16 @@ export default function ImportApiSpec({ onImportSucceeded, sx }: ImportApiSpecPr
     }
 
     return (
-        <Box sx={{ ...sx }}>
-            <FormControl sx={{ mt: 1 }}>
+        <Box sx={{...sx}}>
+            <FormControl sx={{mt: 1}}>
                 <FormLabel htmlFor="import-mode-select" id="select-label">
                     From
                 </FormLabel>
                 <Select
                     onChange={(_, value) => setImportMode(value as ImportMode)}
                     value={importMode}
-                    indicator={<KeyboardArrowDown />}
+                    indicator={<KeyboardArrowDown/>}
+                    disabled={loading}
                     slotProps={{
                         button: {
                             id: 'import-mode-select',
@@ -71,16 +74,18 @@ export default function ImportApiSpec({ onImportSucceeded, sx }: ImportApiSpecPr
                     onUrlImportSucceeded={onImportSucceeded}
                     onUrlImportFailed={onImportFailed}
                     showWarningModal={showNoDefaultServersWarningModal}
-                    onWarningModalClose={onModalClose} />}
+                    onWarningModalClose={onModalClose}
+                    onLoading={loading => setLoading(loading)}/>}
 
             {importMode === 'file' &&
                 <TextApiSpecImport
                     onTextImportSucceeded={onImportSucceeded}
                     onTextApiImportFailed={onImportFailed}
                     showWarningModal={showNoDefaultServersWarningModal}
-                    onWarningModalClose={onModalClose} />}
+                    onWarningModalClose={onModalClose}
+                    onLoading={loading => setLoading(loading)}/>}
 
-            <ErrorAlert error={error} onClose={() => setError(undefined)} />
+            <ErrorAlert error={error} onClose={() => setError(undefined)}/>
         </Box>
     );
 }

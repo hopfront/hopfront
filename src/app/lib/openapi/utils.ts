@@ -6,7 +6,7 @@ import {OperationInputs} from "@/app/lib/model/OperationInputs";
 import {ListItemButtonPropsColorOverrides} from "@mui/joy/ListItemButton/ListItemButtonProps";
 import {ColorPaletteProp} from "@mui/joy/styles/types";
 import {OverridableStringUnion} from "@mui/types";
-import {OpenAPI, OpenAPIV3} from "openapi-types";
+import {OpenAPIV3} from "openapi-types";
 import {ApiSpec} from "@/app/lib/dto/ApiSpec";
 import {RunnableOperationFromSchema} from "@/app/lib/model/RunnableOperationFromSchema";
 import {ParameterForeignKeyWithSource} from "@/app/lib/model/ParameterForeignKeyWithSource";
@@ -80,12 +80,6 @@ export const getApiServers = (document: OpenAPIV3.Document): OpenAPIV3.ServerObj
     }
 
     return document.servers;
-}
-
-export const getRestrictedApiUrls = () => {
-    return (process.env.NEXT_PUBLIC_RESTRICTED_IMPORT_URLS || '')
-        .split(',')
-        .filter(value => value); // is not blank
 }
 
 const operationFromPathItemObject = (
@@ -332,10 +326,6 @@ export const uniqueFilter = (value: string, index: number, array: string[]) => a
 export const buildSchemaRef = (schemaName: string): string => {
     return `#/components/schemas/${schemaName}`;
 }
-
-export const buildApiSpecId = (document: OpenAPI.Document): string => {
-    return btoa(document.info.title);
-};
 
 export const getHopFrontVersion = (): string => {
     return process.env.NEXT_PUBLIC_APP_VERSION || 'snapshot';

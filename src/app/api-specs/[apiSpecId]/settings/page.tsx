@@ -10,7 +10,6 @@ import { useApiContext } from "@/app/hooks/useApiContext";
 import { ApiSpecsApi } from "@/app/lib/api/ApiSpecsApi";
 import { Problem } from "@/app/lib/dto/Problem";
 import { ServerLocalStorage } from "@/app/lib/localstorage/ServerLocalStorage";
-import { getRestrictedApiUrls } from "@/app/lib/openapi/utils";
 import {
     OperationsExtensionsConfigurerPage
 } from "@/app/settings/operations/OperationExtensionsConfigurerPage";
@@ -55,9 +54,6 @@ export default function Page() {
         const document = apiContext?.apiSpec.document;
         const title = (document?.info.title) || 'API Spec Title';
         const defaultServer = document && ServerLocalStorage.getApiServer(apiContext);
-
-        const restrictedImportUrls = getRestrictedApiUrls();
-        const readOnly = restrictedImportUrls.length > 0;
 
         return (
             <>
@@ -107,7 +103,7 @@ export default function Page() {
                         <AccordionDetails>
                             {apiContext &&
                                 <Box sx={{ mt: 2 }}>
-                                    <SchemaExtensionsConfigurerPage apiContext={apiContext} readOnly={readOnly} />
+                                    <SchemaExtensionsConfigurerPage apiContext={apiContext} readOnly={false} />
                                 </Box>}
                         </AccordionDetails>
                     </Accordion>
@@ -126,7 +122,7 @@ export default function Page() {
                         <AccordionDetails>
                             {apiContext &&
                                 <Box sx={{ mt: 2 }}>
-                                    <OperationsExtensionsConfigurerPage apiContext={apiContext} readOnly={readOnly} />
+                                    <OperationsExtensionsConfigurerPage apiContext={apiContext} readOnly={false} />
                                 </Box>}
                         </AccordionDetails>
                     </Accordion>

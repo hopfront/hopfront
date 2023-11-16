@@ -7,7 +7,6 @@ import {
     readFile,
     writeFile
 } from "@/app/api/lib/repository/utils";
-import { ApiAuthenticationConfig } from "@/app/lib/dto/ApiAuthenticationConfig";
 import { ApiConfig } from "@/app/lib/dto/ApiConfig";
 import {
     ForeignKey,
@@ -16,6 +15,7 @@ import {
     SchemaExtension
 } from "@/app/lib/dto/OpenApiExtensions";
 import ServerObject = OpenAPIV3.ServerObject;
+import {ApiSpec} from "@/app/lib/dto/ApiSpec";
 
 const API_SPECS_DIRECTORY = `api-specs`;
 const SPEC_EXTENSION_FILE_NAME = 'extension.json';
@@ -180,21 +180,6 @@ export class OpenAPIRepository {
         }
     }
 
-    public getAuthenticationConfig(id: string): ApiAuthenticationConfig | undefined {
-        const config = this.getApiConfig(id);
-        if (config) {
-            return config.authenticationConfig;
-        }
-        return undefined;
-    }
-
-    public saveAuthenticationConfig(id: string, config: ApiAuthenticationConfig | undefined) {
-        const apiConfig = this.getApiConfig(id);
-        apiConfig.authenticationConfig = config;
-
-        this.saveApiConfig(id, apiConfig);
-    }
-
     public saveApiSpec(id: string, text: string) {
         writeFile(`${API_SPECS_DIRECTORY}/${id}`, SPEC_SPEC_FILE_NAME, text);
     }
@@ -208,19 +193,18 @@ export class OpenAPIRepository {
         return readFile(`${API_SPECS_DIRECTORY}/${id}`, SPEC_SPEC_FILE_NAME);
     }
 
-    public getDocuments(): OpenAPIV3.Document[] {
+    public getApiSpecs(): ApiSpec[] {
         try {
-            const apiSpecDirectoryNames: string[] = listDirectoryChildren(API_SPECS_DIRECTORY)
+            const apiSpecIdsAsDirectoryNames: string[] = listDirectoryChildren(API_SPECS_DIRECTORY)
 
-            const documents: OpenAPIV3.Document[] = [];
-
-            for (const apiSpecDirectoryName of apiSpecDirectoryNames) {
-                const apiSpecString = readFile(`${API_SPECS_DIRECTORY}/${apiSpecDirectoryName}`, SPEC_SPEC_FILE_NAME);
+            return apiSpecIdsAsDirectoryNames.map(apiSpecId => {
+                const apiSpecString = readFile(`${API_SPECS_DIRECTORY}/${apiSpecId}`, SPEC_SPEC_FILE_NAME);
                 const document: OpenAPIV3.Document = JSON.parse(apiSpecString);
-                documents.push(document);
-            }
-
-            return documents;
+                return {
+                    id: apiSpecId,
+                    document: document,
+                }
+            })
         } catch (error: any) {
             console.log('Failed to retrieve OpenAPI documents, defaulting to none', error);
             return [];

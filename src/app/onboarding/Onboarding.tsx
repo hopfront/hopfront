@@ -27,7 +27,7 @@ import NewsletterOnboardingAccordion from "./NewsletterOnboardingAccordion";
 import OnboardingCompletedOnboardingAccordion from "./OnboardingCompletedOnboardingAccordion";
 import WelcomeOnboardingStep from "./WelcomeOnboardingStep";
 import { OnBoardingStep, OnBoardingStepCode } from "./model/OnboardingModel";
-import ServerObject = OpenAPIV3.ServerObject;
+import {buildFavoritePetSampleDashboard, buildPetOverviewDashboard} from "@/app/onboarding/utils";
 
 const registerOnboardingStep = async (step: OnBoardingStep, date: Date) => {
     return fetch('/api/instance/properties/setups', {
@@ -166,10 +166,10 @@ export default function Onboarding({ steps: initialSteps, apiSpecs, onOnboarding
             closeOnboarding();
         } else { // We only import demo api spec if no api spec has been imported yet by the user.
             ApiSpecsApi.importApiSpecAsUrl('https://petstore3.swagger.io/api/v3/openapi.json', false)
-                .then(() => {
+                .then(petstoreApiSpecId => {
                     return Promise.all([
-                        importSampleDashboard('/sample-data/dashboards/petstore-sample-dashboard-1.json'),
-                        importSampleDashboard('/sample-data/dashboards/petstore-sample-dashboard-2.json')
+                        DashboardApi.updateDashboard(buildFavoritePetSampleDashboard(petstoreApiSpecId)),
+                        DashboardApi.updateDashboard(buildPetOverviewDashboard(petstoreApiSpecId)),
                     ]);
                 })
                 .finally(() => {

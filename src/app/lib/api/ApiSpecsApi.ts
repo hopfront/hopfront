@@ -7,7 +7,7 @@ const mutateApiSpecList = () => {
 
 export class ApiSpecsApi {
 
-    public static async importApiSpecAsUrl(url: string, skipNoDefaultServers: boolean) {
+    public static async importApiSpecAsUrl(url: string, skipNoDefaultServers: boolean): Promise<string> {
         return fetch('/api/api-specs/imports', {
             method: 'POST',
             headers: {
@@ -18,12 +18,20 @@ export class ApiSpecsApi {
                 skipNoDefaultServers: skipNoDefaultServers
             } as ApiSpecImportRequestBody)
         }).then(async response => {
-            await mutateApiSpecList();
-            return response;
+            if (response.status >= 200 && response.status < 300) {
+                await mutateApiSpecList();
+                return response.json().then(data => {
+                    return data['apiSpecId'];
+                });
+            } else {
+                return response.json().then(problem => {
+                    return Promise.reject(problem);
+                });
+            }
         });
     }
 
-    public static async importApiSpecAsPlainText(text: string, skipNoDefaultServers: boolean) {
+    public static async importApiSpecAsPlainText(text: string, skipNoDefaultServers: boolean): Promise<string> {
         return fetch('/api/api-specs/imports', {
             method: 'POST',
             headers: {
@@ -34,8 +42,16 @@ export class ApiSpecsApi {
                 skipNoDefaultServers: skipNoDefaultServers,
             } as ApiSpecImportRequestBody),
         }).then(async response => {
-            await mutateApiSpecList();
-            return response;
+            if (response.status >= 200 && response.status < 300) {
+                await mutateApiSpecList();
+                return response.json().then(data => {
+                    return data['apiSpecId'];
+                });
+            } else {
+                return response.json().then(problem => {
+                    return Promise.reject(problem);
+                });
+            }
         });
     }
 

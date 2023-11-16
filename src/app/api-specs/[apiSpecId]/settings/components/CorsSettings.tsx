@@ -1,6 +1,5 @@
 'use client'
 
-import { InfoAlert } from "@/app/components/alert/InfoAlert";
 import { Box, Link, Typography } from "@mui/joy";
 import CORSSwitch from "./CorsSwitch";
 import {WarningAlert} from "@/app/components/alert/WarningAlert";

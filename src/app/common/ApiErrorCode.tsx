@@ -1,3 +1,3 @@
 export enum ApiErrorCode {
-    NoDefaultServersError
+    NoDefaultServersError = 'error.noDefaultServer'
 }
