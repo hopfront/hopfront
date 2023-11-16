@@ -19,7 +19,7 @@ export const AccessTokenAuthenticationGuard = ({apiContext, onAuthenticationHand
             open={true}
             onClose={onAuthenticationIgnored}
             onAccessToken={newAccessToken => {
-                AuthLocalStorage.setAccessToken(newAccessToken, apiContext.apiSpec.id);
+                AuthLocalStorage.setAccessToken(apiContext.apiSpec.id, newAccessToken);
                 onAuthenticationHandled();
             }}
             apiContext={apiContext}/>;

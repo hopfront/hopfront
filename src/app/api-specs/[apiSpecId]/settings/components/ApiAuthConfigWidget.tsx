@@ -1,16 +1,17 @@
-import {InfoAlert} from "@/app/components/alert/InfoAlert"
-import {ApiConfigApi} from "@/app/lib/api/ApiConfigApi"
-import {ApiAuthenticationConfig, AuthenticationType} from "@/app/lib/dto/ApiAuthenticationConfig"
-import {ApiContext} from "@/app/lib/model/ApiContext"
-import {UpdatableValue} from "@/app/lib/model/UpdatableValue"
-import {KeyboardArrowDown} from "@mui/icons-material"
-import {Box, CircularProgress, Typography} from "@mui/joy"
+import { InfoAlert } from "@/app/components/alert/InfoAlert"
+import { EventType, useSnackbar } from "@/app/hooks/useSnackbar"
+import { ApiConfigApi } from "@/app/lib/api/ApiConfigApi"
+import { ApiAuthenticationConfig, AuthenticationType } from "@/app/lib/dto/ApiAuthenticationConfig"
+import { AuthLocalStorage } from "@/app/lib/localstorage/AuthLocalStorage"
+import { ApiContext } from "@/app/lib/model/ApiContext"
+import { UpdatableValue } from "@/app/lib/model/UpdatableValue"
+import { KeyboardArrowDown } from "@mui/icons-material"
+import { Box, CircularProgress, Typography } from "@mui/joy"
 import Option from '@mui/joy/Option'
-import Select, {selectClasses} from "@mui/joy/Select"
-import {useEffect, useMemo, useState} from "react"
-import {useDebouncedCallback} from "use-debounce"
+import Select, { selectClasses } from "@mui/joy/Select"
+import { useEffect, useMemo, useState } from "react"
+import { useDebouncedCallback } from "use-debounce"
 import AuthenticationTypeComponent from "./AuthenticationTypeComponent"
-import {EventType, useSnackbar} from "@/app/hooks/useSnackbar";
 
 interface ApiAuthenticationProps {
     apiContext: ApiContext,
@@ -27,7 +28,12 @@ export const ApiAuthConfigWidget = ({ apiContext, sx }: ApiAuthenticationProps) 
     const [saving, setSaving] = useState(false);
     const debouncedSaveAuthentication = useDebouncedCallback((specId: string, currentAuth: ApiAuthenticationConfig) => {
         setSaving(true);
-        ApiConfigApi.saveApiConfig(specId, {authenticationConfig: currentAuth})
+        ApiConfigApi.saveApiConfig(specId, { authenticationConfig: currentAuth })
+            .then(() => {
+                if (currentAuth.authenticationType === 'ACCESS_TOKEN') {
+                    AuthLocalStorage.setAccessToken(specId, undefined);
+                }
+            })
             .then(() => showSnackbar(EventType.Success, 'Authentication configuration saved successfully'))
             .catch(reason => showSnackbar(EventType.Error, `Failed to update authentication configuration: ${reason.toLocaleString()}`))
             .finally(() => setSaving(false));
@@ -37,7 +43,7 @@ export const ApiAuthConfigWidget = ({ apiContext, sx }: ApiAuthenticationProps) 
     }, [apiContext.config.authenticationConfig]);
     const [currentAuth, setCurrentAuth] = useState<ApiAuthenticationConfig>(initialAuth);
     const [authType, setAuthType] = useState<AuthenticationType>(initialAuth.authenticationType);
-    const {showSnackbar, Snackbar} = useSnackbar();
+    const { showSnackbar, Snackbar } = useSnackbar();
 
     const updateFormCallback = useMemo(() => {
         return {
@@ -82,7 +88,7 @@ export const ApiAuthConfigWidget = ({ apiContext, sx }: ApiAuthenticationProps) 
                             }
                         }}
                         value={authType}
-                        endDecorator={saving && <CircularProgress size="sm"/>}
+                        endDecorator={saving && <CircularProgress size="sm" />}
                         disabled={saving}
                         sx={{
                             width: '15%',

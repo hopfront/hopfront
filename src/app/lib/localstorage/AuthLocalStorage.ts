@@ -21,11 +21,11 @@ export interface StaticAuthCredentials {
 
 export class AuthLocalStorage {
 
-    public static setAccessToken(accessToken: string, apiSpecId: string) {
+    public static setAccessToken(apiSpecId: string, accessToken: string | undefined) {
         if (typeof window === 'undefined') {
             return;
         }
-        localStorage.setItem(buildAccessTokenLocalStorageKey(apiSpecId), accessToken);
+        localStorage.setItem(buildAccessTokenLocalStorageKey(apiSpecId), accessToken ?? '');
     }
 
     public static getAccessToken(apiSpecId: string | undefined): string | null {
