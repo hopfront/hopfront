@@ -14,6 +14,8 @@ import {
 import {ConfirmModal, ConfirmModalProps} from "@/app/components/modal/ConfirmModal";
 import {WarningAlert} from "@/app/components/alert/WarningAlert";
 
+const VARIABLE_TECH_NAME_REGEX = new RegExp("^([a-zA-Z0-9_-]){0,50}$");
+
 export interface DashboardVariableConfigProps {
     dashboardTitle: string
     defaultVariable: DashboardVariable
@@ -81,22 +83,26 @@ export const DashboardVariableConfig = ({
             </Typography>
 
             <FormControl>
-                <FormLabel>Technical name</FormLabel>
+                <FormLabel>Name</FormLabel>
                 <Input
                     value={variable.name}
                     placeholder="Variable name"
                     required
                     onChange={event => {
-                        setVariable({
-                            ...variable,
-                            name: event.currentTarget.value,
-                            foreignKeys: variable.foreignKeys || []
-                        });
+                        const newVariableName = event.currentTarget.value;
+
+                        if (VARIABLE_TECH_NAME_REGEX.test(newVariableName)) {
+                            setVariable({
+                                ...variable,
+                                name: newVariableName,
+                                foreignKeys: variable.foreignKeys || []
+                            });
+                        }
                     }}/>
-                <FormHelperText>Used for technical features and configuration</FormHelperText>
+                <FormHelperText>The name of the variable. (Max. 50 characters, no special character allowed)</FormHelperText>
             </FormControl>
             <FormControl sx={{mt: 2}}>
-                <FormLabel>Alias (optional)</FormLabel>
+                <FormLabel>Label</FormLabel>
                 <Input
                     value={variable.label}
                     placeholder="Label name"
@@ -108,7 +114,7 @@ export const DashboardVariableConfig = ({
                             foreignKeys: variable.foreignKeys || []
                         });
                     }}/>
-                <FormHelperText>Displayed on dashboard instead of the technical name</FormHelperText>
+                <FormHelperText>Optional display name</FormHelperText>
             </FormControl>
             <FormControl sx={{mt: 2}}>
                 <FormLabel>Type</FormLabel>
