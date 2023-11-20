@@ -31,7 +31,7 @@
     "react-dom": "18.2.0",
     "react-form-stepper": "^2.0.3",
     "react-markdown": "^9.0.0",
-    "recharts": "^2.9.3",
+    "recharts": "^2.10.1",
     "slugify": "^1.6.6",
     "swr": "^2.2.4",
     "typescript": "5.2.2",
