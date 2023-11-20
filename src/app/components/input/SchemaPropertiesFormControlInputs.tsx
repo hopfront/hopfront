@@ -18,10 +18,10 @@ export interface SchemaPropertiesFormControlInputsProps {
 }
 
 export const SchemaPropertiesFormControlInputs = ({schema, propertiesUpdatableValue, disabled, readonlyProperties = [], apiContext}: SchemaPropertiesFormControlInputsProps) => {
-    const reference = getReferenceObjectOrUndefined(schema);
+    const schemaReferenceObject = getReferenceObjectOrUndefined(schema);
     const schemaObject = resolveSchemaFromSchemaOrReference(schema, apiContext.apiSpec.document);
-    const schemaExtension = reference &&
-        apiContext.extension.schemas.find(ext => ext.schemaRef === reference.$ref);
+    const schemaExtension = schemaReferenceObject &&
+        apiContext.extension.schemas.find(ext => ext.schemaRef === schemaReferenceObject.$ref);
 
     const properties = getPropertiesFromSchema(schemaObject, apiContext.apiSpec.document);
 
@@ -41,6 +41,7 @@ export const SchemaPropertiesFormControlInputs = ({schema, propertiesUpdatableVa
 
     for (let schemaPropertyName in properties) {
         inputs.push(<SchemaPropertyFormControlInput
+            propertyParentSchemaRef={schemaReferenceObject?.$ref}
             propertyName={schemaPropertyName}
             propertySchema={properties[schemaPropertyName]}
             propertyExtension={schemaExtension?.properties.find(p => p.propertyName === schemaPropertyName)}
