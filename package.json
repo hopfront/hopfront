@@ -21,7 +21,7 @@
     "@types/react-dom": "18.2.15",
     "allotment": "^1.19.3",
     "eslint": "8.54.0",
-    "eslint-config-next": "14.0.2",
+    "eslint-config-next": "14.0.3",
     "i": "^0.3.7",
     "jwt-decode": "^4.0.0",
     "next": "14.0.2",
