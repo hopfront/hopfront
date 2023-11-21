@@ -26,6 +26,8 @@ export default function Page() {
 
     usePageView("dashboard-list-page");
 
+    throw new Error('hehe');
+
     const onAddDashboardClick = () => {
         registerEvent({
             category: "dashboard",

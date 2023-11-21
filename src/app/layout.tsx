@@ -3,8 +3,10 @@
 import './global.css' // importing is enough to apply global style to the app
 import ThemeProvider from "@/app/components/base/CssProvider"
 import React from "react";
-import { MatomoProvider, createInstance } from '@jonkoops/matomo-tracker-react';
+import {MatomoProvider, createInstance} from '@jonkoops/matomo-tracker-react';
 import Navigation from "@/app/components/base/Navigation";
+import {ErrorBoundaryFallback} from "@/app/components/misc/ErrorBoundaryFallback";
+import {ErrorBoundary} from "react-error-boundary";
 
 const matomoUrlBase = process.env.NEXT_PUBLIC_MATOMO_URL_BASE || 'http://localhost';
 const matomoSiteId = parseInt(process.env.NEXT_PUBLIC_MATOMO_SITE_ID || '1');
@@ -31,11 +33,13 @@ export default function RootLayout({children}: {
         </head>
         <body>
         <ThemeProvider>
-            <MatomoProvider value={MATOMO_INSTANCE}>
-                <Navigation>
-                    {children}
-                </Navigation>
-            </MatomoProvider>
+            <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
+                <MatomoProvider value={MATOMO_INSTANCE}>
+                    <Navigation>
+                        {children}
+                    </Navigation>
+                </MatomoProvider>
+            </ErrorBoundary>
         </ThemeProvider>
         </body>
         </html>
