@@ -13,19 +13,7 @@
   - Useful for rapidly building internal tools or personalized UIs based on your daily API interactions.
 
 ## Installation
+TL;DR: `docker run -p 3000:3000 -v hopfront:/etc/hopfront hopfront/hopfront:latest`
+
 HopFront is currently available as a Docker image, follow the installation guide [here](https://hub.docker.com/r/hopfront/hopfront).
 
-## Contributing
-
-### Getting Started
-
-HopFront is built using [Next.js](https://nextjs.org).
-
-Running the development server:
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
