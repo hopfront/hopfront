@@ -76,7 +76,8 @@ export const OperationParameterFormControlInput = ({
                         }
                     }}
                     disabled={disabled || parameter.readonly}
-                    foreignKeys={parameterExtension.foreignKeys}/>
+                    foreignKeys={parameterExtension.foreignKeys}
+                    cacheKey={`api:${apiContext.apiSpec.id}:operation:${operation.path}:parameter:${parameter.parameter.name}`}/>
             </Box>
         );
     } else {

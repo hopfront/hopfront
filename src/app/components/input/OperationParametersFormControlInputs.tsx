@@ -25,7 +25,7 @@ export const OperationParametersFormControlInputs = ({
                                                          apiContext
                                                      }: ParametersFormControlInputsProps) => {
     return (
-        <Stack maxWidth={400}>
+        <Stack maxWidth={'90%'}>
             {parameters.map(param => {
                 return <OperationParameterFormControlInput
                     key={`param-${param.parameter.name}`}
