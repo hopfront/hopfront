@@ -43,12 +43,6 @@ const registerOnboardingStep = async (step: OnBoardingStep, date: Date) => {
     })
 }
 
-const importSampleDashboard = async (sampleDashboardUrl: string) => {
-    return fetch(sampleDashboardUrl)
-        .then(response => response.json())
-        .then((dashboard: Dashboard) => DashboardApi.updateDashboard(dashboard));
-};
-
 type OnBoardingProps = {
     steps: OnBoardingStep[],
     apiSpecs: ApiSpec[],
