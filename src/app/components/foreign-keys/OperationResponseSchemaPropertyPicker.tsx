@@ -9,6 +9,35 @@ import {
     SchemaPropertyPicker
 } from "@/app/components/foreign-keys/SchemaPropertyPicker/SchemaPropertyPicker";
 import {getReferenceObjectOrUndefined} from "@/app/lib/openapi/utils";
+import SchemaObject = OpenAPIV3.SchemaObject;
+import ReferenceObject = OpenAPIV3.ReferenceObject;
+
+const getResponseSchemaReferenceObject = (operation: StandaloneOperation, status: string, contentType: string): ReferenceObject | undefined => {
+    const response = operation.operation.responses[status] as ResponseObject;
+
+    if (!response || !response.content) {
+        return undefined;
+    }
+
+    const content = response.content[contentType];
+
+    if (!content || !content.schema) {
+        return undefined;
+    }
+
+    if (content.schema.hasOwnProperty('type')) {
+        const schemaObject = content.schema as SchemaObject;
+
+        if (schemaObject.type === "array") {
+            return getReferenceObjectOrUndefined(schemaObject.items);
+        } else {
+            return getReferenceObjectOrUndefined(content.schema);
+        }
+    } else {
+        return getReferenceObjectOrUndefined(content.schema);
+    }
+}
+
 
 export interface OperationResponseSchemaPropertyPickerProps {
     operation: StandaloneOperation
@@ -30,22 +59,10 @@ export const OperationResponseSchemaPropertyPicker = ({
                                                           onSchemaPropertySelected,
                                                       }: OperationResponseSchemaPropertyPickerProps) => {
 
-    const response = operation.operation.responses[status] as ResponseObject;
+    const responseSchemaReferenceObject = getResponseSchemaReferenceObject(operation, status, contentType);
 
-    if (!response || !response.content) {
-        return null;
-    }
-
-    const content = response.content[contentType];
-
-    if (!content || !content.schema) {
-        return null;
-    }
-
-    const schemaReferenceObject = getReferenceObjectOrUndefined(content.schema);
-
-    return schemaReferenceObject && <SchemaPropertyPicker
-        schemaRef={schemaReferenceObject.$ref}
+    return responseSchemaReferenceObject && <SchemaPropertyPicker
+        schemaRef={responseSchemaReferenceObject.$ref}
         schemaPropertyPredicate={schemaPropertyPredicate}
         defaultSchemaProperty={defaultSchemaProperty}
         onSchemaPropertySelected={onSchemaPropertySelected}
