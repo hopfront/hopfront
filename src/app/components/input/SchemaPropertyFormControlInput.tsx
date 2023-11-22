@@ -1,14 +1,14 @@
-import {SchemaFormControlInput} from "@/app/components/input/SchemaFormControlInput";
-import {ApiContext, SchemaOrReference} from "@/app/lib/model/ApiContext";
-import {UpdatableValue} from "@/app/lib/model/UpdatableValue";
-import {ForeignKeyFormControlInput} from "@/app/components/input/ForeignKeyFormControlInput";
-import {PropertyExtension} from "@/app/lib/dto/OpenApiExtensions";
-import {resolveSchemaFromSchemaOrReference} from "@/app/lib/openapi/utils";
-import {InputMenu} from "@/app/components/input/InputMenu";
-import React, {useState} from "react";
-import {AutoFixHigh, Settings} from "@mui/icons-material";
-import {SchemaPropertyFetchValueModal} from "@/app/components/foreign-keys/SchemaPropertyFetchValueModal";
-import {useRouter} from "next/navigation";
+import { SchemaPropertyFetchValueModal } from "@/app/components/foreign-keys/SchemaPropertyFetchValueModal";
+import { ForeignKeyFormControlInput } from "@/app/components/input/ForeignKeyFormControlInput";
+import { InputMenu } from "@/app/components/input/InputMenu";
+import { SchemaFormControlInput } from "@/app/components/input/SchemaFormControlInput";
+import { PropertyExtension } from "@/app/lib/dto/OpenApiExtensions";
+import { ApiContext, SchemaOrReference } from "@/app/lib/model/ApiContext";
+import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
+import { resolveSchemaFromSchemaOrReference } from "@/app/lib/openapi/utils";
+import { AutoFixHigh, Settings } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export interface SchemaPropertyFormControlInputProps {
     propertyParentSchemaRef?: string
@@ -23,16 +23,16 @@ export interface SchemaPropertyFormControlInputProps {
 }
 
 export const SchemaPropertyFormControlInput = ({
-                                                   propertyParentSchemaRef,
-                                                   propertyName,
-                                                   propertySchema,
-                                                   propertyExtension,
-                                                   updatableValue,
-                                                   required,
-                                                   disabled,
-                                                   readOnly,
-                                                   apiContext
-                                               }: SchemaPropertyFormControlInputProps) => {
+    propertyParentSchemaRef,
+    propertyName,
+    propertySchema,
+    propertyExtension,
+    updatableValue,
+    required,
+    disabled,
+    readOnly,
+    apiContext
+}: SchemaPropertyFormControlInputProps) => {
 
     const router = useRouter();
     const [fetchValueModalOpen, setFetchValueModalOpen] = useState(false);
@@ -49,7 +49,9 @@ export const SchemaPropertyFormControlInput = ({
                 foreignKeys={propertyExtension.foreignKeys}
                 required={required}
                 disabled={disabled}
-                readOnly={readOnly}/>
+                readOnly={readOnly}
+                schema={propertySchema}
+                apiContext={apiContext} />
         );
     } else {
         const buildSchemaFormControlInput = (menu: InputMenu | undefined) => {
@@ -61,7 +63,7 @@ export const SchemaPropertyFormControlInput = ({
                 disabled={disabled}
                 readOnly={readOnly}
                 menu={menu}
-                apiContext={apiContext}/>;
+                apiContext={apiContext} />;
         }
 
         return (
@@ -87,7 +89,7 @@ export const SchemaPropertyFormControlInput = ({
                     }}
                     propertyRequired={required || false}
                     inputWithoutForeignKeyPreview={buildSchemaFormControlInput(undefined)}
-                    apiContext={apiContext}/>}
+                    apiContext={apiContext} />}
             </>
         );
     }

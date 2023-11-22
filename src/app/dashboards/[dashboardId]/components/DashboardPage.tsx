@@ -21,7 +21,6 @@ import PanelConfigurationModal from "./PanelConfigurationModal";
 import UpdatableLabel from "@/app/components/typography/UpdatableLabel";
 import {buildNewVariableName} from "../settings/components/DashboardSettingsVariablesSection";
 import {useAnalytics} from "@/app/hooks/analytics/useAnalytics";
-import {DashboardApi} from "@/app/lib/api/DashboardApi";
 import {ConfirmModal, ConfirmModalProps} from "@/app/components/modal/ConfirmModal";
 import {PanelCreationModal} from "@/app/dashboards/[dashboardId]/components/PanelCreationModal";
 import {DashboardVariable} from "@/app/lib/model/dashboard/DashboardVariable";

@@ -1,15 +1,15 @@
-import {Box} from "@mui/joy";
-import {ForeignKeyFormControlInput} from "@/app/components/input/ForeignKeyFormControlInput";
-import {SchemaFormControlInput} from "@/app/components/input/SchemaFormControlInput";
-import {ApiContext} from "@/app/lib/model/ApiContext";
-import {ParameterExtension} from "@/app/lib/dto/OpenApiExtensions";
-import {ParameterWithValue} from "@/app/lib/model/ParameterWithValue";
-import {AutoFixHigh, Settings} from "@mui/icons-material";
-import {OperationParameterFetchValueModal} from "@/app/components/foreign-keys/OperationParameterFetchValueModal";
-import React, {useState} from "react";
-import {StandaloneOperation} from "@/app/lib/model/StandaloneOperation";
-import {InputMenu} from "@/app/components/input/InputMenu";
-import {useRouter} from "next/navigation";
+import { OperationParameterFetchValueModal } from "@/app/components/foreign-keys/OperationParameterFetchValueModal";
+import { ForeignKeyFormControlInput } from "@/app/components/input/ForeignKeyFormControlInput";
+import { InputMenu } from "@/app/components/input/InputMenu";
+import { SchemaFormControlInput } from "@/app/components/input/SchemaFormControlInput";
+import { ParameterExtension } from "@/app/lib/dto/OpenApiExtensions";
+import { ApiContext } from "@/app/lib/model/ApiContext";
+import { ParameterWithValue } from "@/app/lib/model/ParameterWithValue";
+import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
+import { AutoFixHigh, Settings } from "@mui/icons-material";
+import { Box } from "@mui/joy";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export interface OperationParameterFormControlInputProps {
     operation: StandaloneOperation
@@ -24,14 +24,14 @@ export interface OperationParameterFormControlInputProps {
 const INPUT_MARGIN_BOTTOM = 2;
 
 export const OperationParameterFormControlInput = ({
-                                                       operation,
-                                                       parameter,
-                                                       parameterExtensions = [],
-                                                       onValueChanged,
-                                                       disabled,
-                                                       debounceMillis,
-                                                       apiContext
-                                                   }: OperationParameterFormControlInputProps) => {
+    operation,
+    parameter,
+    parameterExtensions = [],
+    onValueChanged,
+    disabled,
+    debounceMillis,
+    apiContext
+}: OperationParameterFormControlInputProps) => {
 
     const router = useRouter();
     const [fetchValueModalOpen, setFetchValueModalOpen] = useState(false);
@@ -56,12 +56,12 @@ export const OperationParameterFormControlInput = ({
             disabled={disabled}
             debounceMillis={debounceMillis}
             menu={menu}
-            apiContext={apiContext}/>;
+            apiContext={apiContext} />;
     }
 
     if (parameterExtension && parameterExtension.foreignKeys.length > 0) {
         return (
-            <Box key={parameter.parameter.name} sx={{mb: INPUT_MARGIN_BOTTOM}}>
+            <Box key={parameter.parameter.name} sx={{ mb: INPUT_MARGIN_BOTTOM }}>
                 <ForeignKeyFormControlInput
                     inputDescription={parameter.parameter.description}
                     inputLabel={parameter.parameter.name}
@@ -77,12 +77,15 @@ export const OperationParameterFormControlInput = ({
                     }}
                     disabled={disabled || parameter.readonly}
                     foreignKeys={parameterExtension.foreignKeys}
-                    cacheKey={`api:${apiContext.apiSpec.id}:operation:${operation.path}:parameter:${parameter.parameter.name}`}/>
+                    cacheKey={`api:${apiContext.apiSpec.id}:operation:${operation.path}:parameter:${parameter.parameter.name}`}
+                    schema={parameter.parameter.schema}
+                    apiContext={apiContext}
+                />
             </Box>
         );
     } else {
         return (
-            <Box key={parameter.parameter.name} sx={{mb: INPUT_MARGIN_BOTTOM}}>
+            <Box key={parameter.parameter.name} sx={{ mb: INPUT_MARGIN_BOTTOM }}>
                 {buildSchemaFormControlInput({
                     icon: Settings,
                     items: [{
@@ -101,7 +104,7 @@ export const OperationParameterFormControlInput = ({
                         router.refresh();
                     }}
                     inputWithoutForeignKeyPreview={buildSchemaFormControlInput(undefined)}
-                    apiContext={apiContext}/>
+                    apiContext={apiContext} />
             </Box>
         );
     }

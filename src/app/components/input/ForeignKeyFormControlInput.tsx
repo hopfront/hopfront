@@ -1,30 +1,30 @@
+import { ModalOperationResponseSchemaSelector } from "@/app/components/foreign-keys/ModalOperationResponseSchemaSelector";
+import { SelectedObjectButton } from "@/app/components/input/SelectedObjectButton";
+import { OperationLabel } from "@/app/components/typography/OperationLabel";
+import { useApiSpecs } from "@/app/hooks/useApiSpecs";
 import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
+import { ApiContext, SchemaOrReference } from "@/app/lib/model/ApiContext";
+import { ResponseSchemaSelectedObserver } from "@/app/lib/model/ResponseSchemaSelectedObserver";
+import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
 import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
 import {
     getSchemaByRef,
     getStandaloneOperations
 } from "@/app/lib/openapi/utils";
 import { Edit } from "@mui/icons-material";
+import { Box, IconButton, Menu, MenuItem } from "@mui/joy";
+import ButtonGroup from "@mui/joy/ButtonGroup";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
+import Typography from "@mui/joy/Typography";
 import { OpenAPIV3 } from "openapi-types";
 import React, { useEffect, useRef, useState } from "react";
 import { MarkdownFormHelperText } from "./MarkdownFormHelperText";
+import { SchemaInput } from "./SchemaInput";
 import ResponseObject = OpenAPIV3.ResponseObject;
 import ReferenceObject = OpenAPIV3.ReferenceObject;
 import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
-import { SchemaOrReference } from "@/app/lib/model/ApiContext";
 import SchemaObject = OpenAPIV3.SchemaObject;
-import { useApiSpecs } from "@/app/hooks/useApiSpecs";
-import ButtonGroup from "@mui/joy/ButtonGroup";
-import { IconButton, Menu, MenuItem } from "@mui/joy";
-import { SelectedObjectButton } from "@/app/components/input/SelectedObjectButton";
-import { ModalOperationResponseSchemaSelector } from "@/app/components/foreign-keys/ModalOperationResponseSchemaSelector";
-import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
-import { ResponseSchemaSelectedObserver } from "@/app/lib/model/ResponseSchemaSelectedObserver";
-import { useApiContext } from "@/app/hooks/useApiContext";
-import { OperationLabel } from "@/app/components/typography/OperationLabel";
-import Typography from "@mui/joy/Typography";
 
 const getForeignKeyWithinSchema = (schemaRef: ReferenceObject, foreignKeys: ForeignKey[], document: OpenAPIV3.Document): ForeignKey | undefined => {
     return foreignKeys.find(foreignKey => schemaContainsForeignKey(schemaRef, foreignKey, document));
@@ -118,6 +118,8 @@ export interface ForeignKeyFormControlInputProps {
     readOnly?: boolean
     cacheKey?: string
     icon?: React.ReactNode
+    schema?: SchemaOrReference
+    apiContext?: ApiContext
 }
 
 export const ForeignKeyFormControlInput = ({
@@ -129,11 +131,19 @@ export const ForeignKeyFormControlInput = ({
     disabled,
     readOnly,
     cacheKey,
+    schema,
+    apiContext,
     icon = <Edit />
 }: ForeignKeyFormControlInputProps) => {
 
-
     const persistedSelectedObject = getCachedSelectedObject(cacheKey);
+
+    const { data: apiSpecs, error, isLoading } = useApiSpecs();
+    const [selectedObject, setSelectedObject] = useState<SelectedObject | undefined>(persistedSelectedObject);
+    const [menuItemOpen, setMenuItemOpen] = useState(false);
+    const actionRef = useRef<() => void | null>(null);
+    const anchorRef = useRef<HTMLDivElement>(null);
+    const [showManualEdition, setShowManualEdition] = useState(!selectedObject);
 
     const cachedValue = foreignKeys
         .flatMap(fk => {
@@ -147,15 +157,9 @@ export const ForeignKeyFormControlInput = ({
         })
         .find(anyFk => true);
 
-    if (cachedValue && cachedValue != updatableValue.value) {
+    if (cachedValue && cachedValue != updatableValue.value && !showManualEdition) {
         updatableValue.onValueUpdate(cachedValue);
     }
-
-    const { data: apiSpecs, error, isLoading } = useApiSpecs();
-    const [selectedObject, setSelectedObject] = useState<SelectedObject | undefined>(persistedSelectedObject);
-    const [menuItemOpen, setMenuItemOpen] = useState(false);
-    const actionRef = useRef<() => void | null>(null);
-    const anchorRef = useRef<HTMLDivElement>(null);
 
     // This part is because JoyUI ButtonGroup is buggy (menu does not close when user clicked outside of it).
     const menuRef = useRef<HTMLDivElement>(null);
@@ -174,13 +178,15 @@ export const ForeignKeyFormControlInput = ({
     }, [menuItemOpen]);
     // ---- 
 
+    useEffect(() => {
+        setShowManualEdition(!selectedObject);
+    }, [selectedObject]);
+
     const allOperations = apiSpecs
         ? apiSpecs.apiSpecs.flatMap(apiSpec => getStandaloneOperations(apiSpec))
         : [];
 
     const [selectedOperation, setSelectedOperation] = useState<SelectedOperation | undefined>();
-
-    const { data: apiContext } = useApiContext(selectedOperation?.operation.apiSpec.id);
 
     const relevantOperations: OperationWithForeignKey[] = allOperations.flatMap(op => {
         for (const responsesStatuses in op.operation.responses) {
@@ -222,6 +228,8 @@ export const ForeignKeyFormControlInput = ({
         return [];
     });
 
+    const shouldShowMenuOnClick = relevantOperations.length > 1 || selectedObject;
+
     const onOperationClick = (operationWithForeignKey: OperationWithForeignKey) => {
         setMenuItemOpen(false);
         setSelectedOperation({
@@ -255,38 +263,45 @@ export const ForeignKeyFormControlInput = ({
                 {inputLabel}
                 {required ? <Typography level="body-xs" color="danger">*</Typography> : ''}
             </FormLabel>
-            <ButtonGroup
-                ref={anchorRef}
-                variant="outlined"
-                aria-label="split button"
-            >
-                <SelectedObjectButton
-                    selectedObject={selectedObject?.value || updatableValue.value}
-                    selectedSchemaRef={selectedObject?.schemaRef}
-                    apiSpecId={selectedObject?.apiSpecId} />
-                {!readOnly &&
+            <Box display='flex'>
+                {showManualEdition &&
+                    <SchemaInput
+                        updatableValue={updatableValue}
+                        schema={schema}
+                        required={required}
+                        readOnly={readOnly}
+                        debounceMillis={500} />}
+                <ButtonGroup
+                    ref={anchorRef}
+                    variant="outlined"
+                    aria-label="split button"
+                >
+                    {!showManualEdition && <SelectedObjectButton
+                        selectedObject={selectedObject?.value || updatableValue.value}
+                        selectedSchemaRef={selectedObject?.schemaRef}
+                        apiSpecId={selectedObject?.apiSpecId} />}
                     <IconButton
                         color="primary"
                         variant="outlined"
-                        disabled={disabled || relevantOperations.length === 0}
+                        disabled={readOnly || disabled || relevantOperations.length === 0}
                         aria-controls={menuItemOpen ? 'split-button-menu' : undefined}
                         aria-expanded={menuItemOpen ? 'true' : undefined}
                         aria-label="select object"
                         aria-haspopup="menu"
                         onMouseDown={() => {
-                            if (relevantOperations.length !== 1) {
+                            if (shouldShowMenuOnClick) {
                                 // @ts-ignore
                                 actionRef.current = () => setMenuItemOpen(!menuItemOpen);
                             }
                         }}
                         onKeyDown={() => {
-                            if (relevantOperations.length !== 1) {
+                            if (shouldShowMenuOnClick) {
                                 // @ts-ignore
                                 actionRef.current = () => setMenuItemOpen(!menuItemOpen);
                             }
                         }}
                         onClick={() => {
-                            if (relevantOperations.length === 1) {
+                            if (!shouldShowMenuOnClick) {
                                 onOperationClick(relevantOperations[0]);
                             } else {
                                 actionRef.current?.();
@@ -295,8 +310,10 @@ export const ForeignKeyFormControlInput = ({
                         }}
                     >
                         {icon}
-                    </IconButton>}
-            </ButtonGroup>
+                    </IconButton>
+                </ButtonGroup>
+            </Box>
+
             <Menu
                 ref={menuRef}
                 sx={{
@@ -315,6 +332,12 @@ export const ForeignKeyFormControlInput = ({
                         </MenuItem>
                     );
                 })}
+                {selectedObject &&
+                    <MenuItem
+                        key={`menu-item-edit-manually`}
+                        onClick={() => { setShowManualEdition(true); setMenuItemOpen(false); }}>
+                        Edit manually
+                    </MenuItem>}
             </Menu>
             {(apiContext && selectedOperation) &&
                 <ModalOperationResponseSchemaSelector

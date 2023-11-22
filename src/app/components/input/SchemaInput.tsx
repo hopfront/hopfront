@@ -16,12 +16,12 @@ export interface SchemaInputProps {
     required?: boolean
     readOnly?: boolean
     menu?: InputMenu
-    apiContext: ApiContext
+    apiContext?: ApiContext
 }
 
 export const SchemaInput = ({ updatableValue, schema, debounceMillis = 0, required, readOnly, menu, apiContext }: SchemaInputProps) => {
-    if (!schema) {
-        return <StringInput updatableValue={updatableValue} schemaObject={{ type: 'string' }} required={false} />;
+    if (!schema || !apiContext) {
+        return <StringInput updatableValue={updatableValue} schemaObject={{ type: 'string' }} required={false} debounceMillis={debounceMillis} />;
     }
     
     const schemaObject = resolveSchemaFromSchemaOrReference(schema, apiContext.apiSpec.document);
