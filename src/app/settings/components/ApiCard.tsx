@@ -7,6 +7,8 @@ import Link from '@mui/joy/Link';
 import Stack from '@mui/joy/Stack';
 import Typography from '@mui/joy/Typography';
 import { useRouter } from 'next/navigation';
+import Chip from "@mui/joy/Chip";
+import {Monospace} from "@/app/components/typography/Monospace";
 
 type ApiCardProps = {
     api: ApiSpec
@@ -45,18 +47,22 @@ export default function ApiCard({
                 flex={1}
             >
                 <Box>
-                    <Typography color="primary" fontSize="sm" fontWeight="lg">
-                        {`OpenAPI ${api.document.info.version === 'v0' ? '' : api.document.info.version}`}
+                    <Typography sx={{mb: 1}}>
+                        <Chip color="primary">
+                            OAS <Monospace>{api.document.openapi}</Monospace>
+                        </Chip>
                     </Typography>
                     <Link
-                        fontWeight="md"
                         fontSize="lg"
                         onClick={() => router.push(href)}
                         overlay
+                        sx={{color: 'text.primary'}}
                         underline="none"
-                        sx={{ color: 'text.primary' }}
                     >
                         {api.document.info.title || 'Untitled API'}
+                        <Chip sx={{ml: 1}}>
+                            <Monospace>v{api.document.info.version === 'v0' ? '' : api.document.info.version}</Monospace>
+                        </Chip>
                     </Link>
                 </Box>
 

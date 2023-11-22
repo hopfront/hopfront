@@ -1,3 +1,7 @@
+export interface ApiAuthenticationOAuth2Data {
+    oauthProviderId: string
+}
+
 export interface ApiAuthenticationAccessTokenData {
     apiSpecId: string
     operationId: string
@@ -16,7 +20,7 @@ export interface ApiAuthenticationStaticParameterData {
 
 export interface ApiAuthenticationConfig {
     authenticationType: AuthenticationType,
-    data?: ApiAuthenticationAccessTokenData | ApiAuthenticationStaticParameterData,
+    data?: ApiAuthenticationAccessTokenData | ApiAuthenticationStaticParameterData | ApiAuthenticationOAuth2Data,
 }
 
-export type AuthenticationType = 'STATIC' | 'BASIC_AUTH' | 'ACCESS_TOKEN' | 'NONE';
+export type AuthenticationType = 'STATIC' | 'BASIC_AUTH' | 'ACCESS_TOKEN' | 'NONE' | 'OAUTH2';

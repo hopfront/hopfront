@@ -233,6 +233,6 @@ export class OpenAPIRepository {
                 authenticationConfig: undefined,
                 isCorsByPassed: false
             };
-        };
+        }
     }
 }

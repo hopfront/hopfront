@@ -1,8 +1,11 @@
 import { ApiContext } from "../model/ApiContext";
 import { ServerLocalStorage } from "./ServerLocalStorage";
+import {
+    buildOauthProviderLocalStorageKeyPrefix
+} from "@/app/components/authentication/oauth2/OAuth2AuthenticationGuard";
 
 const buildAccessTokenLocalStorageKey = (apiSpecId: string, apiServerUrl: string) => {
-    return `com.hopfront.api.${apiSpecId}.${apiServerUrl}access-token`;
+    return `com.hopfront.api.${apiSpecId}.${apiServerUrl}.access-token`;
 }
 
 const buildBasicAuthLocalStorageKey = (apiSpecId: string, apiServerUrl: string) => {
@@ -52,6 +55,14 @@ export class AuthLocalStorage {
         return this.getAuth(apiContext, (specId, apiServerUrl) => {
             return localStorage.getItem(buildAccessTokenLocalStorageKey(specId, apiServerUrl)) as string;
         }) as string | null;
+    }
+
+    public static getOauth2AccessToken(oauth2ProviderId: string): string | undefined {
+        // This is a little trick used to retrieve the OAuth2 access token stored by the "react-oauth2-code-pkce" library.
+        // This is not the "intended" way to retrieve the accessToken because the library recommends using a Context,
+        // but it works.
+        const oauth2AccessTokenLocalStorageKey = buildOauthProviderLocalStorageKeyPrefix(oauth2ProviderId) + 'token';
+        return localStorage.getItem(oauth2AccessTokenLocalStorageKey) || undefined;
     }
 
     public static setBasicAuthCredentials(apiContext: ApiContext, credentials: BasicAuthCredentials) {

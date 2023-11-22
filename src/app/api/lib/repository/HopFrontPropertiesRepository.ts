@@ -32,6 +32,7 @@ export class HopFrontPropertiesRepository {
             const newInstanceConfig: InstanceProperties = {
                 instanceId: process.env.NEXT_PUBLIC_HOPFRONT_INSTANCE_ID || randomUUID(),
                 setups: [],
+                oauthProviders: []
             };
 
             saveInstanceProperties(newInstanceConfig);

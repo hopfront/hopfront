@@ -1,9 +1,8 @@
-import { useAnalytics } from "@/app/hooks/analytics/useAnalytics";
-import { ApiSpecsApi } from "@/app/lib/api/ApiSpecsApi";
-import { DashboardApi } from "@/app/lib/api/DashboardApi";
-import { Dashboard } from "@/app/lib/model/dashboard/Dashboard";
-import { ConnectivityTestOnboardingAccordion } from "@/app/onboarding/ConnectivityTestOnboardingAccordion";
-import { Check, Warning } from "@mui/icons-material";
+import {useAnalytics} from "@/app/hooks/analytics/useAnalytics";
+import {ApiSpecsApi} from "@/app/lib/api/ApiSpecsApi";
+import {DashboardApi} from "@/app/lib/api/DashboardApi";
+import {ConnectivityTestOnboardingAccordion} from "@/app/onboarding/ConnectivityTestOnboardingAccordion";
+import {Check, Warning} from "@mui/icons-material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import {
     AccordionGroup,
@@ -13,21 +12,22 @@ import {
     Typography,
     accordionSummaryClasses
 } from "@mui/joy";
-import { OpenAPIV3 } from "openapi-types";
-import { useEffect, useState } from "react";
-import { useApiContext } from "../hooks/useApiContext";
-import { ApiSpec } from "../lib/dto/ApiSpec";
-import { ServerLocalStorage } from "../lib/localstorage/ServerLocalStorage";
-import { InstanceSetup, InstanceSetupStatus } from "../lib/model/InstanceProperties";
-import { ImportMode } from "../settings/apis/imports/components/ImportApiSpec";
+import {OpenAPIV3} from "openapi-types";
+import {useEffect, useState} from "react";
+import {useApiContext} from "../hooks/useApiContext";
+import {ApiSpec} from "../lib/dto/ApiSpec";
+import {ServerLocalStorage} from "../lib/localstorage/ServerLocalStorage";
+import {InstanceSetup, InstanceSetupStatus} from "../lib/model/InstanceProperties";
+import {ImportMode} from "../settings/apis/imports/components/ImportApiSpec";
 import ApiAuthenticationOnboardingAccordion from "./ApiAuthenticationOnboardingAccordion";
 import ApiServersOnboardingAccordion from "./ApiServersOnboardingAccordion";
 import ImportApiOnboardingAccordion from "./ImportApiOnboardingAccordion";
 import NewsletterOnboardingAccordion from "./NewsletterOnboardingAccordion";
 import OnboardingCompletedOnboardingAccordion from "./OnboardingCompletedOnboardingAccordion";
 import WelcomeOnboardingStep from "./WelcomeOnboardingStep";
-import { OnBoardingStep, OnBoardingStepCode } from "./model/OnboardingModel";
+import {OnBoardingStep, OnBoardingStepCode} from "./model/OnboardingModel";
 import {buildFavoritePetSampleDashboard, buildPetOverviewDashboard} from "@/app/onboarding/utils";
+import {useInstanceProperties} from "@/app/hooks/useInstanceProperties";
 
 const registerOnboardingStep = async (step: OnBoardingStep, date: Date) => {
     return fetch('/api/instance/properties/setups', {
@@ -49,15 +49,16 @@ type OnBoardingProps = {
     onOnboardingCompleted: () => void
 }
 
-export default function Onboarding({ steps: initialSteps, apiSpecs, onOnboardingCompleted }: OnBoardingProps) {
-    const { usePageView, registerEvent } = useAnalytics();
+export default function Onboarding({steps: initialSteps, apiSpecs, onOnboardingCompleted}: OnBoardingProps) {
+    const {mutate: mutateProperties} = useInstanceProperties();
+    const {usePageView, registerEvent} = useAnalytics();
     usePageView('onboarding');
 
     const [steps, setSteps] = useState<OnBoardingStep[]>(initialSteps);
     const initialActiveStep = steps.find(step => step.status === 'TODO' || step.status === 'SEEN') ?? steps[0];
     const [activeStep, setActiveStep] = useState<OnBoardingStep>(initialActiveStep);
     const [apiSpecId, setApiSpecId] = useState<string>('');
-    const { data: apiContext, error, isLoading } = useApiContext(apiSpecId);
+    const {data: apiContext, error, isLoading} = useApiContext(apiSpecId);
     const [submitOnboardingLoading, setSubmitOnboardingLoading] = useState<boolean>(false);
     const [showImportSuccessAlert, setShowImportSuccessAlert] = useState(false);
     const [defaultServer, setDefaultServer] = useState<OpenAPIV3.ServerObject | undefined>(undefined);
@@ -86,7 +87,8 @@ export default function Onboarding({ steps: initialSteps, apiSpecs, onOnboarding
     const updateStep = (step: OnBoardingStep, status?: InstanceSetupStatus) => {
         if (status) {
             step.status = status;
-            registerOnboardingStep(step, new Date());
+            registerOnboardingStep(step, new Date())
+                .then(() => mutateProperties());
         }
         setSteps(steps => steps.map(s => s.code === step.code ? step : s));
     }
@@ -184,8 +186,8 @@ export default function Onboarding({ steps: initialSteps, apiSpecs, onOnboarding
         onNextClicked();
     }
 
-    const nextButton = <Button variant='soft' color='primary' sx={{ alignSelf: 'start', mt: 2 }}
-        onClick={onNextClicked}>Next</Button>
+    const nextButton = <Button variant='soft' color='primary' sx={{alignSelf: 'start', mt: 2}}
+                               onClick={onNextClicked}>Next</Button>
 
     const stepIsDisabled = (type: OnBoardingStepCode): boolean => {
         const step = steps.find(s => s.code === type);
@@ -240,26 +242,26 @@ export default function Onboarding({ steps: initialSteps, apiSpecs, onOnboarding
             case 'SKIPPED':
                 return (
                     <Typography display='flex' level="title-lg" textColor={getTitleColor(type)}>
-                        {title} <CloseRoundedIcon sx={{ ml: 0.5 }} />
+                        {title} <CloseRoundedIcon sx={{ml: 0.5}}/>
                     </Typography>
                 )
             case 'JUMPED':
                 return (
                     <Typography display='flex' alignItems='baseline' level="title-lg" textColor={getTitleColor(type)}>
                         {title} <Typography level='body-sm' textColor={getTitleColor(type)}
-                            sx={{ ml: 0.5 }}>{'- skipped'}</Typography>
+                                            sx={{ml: 0.5}}>{'- skipped'}</Typography>
                     </Typography>
                 )
             case 'FAILED':
                 return (
                     <Typography display='flex' level="title-lg" textColor={getTitleColor(type)}>
-                        {title} <Warning color='warning' sx={{ ml: 0.5 }} />
+                        {title} <Warning color='warning' sx={{ml: 0.5}}/>
                     </Typography>
                 )
             case 'DONE':
                 return (
                     <Typography display='flex' level="title-lg" textColor={getTitleColor(type)}>
-                        {title} <Check color='success' sx={{ ml: 0.5 }} />
+                        {title} <Check color='success' sx={{ml: 0.5}}/>
                     </Typography>
                 )
             default:
@@ -279,12 +281,12 @@ export default function Onboarding({ steps: initialSteps, apiSpecs, onOnboarding
             height={'100%'}
             borderRadius={'8px'}
         >
-            <Typography level='h1' sx={{ m: 3 }} gutterBottom>HopFront.</Typography>
-            <Divider />
+            <Typography level='h1' sx={{m: 3}} gutterBottom>HopFront.</Typography>
+            <Divider/>
 
             <WelcomeOnboardingStep
                 visibility={activeStep.code === 'welcome'}
-                onNextClicked={onNextClicked} />
+                onNextClicked={onNextClicked}/>
 
             {activeStep.code !== 'welcome' &&
                 <Box
@@ -362,7 +364,7 @@ export default function Onboarding({ steps: initialSteps, apiSpecs, onOnboarding
                                     shouldRunConnectivityTest={activeStep.code === 'api-connectivity'}
                                     nextButton={nextButton}
                                     onStepCompleted={state => updateStep(activeStep, state)}
-                                    apiContext={apiContext} />
+                                    apiContext={apiContext}/>
 
                                 <NewsletterOnboardingAccordion
                                     title={getTitle('newsletter-subscription')}

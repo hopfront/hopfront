@@ -1,16 +1,17 @@
-import { ApiAuthenticationConfig, ApiAuthenticationStaticParameterData } from "@/app/lib/dto/ApiAuthenticationConfig";
+import {
+    ApiAuthenticationConfig,
+    ApiAuthenticationOAuth2Data,
+    ApiAuthenticationStaticParameterData
+} from "@/app/lib/dto/ApiAuthenticationConfig";
 import { XHRFrontRequestMethod } from "@/app/lib/dto/XHRFrontRequest";
 import { OperationInputs } from "@/app/lib/model/OperationInputs";
 import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
 import { OpenAPIV3 } from "openapi-types";
 import HttpMethods = OpenAPIV3.HttpMethods;
-
 import { ProxyApi } from "@/app/lib/api/ProxyApi";
 import { AuthLocalStorage } from "@/app/lib/localstorage/AuthLocalStorage";
 import { ServerLocalStorage } from "@/app/lib/localstorage/ServerLocalStorage";
 import { ParameterWithValue } from "@/app/lib/model/ParameterWithValue";
-import { ApiConfig } from "../dto/ApiConfig";
-import { OpenAPIDocumentExtension } from "../dto/OpenApiExtensions";
 import { ApiContext } from "../model/ApiContext";
 
 const buildUrl = (
@@ -122,6 +123,15 @@ export class OperationService {
                     headers['Authorization'] = `Basic ${base64credentials}`;
                 } else if (authentication.authenticationType === "ACCESS_TOKEN") {
                     headers['Authorization'] = `Bearer ${AuthLocalStorage.getAccessToken(apiContext)}`;
+                } else if (authentication.authenticationType === "OAUTH2") {
+                    const oauth2ConfigData = authentication.data as ApiAuthenticationOAuth2Data;
+                    const oauth2AccessToken = AuthLocalStorage.getOauth2AccessToken(oauth2ConfigData.oauthProviderId);
+
+                    if (oauth2AccessToken) {
+                        headers['Authorization'] = `Bearer ${oauth2AccessToken}`;
+                    } else {
+                        console.log('Failed to retrieve OAuth2 access token from localstorage');
+                    }
                 }
             }
 

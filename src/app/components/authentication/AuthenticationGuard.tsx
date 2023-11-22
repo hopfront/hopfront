@@ -1,8 +1,11 @@
-import { ApiContext } from "@/app/lib/model/ApiContext";
-import { AccessTokenAuthenticationGuard } from "@/app/components/authentication/access-token/AccessTokenAuthenticationGuard";
-import React, { useState } from "react";
+import {ApiContext} from "@/app/lib/model/ApiContext";
+import {
+    AccessTokenAuthenticationGuard
+} from "@/app/components/authentication/access-token/AccessTokenAuthenticationGuard";
+import React, {useState} from "react";
 import BasicAuthAuthenticationGuard from "@/app/components/authentication/basic-auth/BasicAuthAuthenticationGuard";
 import StaticAuthenticationGuard from "@/app/components/authentication/static/StaticAuthenticationGuard";
+import {OAuth2AuthenticationGuard} from "@/app/components/authentication/oauth2/OAuth2AuthenticationGuard";
 
 export interface AuthenticationGuardProps {
     apiContext: ApiContext,
@@ -10,9 +13,10 @@ export interface AuthenticationGuardProps {
 }
 
 export const AuthenticationGuard = ({
-    apiContext,
-    children
-}: AuthenticationGuardProps) => {
+                                        apiContext,
+                                        children
+                                    }: AuthenticationGuardProps) => {
+
     const authenticationConfig = apiContext.config.authenticationConfig;
     const [handled, setHandled] = useState(false);
     const [ignored, setIgnored] = useState(false);
@@ -34,38 +38,31 @@ export const AuthenticationGuard = ({
     if (authenticationConfig?.authenticationType === "ACCESS_TOKEN") {
         return <AccessTokenAuthenticationGuard
             apiContext={apiContext}
-            onAuthenticationHandled={() => {
-                onHandled();
-            }}
-            onAuthenticationIgnored={() => {
-                onIgnored();
-            }}>
+            onAuthenticationHandled={onHandled}
+            onAuthenticationIgnored={onIgnored}>
             {children}
         </AccessTokenAuthenticationGuard>;
     } else if (authenticationConfig?.authenticationType === "STATIC") {
         return <StaticAuthenticationGuard
             apiContext={apiContext}
-            onAuthenticationHandled={() => {
-                onHandled();
-            }}
-            onAuthenticationIgnored={() => {
-                onIgnored();
-            }}>
+            onAuthenticationHandled={onHandled}
+            onAuthenticationIgnored={onIgnored}>
             {children}
         </StaticAuthenticationGuard>;
     } else if (authenticationConfig?.authenticationType === "BASIC_AUTH") {
         return <BasicAuthAuthenticationGuard
             apiContext={apiContext}
-            onAuthenticationHandled={() => {
-                onHandled();
-            }}
-            onAuthenticationIgnored={() => {
-                onIgnored();
-            }}>
+            onAuthenticationHandled={onHandled}
+            onAuthenticationIgnored={onIgnored}>
             {children}
         </BasicAuthAuthenticationGuard>;
-    }
-    else {
+    } else if (authenticationConfig?.authenticationType === "OAUTH2") {
+        return <OAuth2AuthenticationGuard
+            apiContext={apiContext}
+            postLogin={onHandled}>
+            {children}
+        </OAuth2AuthenticationGuard>;
+    } else {
         return children;
     }
 }

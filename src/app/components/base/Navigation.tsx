@@ -1,24 +1,22 @@
-import { fetcher } from "@/app/lib/api/utils"
-import { InstanceProperties } from "@/app/lib/model/InstanceProperties"
 import Onboarding from "@/app/onboarding/Onboarding"
-import { ONBOARDING_STEPS, OnBoardingStep } from "@/app/onboarding/model/OnboardingModel"
-import { Box } from "@mui/joy"
-import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
-import useSWR from "swr"
+import {ONBOARDING_STEPS, OnBoardingStep} from "@/app/onboarding/model/OnboardingModel"
+import {Box} from "@mui/joy"
+import {useRouter} from "next/navigation"
+import {useEffect, useState} from "react"
 import ThreeDotsLoader from "../misc/ThreeDotsLoader"
 import Header from "./Header"
 import Sidebar from "./Sidebar"
-import { useApiSpecs } from "@/app/hooks/useApiSpecs"
+import {useApiSpecs} from "@/app/hooks/useApiSpecs"
+import {useInstanceProperties} from "@/app/hooks/useInstanceProperties";
 
 export interface NavigationProps {
     children: React.ReactNode
 }
 
-export default function Navigation({ children }: NavigationProps) {
+export default function Navigation({children}: NavigationProps) {
     const router = useRouter();
-    const { data: properties, isLoading: isPropertiesLoading, error: propertiesError } = useSWR<InstanceProperties>('/api/instance/properties/', fetcher);
-    const { data: apiSpecsData, error: apiSpecsError, isLoading: isApiSpecsLoading } = useApiSpecs();
+    const {data: properties, isLoading: isPropertiesLoading, error: propertiesError} = useInstanceProperties();
+    const {data: apiSpecsData, error: apiSpecsError, isLoading: isApiSpecsLoading} = useApiSpecs();
     const [setupsToShow, setSetupsToShow] = useState<OnBoardingStep[]>([]);
     const [showContent, setShowContent] = useState<boolean>(false);
 
@@ -67,7 +65,7 @@ export default function Navigation({ children }: NavigationProps) {
                 alignItems="center"
                 justifyContent='center'
             >
-                {(isPropertiesLoading || isApiSpecsLoading) && <ThreeDotsLoader color={"primary.500"} size={12} />}
+                {(isPropertiesLoading || isApiSpecsLoading) && <ThreeDotsLoader color={"primary.500"} size={12}/>}
             </Box>
 
             <Box>
@@ -82,8 +80,8 @@ export default function Navigation({ children }: NavigationProps) {
                         width: '100vw',
                         height: '100vh'
                     }}>
-                        <Header />
-                        <Sidebar />
+                        <Header/>
+                        <Sidebar/>
                         <Box
                             component="main"
                             className="MainContent"
@@ -118,7 +116,10 @@ export default function Navigation({ children }: NavigationProps) {
                             backgroundColor: 'background.body',
                             zIndex: 36 // because of the Allotment pane which has a z-index of 35
                         }}>
-                        <Onboarding steps={setupsToShow} apiSpecs={apiSpecsData?.apiSpecs ?? []} onOnboardingCompleted={onOnboardingCompleted} />
+                        <Onboarding
+                            steps={setupsToShow}
+                            apiSpecs={apiSpecsData?.apiSpecs ?? []}
+                            onOnboardingCompleted={onOnboardingCompleted}/>
                     </Box>}
             </Box>
         </>
