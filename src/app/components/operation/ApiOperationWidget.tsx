@@ -33,6 +33,7 @@ export const ApiOperationWidget = ({
         switch (operation.method) {
             case HttpMethods.GET:
                 return <OperationGetWidget
+                    key={`operation:${operation.path}:method:${operation.method}`}
                     operation={operation}
                     defaultInputs={defaultInputs}
                     onResponse={onResponse}
@@ -42,6 +43,7 @@ export const ApiOperationWidget = ({
             case HttpMethods.POST:
             case HttpMethods.PUT:
                 return <OperationPostPutWidget
+                    key={`operation:${operation.path}:method:${operation.method}`}
                     operation={operation}
                     defaultInputs={defaultInputs}
                     onResponse={onResponse}
@@ -50,6 +52,7 @@ export const ApiOperationWidget = ({
                     apiContext={apiContext} />;
             case HttpMethods.DELETE:
                 return <OperationDeleteWidget
+                    key={`operation:${operation.path}:method:${operation.method}`}
                     operation={operation}
                     defaultInputs={defaultInputs}
                     onResponse={onResponse}
@@ -64,7 +67,7 @@ export const ApiOperationWidget = ({
     return (
         <>
             <AuthenticationGuard apiContext={apiContext}>
-                <Box sx={{ height: '100%', overflow: 'scroll', px: 3, py: 3}}>
+                <Box sx={{ height: '100%', overflow: 'scroll', px: 3, py: 3 }}>
                     <OperationHeader operation={operation} apiContext={apiContext} />
                     {getOperationWidget()}
                 </Box>
