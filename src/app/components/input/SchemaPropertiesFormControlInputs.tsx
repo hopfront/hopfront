@@ -41,6 +41,7 @@ export const SchemaPropertiesFormControlInputs = ({ schema, propertiesUpdatableV
         const schemaPropertyNames = properties ? Object.keys(properties) : [];
         return schemaPropertyNames.map((schemaPropertyName, index) => {
             return (<SchemaPropertyFormControlInput
+                key={`schema-property-input-${index}`}
                 propertyParentSchemaRef={schemaReferenceObject?.$ref}
                 propertyName={schemaPropertyName}
                 propertySchema={properties[schemaPropertyName]}
