@@ -23,6 +23,10 @@ export interface OperationParameterFormControlInputProps {
 
 const INPUT_MARGIN_BOTTOM = 2;
 
+const getCacheKey = (apiContext: ApiContext, operation: StandaloneOperation, parameter: ParameterWithValue) => {
+    return `api:${apiContext.apiSpec.id}:operation:${operation.path}:parameter:${parameter.parameter.name}`;
+}
+
 export const OperationParameterFormControlInput = ({
     operation,
     parameter,
@@ -61,7 +65,9 @@ export const OperationParameterFormControlInput = ({
 
     if (parameterExtension && parameterExtension.foreignKeys.length > 0) {
         return (
-            <Box key={parameter.parameter.name} sx={{ mb: INPUT_MARGIN_BOTTOM }}>
+            <Box
+                key={`${operation.path}:${parameter.parameter.name}`}
+                sx={{ mb: INPUT_MARGIN_BOTTOM }}>
                 <ForeignKeyFormControlInput
                     inputDescription={parameter.parameter.description}
                     inputLabel={parameter.parameter.name}
@@ -77,7 +83,7 @@ export const OperationParameterFormControlInput = ({
                     }}
                     disabled={disabled || parameter.readonly}
                     foreignKeys={parameterExtension.foreignKeys}
-                    cacheKey={`api:${apiContext.apiSpec.id}:operation:${operation.path}:parameter:${parameter.parameter.name}`}
+                    cacheKey={getCacheKey(apiContext, operation, parameter)}
                     schema={parameter.parameter.schema}
                     apiContext={apiContext}
                 />
@@ -85,7 +91,9 @@ export const OperationParameterFormControlInput = ({
         );
     } else {
         return (
-            <Box key={parameter.parameter.name} sx={{ mb: INPUT_MARGIN_BOTTOM }}>
+            <Box
+                key={`${operation.path}:${parameter.parameter.name}`}
+                sx={{ mb: INPUT_MARGIN_BOTTOM }}>
                 {buildSchemaFormControlInput({
                     icon: Settings,
                     items: [{

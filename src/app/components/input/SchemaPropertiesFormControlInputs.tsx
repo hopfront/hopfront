@@ -1,13 +1,13 @@
+import { SchemaPropertyFormControlInput } from "@/app/components/input/SchemaPropertyFormControlInput";
+import { ApiContext, SchemaOrReference } from "@/app/lib/model/ApiContext";
+import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
 import {
     getPropertiesFromSchema,
     getReferenceObjectOrUndefined,
     resolveSchemaFromSchemaOrReference
 } from "@/app/lib/openapi/utils";
-import {SchemaPropertyFormControlInput} from "@/app/components/input/SchemaPropertyFormControlInput";
-import {ApiContext, SchemaOrReference} from "@/app/lib/model/ApiContext";
-import {ReactNode, useRef} from "react";
 import Box from "@mui/joy/Box";
-import {UpdatableValue} from "@/app/lib/model/UpdatableValue";
+import { useRef } from "react";
 
 export interface SchemaPropertiesFormControlInputsProps {
     schema: SchemaOrReference
@@ -17,7 +17,7 @@ export interface SchemaPropertiesFormControlInputsProps {
     apiContext: ApiContext
 }
 
-export const SchemaPropertiesFormControlInputs = ({schema, propertiesUpdatableValue, disabled, readonlyProperties = [], apiContext}: SchemaPropertiesFormControlInputsProps) => {
+export const SchemaPropertiesFormControlInputs = ({ schema, propertiesUpdatableValue, disabled, readonlyProperties = [], apiContext }: SchemaPropertiesFormControlInputsProps) => {
     const schemaReferenceObject = getReferenceObjectOrUndefined(schema);
     const schemaObject = resolveSchemaFromSchemaOrReference(schema, apiContext.apiSpec.document);
     const schemaExtension = schemaReferenceObject &&
@@ -37,33 +37,34 @@ export const SchemaPropertiesFormControlInputs = ({schema, propertiesUpdatableVa
         return schemaObject.required.indexOf(propertyName) >= 0;
     };
 
-    const inputs: ReactNode[] = [];
-
-    for (let schemaPropertyName in properties) {
-        inputs.push(<SchemaPropertyFormControlInput
-            propertyParentSchemaRef={schemaReferenceObject?.$ref}
-            propertyName={schemaPropertyName}
-            propertySchema={properties[schemaPropertyName]}
-            propertyExtension={schemaExtension?.properties.find(p => p.propertyName === schemaPropertyName)}
-            updatableValue={{
-                value: propertiesValuesRef.current && propertiesValuesRef.current[schemaPropertyName],
-                onValueUpdate: (updatedPropertyValue: any) => {
-                    const updatedInputsValue = Object.assign({}, propertiesValuesRef.current, {[schemaPropertyName]: updatedPropertyValue});
-                    propertiesValuesRef.current = updatedInputsValue
-                    propertiesUpdatableValue.onValueUpdate(updatedInputsValue);
-                },
-            }}
-            required={isPropertyRequired(schemaPropertyName)}
-            disabled={disabled}
-            readOnly={readonlyProperties.indexOf(schemaPropertyName) >= 0}
-            apiContext={apiContext}/>);
+    const getInputs = (properties: Record<string, SchemaOrReference>) => {
+        const schemaPropertyNames = properties ? Object.keys(properties) : [];
+        return schemaPropertyNames.map((schemaPropertyName, index) => {
+            return (<SchemaPropertyFormControlInput
+                propertyParentSchemaRef={schemaReferenceObject?.$ref}
+                propertyName={schemaPropertyName}
+                propertySchema={properties[schemaPropertyName]}
+                propertyExtension={schemaExtension?.properties.find(p => p.propertyName === schemaPropertyName)}
+                updatableValue={{
+                    value: propertiesValuesRef.current && propertiesValuesRef.current[schemaPropertyName],
+                    onValueUpdate: (updatedPropertyValue: any) => {
+                        const updatedInputsValue = Object.assign({}, propertiesValuesRef.current, { [schemaPropertyName]: updatedPropertyValue });
+                        propertiesValuesRef.current = updatedInputsValue
+                        propertiesUpdatableValue.onValueUpdate(updatedInputsValue);
+                    },
+                }}
+                required={isPropertyRequired(schemaPropertyName)}
+                disabled={disabled}
+                readOnly={readonlyProperties.indexOf(schemaPropertyName) >= 0}
+                apiContext={apiContext} />);
+        })
     }
 
     return (
         <>
-            {inputs.map((input, index) => {
+            {properties && getInputs(properties).map((input, index) => {
                 return (
-                    <Box key={`schema-input-${index}`} sx={{mb: 2}}>
+                    <Box key={`schema-input-${index}`} sx={{ mb: 2, backgroundColor: 'blueviolet' }}>
                         {input}
                     </Box>
                 );

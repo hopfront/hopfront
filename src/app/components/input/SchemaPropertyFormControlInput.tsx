@@ -36,7 +36,6 @@ export const SchemaPropertyFormControlInput = ({
 
     const router = useRouter();
     const [fetchValueModalOpen, setFetchValueModalOpen] = useState(false);
-
     const propertySchemaObject =
         resolveSchemaFromSchemaOrReference(propertySchema, apiContext.apiSpec.document);
 
@@ -53,30 +52,36 @@ export const SchemaPropertyFormControlInput = ({
                 schema={propertySchema}
                 apiContext={apiContext} />
         );
-    } else {
-        const buildSchemaFormControlInput = (menu: InputMenu | undefined) => {
-            return <SchemaFormControlInput
-                label={propertyName}
-                updatableValue={updatableValue}
-                schema={propertySchema}
-                required={required}
-                disabled={disabled}
-                readOnly={readOnly}
-                menu={menu}
-                apiContext={apiContext} />;
-        }
+    }
 
-        return (
-            <>
-                {buildSchemaFormControlInput(propertyParentSchemaRef ? {
-                    icon: Settings,
-                    items: [{
-                        icon: AutoFixHigh,
-                        text: 'Fetch value from an other operation',
-                        onClick: () => setFetchValueModalOpen(true)
-                    }]
-                } : undefined)}
-                {propertyParentSchemaRef && <SchemaPropertyFetchValueModal
+    const buildSchemaFormControlInput = (menu: InputMenu | undefined) => {
+        return <SchemaFormControlInput
+            label={propertyName}
+            updatableValue={updatableValue}
+            schema={propertySchema}
+            required={required}
+            disabled={disabled}
+            readOnly={readOnly}
+            menu={menu}
+            apiContext={apiContext} />;
+    }
+
+    const getInputMenu = (propertyParentSchemaRef: string | undefined) => {
+        return propertyParentSchemaRef ? {
+            icon: Settings,
+            items: [{
+                icon: AutoFixHigh,
+                text: 'Fetch value from an other operation',
+                onClick: () => setFetchValueModalOpen(true)
+            }]
+        } : undefined
+    }
+
+    return (
+        <>
+            {buildSchemaFormControlInput(getInputMenu(propertyParentSchemaRef))}
+            {propertyParentSchemaRef &&
+                <SchemaPropertyFetchValueModal
                     open={fetchValueModalOpen}
                     onClose={() => setFetchValueModalOpen(false)}
                     onConfigurationUpdate={() => {
@@ -90,7 +95,6 @@ export const SchemaPropertyFormControlInput = ({
                     propertyRequired={required || false}
                     inputWithoutForeignKeyPreview={buildSchemaFormControlInput(undefined)}
                     apiContext={apiContext} />}
-            </>
-        );
-    }
+        </>
+    );
 }

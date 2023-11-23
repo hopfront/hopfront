@@ -143,7 +143,7 @@ export const ForeignKeyFormControlInput = ({
     const [menuItemOpen, setMenuItemOpen] = useState(false);
     const actionRef = useRef<() => void | null>(null);
     const anchorRef = useRef<HTMLDivElement>(null);
-    const [showManualEdition, setShowManualEdition] = useState(!selectedObject);
+    const [showManualEditing, setShowManualEditing] = useState(!selectedObject);
 
     const cachedValue = foreignKeys
         .flatMap(fk => {
@@ -157,7 +157,7 @@ export const ForeignKeyFormControlInput = ({
         })
         .find(anyFk => true);
 
-    if (cachedValue && cachedValue != updatableValue.value && !showManualEdition) {
+    if (cachedValue && cachedValue != updatableValue.value && !showManualEditing) {
         updatableValue.onValueUpdate(cachedValue);
     }
 
@@ -179,7 +179,7 @@ export const ForeignKeyFormControlInput = ({
     // ---- 
 
     useEffect(() => {
-        setShowManualEdition(!selectedObject);
+        setShowManualEditing(!selectedObject);
     }, [selectedObject]);
 
     const allOperations = apiSpecs
@@ -257,6 +257,14 @@ export const ForeignKeyFormControlInput = ({
         });
     };
 
+    const onManualEditingValueUpdate = (value: any) => {
+        // We don't want to keep the selected object in cache if the user is editing manually.
+        if (cacheKey) {
+            localStorage.removeItem(cacheKey);
+        }
+        updatableValue.onValueUpdate(value);
+    }
+
     return (
         <FormControl disabled={disabled}>
             <FormLabel>
@@ -264,9 +272,14 @@ export const ForeignKeyFormControlInput = ({
                 {required ? <Typography level="body-xs" color="danger">*</Typography> : ''}
             </FormLabel>
             <Box display='flex'>
-                {showManualEdition &&
+                {showManualEditing &&
                     <SchemaInput
-                        updatableValue={updatableValue}
+                        updatableValue={{
+                            value: updatableValue.value,
+                            onValueUpdate: value => {
+                                onManualEditingValueUpdate(value);
+                            }
+                        }}
                         schema={schema}
                         required={required}
                         readOnly={readOnly}
@@ -276,7 +289,7 @@ export const ForeignKeyFormControlInput = ({
                     variant="outlined"
                     aria-label="split button"
                 >
-                    {!showManualEdition && <SelectedObjectButton
+                    {!showManualEditing && <SelectedObjectButton
                         selectedObject={selectedObject?.value || updatableValue.value}
                         selectedSchemaRef={selectedObject?.schemaRef}
                         apiSpecId={selectedObject?.apiSpecId} />}
@@ -335,7 +348,7 @@ export const ForeignKeyFormControlInput = ({
                 {selectedObject &&
                     <MenuItem
                         key={`menu-item-edit-manually`}
-                        onClick={() => { setShowManualEdition(true); setMenuItemOpen(false); }}>
+                        onClick={() => { setShowManualEditing(true); setMenuItemOpen(false); }}>
                         Edit manually
                     </MenuItem>}
             </Menu>
