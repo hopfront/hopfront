@@ -5,14 +5,19 @@ import {
 import React, {useState} from "react";
 import BasicAuthAuthenticationGuard from "@/app/components/authentication/basic-auth/BasicAuthAuthenticationGuard";
 import StaticAuthenticationGuard from "@/app/components/authentication/static/StaticAuthenticationGuard";
-import {OAuth2AuthenticationGuard} from "@/app/components/authentication/oauth2/OAuth2AuthenticationGuard";
+import {getSecurityScheme, getStandaloneOperation} from "@/app/lib/openapi/utils";
+import {
+    SecuritySchemeAuthenticationGuard
+} from "@/app/components/authentication/security-requirements/SecuritySchemeAuthenticationGuard";
 
 export interface AuthenticationGuardProps {
+    operationId: string
     apiContext: ApiContext,
     children?: React.ReactNode;
 }
 
 export const AuthenticationGuard = ({
+                                        operationId,
                                         apiContext,
                                         children
                                     }: AuthenticationGuardProps) => {
@@ -33,6 +38,21 @@ export const AuthenticationGuard = ({
 
     if (handled || ignored) {
         return children;
+    }
+
+    const standaloneOperation = getStandaloneOperation(operationId, apiContext.apiSpec);
+
+    const securityScheme =
+        standaloneOperation && getSecurityScheme(standaloneOperation);
+
+    if (securityScheme) {
+        return <SecuritySchemeAuthenticationGuard
+            securityScheme={securityScheme}
+            onAuthenticationHandled={onHandled}
+            onAuthenticationIgnored={onIgnored}>
+
+            {children}
+        </SecuritySchemeAuthenticationGuard>
     }
 
     if (authenticationConfig?.authenticationType === "ACCESS_TOKEN") {
@@ -56,12 +76,6 @@ export const AuthenticationGuard = ({
             onAuthenticationIgnored={onIgnored}>
             {children}
         </BasicAuthAuthenticationGuard>;
-    } else if (authenticationConfig?.authenticationType === "OAUTH2") {
-        return <OAuth2AuthenticationGuard
-            apiContext={apiContext}
-            postLogin={onHandled}>
-            {children}
-        </OAuth2AuthenticationGuard>;
     } else {
         return children;
     }

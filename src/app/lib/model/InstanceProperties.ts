@@ -1,9 +1,6 @@
-import {OAuthProvider} from "@/app/lib/model/OAuthProvider";
-
 export interface InstanceProperties {
     instanceId: string
     setups: InstanceSetup[] // the list of all the setups that are already done
-    oauthProviders: OAuthProvider[] | undefined
 }
 
 

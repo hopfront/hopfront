@@ -59,7 +59,7 @@ export default function Page() {
             <>
                 <Breadcrumbs separator={<KeyboardArrowRight />} sx={{ p: 0 }}>
                     <Link href='/settings' color='neutral'>
-                        Settings
+                        HopFront Settings
                     </Link>
                     <Typography><Skeleton loading={!apiContext}>{title}</Skeleton></Typography>
                 </Breadcrumbs>

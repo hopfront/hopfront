@@ -1,7 +1,7 @@
 import { ApiContext } from "../model/ApiContext";
 import { ServerLocalStorage } from "./ServerLocalStorage";
 import {
-    buildOauthProviderLocalStorageKeyPrefix
+    buildSecuritySchemeLocalStorageKeyPrefix
 } from "@/app/components/authentication/oauth2/OAuth2AuthenticationGuard";
 
 const buildAccessTokenLocalStorageKey = (apiSpecId: string, apiServerUrl: string) => {
@@ -57,12 +57,15 @@ export class AuthLocalStorage {
         }) as string | null;
     }
 
-    public static getOauth2AccessToken(oauth2ProviderId: string): string | undefined {
+    public static getSecuritySchemeOauth2AccessToken(securitySchemeKey: string): string | undefined {
         // This is a little trick used to retrieve the OAuth2 access token stored by the "react-oauth2-code-pkce" library.
         // This is not the "intended" way to retrieve the accessToken because the library recommends using a Context,
         // but it works.
-        const oauth2AccessTokenLocalStorageKey = buildOauthProviderLocalStorageKeyPrefix(oauth2ProviderId) + 'token';
-        return localStorage.getItem(oauth2AccessTokenLocalStorageKey) || undefined;
+        const oauth2AccessTokenLocalStorageKey = buildSecuritySchemeLocalStorageKeyPrefix(securitySchemeKey) + 'token';
+
+        // The react-oauth2-code-pkce library stores the token surrounded by double quotes ("), so we remove them.
+        // Why does it do it? Maybe we should not remove them.
+        return localStorage.getItem(oauth2AccessTokenLocalStorageKey)?.replace('"', '') || undefined;
     }
 
     public static setBasicAuthCredentials(apiContext: ApiContext, credentials: BasicAuthCredentials) {

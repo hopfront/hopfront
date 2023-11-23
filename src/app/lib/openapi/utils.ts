@@ -30,6 +30,8 @@ import MediaTypeObject = OpenAPIV3.MediaTypeObject;
 import ArraySchemaObjectType = OpenAPIV3.ArraySchemaObjectType;
 import NonArraySchemaObjectType = OpenAPIV3.NonArraySchemaObjectType;
 import HttpMethods = OpenAPIV3.HttpMethods;
+import SecuritySchemeObject = OpenAPIV3.SecuritySchemeObject;
+import {SecurityScheme} from "@/app/lib/model/SecurityScheme";
 
 export const randomInternalId = (length: number) => {
     let result = '';
@@ -604,4 +606,27 @@ const schemaIsChildOfOtherSchema = (schemaRef: string, otherSchemaRef: string, a
         default:
             return false;
     }
+}
+
+export const getSecurityScheme = (operation: StandaloneOperation): SecurityScheme | undefined => {
+    const operationSecurityRequirements = operation.operation.security || [];
+
+    const securitySchemes = (operation.apiSpec.document.components?.securitySchemes || {});
+
+    if (operationSecurityRequirements.length <= 0) {
+        return undefined;
+    }
+
+    // For simplicity (at the moment), we only handle the first security requirement.
+    const securityRequirementObject = operationSecurityRequirements[0];
+
+    const securityRequirementSchemeKeys = Object.keys(securityRequirementObject);
+
+    // For simplicity (at the moment), we only handle the first item of the security requirement.
+    const securityRequirementSchemeKey = securityRequirementSchemeKeys[0];
+
+    return {
+        key: securityRequirementSchemeKey,
+        object: securitySchemes[securityRequirementSchemeKey] as SecuritySchemeObject
+    };
 }

@@ -20,9 +20,9 @@ export default function Page() {
         <>
             <Breadcrumbs separator={<KeyboardArrowRight />} sx={{ p: 0, pb: 1 }}>
                 <Link href='/settings' color='neutral'>
-                    APIs
+                    HopFront Settings
                 </Link>
-                <Typography>Import</Typography>
+                <Typography>API Import</Typography>
             </Breadcrumbs>
 
             <Typography level='h1'>Import API</Typography>

@@ -66,7 +66,7 @@ export const ApiOperationWidget = ({
 
     return (
         <>
-            <AuthenticationGuard apiContext={apiContext}>
+            <AuthenticationGuard operationId={operation.getOperationId()} apiContext={apiContext}>
                 <Box sx={{ height: '100%', overflow: 'scroll', px: 3, py: 3 }}>
                     <OperationHeader operation={operation} apiContext={apiContext} />
                     {getOperationWidget()}

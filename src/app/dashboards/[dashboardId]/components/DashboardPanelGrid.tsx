@@ -8,6 +8,11 @@ import React, {useState} from "react";
 import {ApiContext} from "@/app/lib/model/ApiContext";
 import {AuthenticationGuard} from "@/app/components/authentication/AuthenticationGuard";
 
+interface AuthRequiredContext {
+    operationId: string
+    apiContext: ApiContext
+}
+
 export interface DashboardPanelGridProps {
     dashboard?: Dashboard
     variables: VariableWithValue[]
@@ -24,7 +29,7 @@ export const DashboardPanelGrid = ({
                                        onPanelDeleteClick,
                                    }: DashboardPanelGridProps) => {
 
-    const [authRequiredApiContext, setAuthRequiredApiContext] = useState<ApiContext | undefined>();
+    const [authRequiredContext, setAuthRequiredContext] = useState<AuthRequiredContext | undefined>();
 
     if (!dashboard) {
         return <AspectRatio maxHeight="200px">
@@ -43,14 +48,20 @@ export const DashboardPanelGrid = ({
                 panel={panel}
                 variables={variables}
                 refreshObserverRegistry={refreshObserverRegistry}
-                onAuthRequired={apiContext => setAuthRequiredApiContext(apiContext)}
+                onAuthRequired={apiContext => setAuthRequiredContext({
+                    operationId: panel.config.operationId!,
+                    apiContext: apiContext
+                })}
                 onEditClick={() => onPanelEditClick(panel)}
                 onDeleteClick={() => onPanelDeleteClick(panel)}/>
         </Box>);
 
-    if (authRequiredApiContext) {
+    if (authRequiredContext) {
         return (
-            <AuthenticationGuard apiContext={authRequiredApiContext}>
+            <AuthenticationGuard
+                operationId={authRequiredContext.operationId}
+                apiContext={authRequiredContext.apiContext}>
+
                 {panels}
             </AuthenticationGuard>
         );

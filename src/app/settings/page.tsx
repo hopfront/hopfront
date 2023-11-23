@@ -8,12 +8,8 @@ import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
 import {useRouter} from "next/navigation";
 import {useAnalytics} from "@/app/hooks/analytics/useAnalytics";
-import {IconButton, Link, Table} from "@mui/joy";
 import {useInstanceProperties} from "@/app/hooks/useInstanceProperties";
-import {Monospace} from "@/app/components/typography/Monospace";
-import {Edit, FileUpload} from "@mui/icons-material";
-import ButtonGroup from "@mui/joy/ButtonGroup";
-import {InfoAlert} from "@/app/components/alert/InfoAlert";
+import {FileUpload} from "@mui/icons-material";
 
 export default function Page() {
     const router = useRouter();
@@ -22,8 +18,6 @@ export default function Page() {
     const {data, error, isLoading} = useApiSpecs();
 
     usePageView("settings-page");
-
-    const oAuthProviders = properties?.oauthProviders || [];
 
     if (isLoading) {
         return <div>loading...</div>
@@ -64,48 +58,6 @@ export default function Page() {
                                 </Box>
                             );
                         })}
-                    </Box>
-                    <Box>
-                        <Box display='flex' alignItems='center' gap={2} sx={{mb: 1}}>
-                            <Typography level='h2'>OAuth Providers</Typography>
-                        </Box>
-                        {oAuthProviders.length === 0 && <>
-                            <InfoAlert title="OAuth Providers allow you to share authentication across multiple APIs in a standard way.">
-                                <Typography>There are many OAuth Providers available, <Link href="https://www.keycloak.org/" target="_blank">KeyCloack</Link> being the leading Open Source example.</Typography>
-                            </InfoAlert>
-                        </>}
-                        {oAuthProviders.length > 0 && <Table>
-                            <thead>
-                            <tr>
-                                <th>Alias</th>
-                                <th>Client ID</th>
-                                <th>Authorization Endpoint</th>
-                                <th>Token Endpoint</th>
-                                <th>Scopes</th>
-                                <th style={{ width: '5%' }}></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {oAuthProviders.map(op => {
-                                return (
-                                    <tr key={op.id}>
-                                        <td><Typography level="title-md">{op.alias}</Typography></td>
-                                        <td><Monospace>{op.clientId}</Monospace></td>
-                                        <td><Monospace>{op.authorizationEndpoint}</Monospace></td>
-                                        <td><Monospace>{op.tokenEndpoint}</Monospace></td>
-                                        <td><Monospace>{op.scope.split(' ').map(s => <Typography key={s} variant="outlined" sx={{mr: 1}}>{s}</Typography>)}</Monospace></td>
-                                        <td>
-                                            <ButtonGroup>
-                                                <IconButton>
-                                                    <Edit/>
-                                                </IconButton>
-                                            </ButtonGroup>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                            </tbody>
-                        </Table>}
                     </Box>
                 </>}
         </Box>

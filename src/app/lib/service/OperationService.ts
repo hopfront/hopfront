@@ -1,6 +1,5 @@
 import {
     ApiAuthenticationConfig,
-    ApiAuthenticationOAuth2Data,
     ApiAuthenticationStaticParameterData
 } from "@/app/lib/dto/ApiAuthenticationConfig";
 import { XHRFrontRequestMethod } from "@/app/lib/dto/XHRFrontRequest";
@@ -13,6 +12,11 @@ import { AuthLocalStorage } from "@/app/lib/localstorage/AuthLocalStorage";
 import { ServerLocalStorage } from "@/app/lib/localstorage/ServerLocalStorage";
 import { ParameterWithValue } from "@/app/lib/model/ParameterWithValue";
 import { ApiContext } from "../model/ApiContext";
+import {SecurityScheme} from "@/app/lib/model/SecurityScheme";
+import {getSecurityScheme} from "@/app/lib/openapi/utils";
+import {
+    buildSecuritySchemeLocalStorageKeyPrefix
+} from "@/app/components/authentication/oauth2/OAuth2AuthenticationGuard";
 
 const buildUrl = (
     parameters: ParameterWithValue[],
@@ -103,35 +107,36 @@ export class OperationService {
             return buildUrl(inputs.parameters, operation, apiContext);
         }
 
-        const buildHeaders = (authentication: ApiAuthenticationConfig | undefined): HeadersInit => {
+        const buildHeaders = (securityScheme: SecurityScheme | undefined, authConfig: ApiAuthenticationConfig | undefined): HeadersInit => {
             let headers: HeadersInit = {};
 
             if (inputs.body?.contentType) {
                 headers['Content-Type'] = inputs.body.contentType;
             }
 
-            if (authentication) {
-                if (authentication.authenticationType === "STATIC") {
-                    const staticData = authentication.data as ApiAuthenticationStaticParameterData;
-
-                    if (staticData.parameterLocation === "HEADER") {
-                        headers[staticData.parameterName] = AuthLocalStorage.getStaticAuthCredentials(apiContext)?.secret ?? '';
-                    }
-                } else if (authentication.authenticationType === "BASIC_AUTH") {
-                    const credentials = AuthLocalStorage.getBasicAuthCredentials(apiContext);
-                    const base64credentials = btoa(`${credentials?.username}:${credentials?.password}`)
-                    headers['Authorization'] = `Basic ${base64credentials}`;
-                } else if (authentication.authenticationType === "ACCESS_TOKEN") {
-                    headers['Authorization'] = `Bearer ${AuthLocalStorage.getAccessToken(apiContext)}`;
-                } else if (authentication.authenticationType === "OAUTH2") {
-                    const oauth2ConfigData = authentication.data as ApiAuthenticationOAuth2Data;
-                    const oauth2AccessToken = AuthLocalStorage.getOauth2AccessToken(oauth2ConfigData.oauthProviderId);
+            if (securityScheme) {
+                if (securityScheme.object.type === "oauth2") {
+                    const oauth2AccessToken = AuthLocalStorage.getSecuritySchemeOauth2AccessToken(securityScheme.key);
 
                     if (oauth2AccessToken) {
                         headers['Authorization'] = `Bearer ${oauth2AccessToken}`;
                     } else {
                         console.log('Failed to retrieve OAuth2 access token from localstorage');
                     }
+                }
+            } else if (authConfig) {
+                if (authConfig.authenticationType === "STATIC") {
+                    const staticData = authConfig.data as ApiAuthenticationStaticParameterData;
+
+                    if (staticData.parameterLocation === "HEADER") {
+                        headers[staticData.parameterName] = AuthLocalStorage.getStaticAuthCredentials(apiContext)?.secret ?? '';
+                    }
+                } else if (authConfig.authenticationType === "BASIC_AUTH") {
+                    const credentials = AuthLocalStorage.getBasicAuthCredentials(apiContext);
+                    const base64credentials = btoa(`${credentials?.username}:${credentials?.password}`)
+                    headers['Authorization'] = `Basic ${base64credentials}`;
+                } else if (authConfig.authenticationType === "ACCESS_TOKEN") {
+                    headers['Authorization'] = `Bearer ${AuthLocalStorage.getAccessToken(apiContext)}`;
                 }
             }
 
@@ -160,9 +165,11 @@ export class OperationService {
             }
         }
 
+        const securityScheme = getSecurityScheme(operation);
+
         const method = buildMethod();
         const url = buildUrlWithParameters();
-        const headers = buildHeaders(apiConfig.authenticationConfig);
+        const headers = buildHeaders(securityScheme, apiConfig.authenticationConfig);
         const body = buildBody();
 
         if (isCORSByPassed) {
