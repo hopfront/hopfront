@@ -43,24 +43,24 @@ export const OperationGetWidget = ({
                                    }: OperationGetWidgetProps) => {
 
     const {registerEvent} = useAnalytics();
-    const [operationInput, setOperationInput] =
+    const [operationInputs, setOperationInputs] =
         useState<OperationInputs>(getOperationDefaultInputs(operation, defaultInputs || getCachedInputs(operation)));
     const [loading, setLoading] = useState(false);
     const [response, setResponse] = useState<Response | undefined>();
     const [error, setError] = useState<Error | undefined>();
     const [refreshCounter, setRefreshCounter] = useState(0); // little trick to force refresh
 
-    const onOperationInputChange = (operationInput: OperationInputs) => {
-        cacheInputs(operation, operationInput);
-        setOperationInput(operationInput);
+    const onOperationInputsChange = (operationInputs: OperationInputs) => {
+        cacheInputs(operation, operationInputs);
+        setOperationInputs(operationInputs);
     }
 
     useEffect(() => {
-        setOperationInput(getOperationDefaultInputs(operation, defaultInputs || getCachedInputs(operation)));
+        setOperationInputs(getOperationDefaultInputs(operation, defaultInputs || getCachedInputs(operation)));
     }, [defaultInputs, operation]);
 
     useEffect(() => {
-        const parameterWithoutRequiredValue = operationInput.parameters.find(p => {
+        const parameterWithoutRequiredValue = operationInputs.parameters.find(p => {
             return !p.value && p.parameter.required;
         });
 
@@ -77,7 +77,7 @@ export const OperationGetWidget = ({
             name: operation.method,
         });
 
-        OperationService.executeOperation(operationInput, operation, apiContext)
+        OperationService.executeOperation(operationInputs, operation, apiContext)
             .then(response => {
                 setResponse(response);
                 setLoading(false);
@@ -89,16 +89,16 @@ export const OperationGetWidget = ({
                 setLoading(false);
                 onError && onError(reason);
             });
-    }, [apiContext.apiSpec, onError, onResponse, operation, operationInput, refreshCounter]);
+    }, [apiContext.apiSpec, onError, onResponse, operation, operationInputs, refreshCounter]);
 
     return (
         <>
             <OperationInputForm
                 operation={operation}
-                operationInputs={operationInput}
+                operationInputs={operationInputs}
                 loading={loading}
                 debounceMillis={500}
-                onChange={onOperationInputChange}
+                onChange={onOperationInputsChange}
                 apiContext={apiContext}/>
             {response &&
                 <Card sx={{mt: 2}}>

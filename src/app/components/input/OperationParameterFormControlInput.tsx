@@ -23,10 +23,6 @@ export interface OperationParameterFormControlInputProps {
 
 const INPUT_MARGIN_BOTTOM = 2;
 
-const getCacheKey = (apiContext: ApiContext, operation: StandaloneOperation, parameter: ParameterWithValue) => {
-    return `api:${apiContext.apiSpec.id}:operation:${operation.path}:parameter:${parameter.parameter.name}`;
-}
-
 export const OperationParameterFormControlInput = ({
     operation,
     parameter,
@@ -83,7 +79,6 @@ export const OperationParameterFormControlInput = ({
                     }}
                     disabled={disabled || parameter.readonly}
                     foreignKeys={parameterExtension.foreignKeys}
-                    cacheKey={getCacheKey(apiContext, operation, parameter)}
                     schema={parameter.parameter.schema}
                     apiContext={apiContext}
                 />
