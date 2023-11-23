@@ -119,7 +119,6 @@ export interface ForeignKeyFormControlInputProps {
     cacheKey?: string
     icon?: React.ReactNode
     schema?: SchemaOrReference
-    apiContext?: ApiContext
 }
 
 export const ForeignKeyFormControlInput = ({
@@ -132,7 +131,6 @@ export const ForeignKeyFormControlInput = ({
     readOnly,
     cacheKey,
     schema,
-    apiContext,
     icon = <Edit />
 }: ForeignKeyFormControlInputProps) => {
 
@@ -228,6 +226,8 @@ export const ForeignKeyFormControlInput = ({
         return [];
     });
 
+    console.log("relevant operations: " + relevantOperations.map(op => op.operation.path).join(', '));
+
     const shouldShowMenuOnClick = relevantOperations.length > 1 || selectedObject;
 
     const onOperationClick = (operationWithForeignKey: OperationWithForeignKey) => {
@@ -289,10 +289,11 @@ export const ForeignKeyFormControlInput = ({
                     variant="outlined"
                     aria-label="split button"
                 >
-                    {!showManualEditing && <SelectedObjectButton
-                        selectedObject={selectedObject?.value || updatableValue.value}
-                        selectedSchemaRef={selectedObject?.schemaRef}
-                        apiSpecId={selectedObject?.apiSpecId} />}
+                    {!showManualEditing &&
+                        <SelectedObjectButton
+                            selectedObject={selectedObject?.value || updatableValue.value}
+                            selectedSchemaRef={selectedObject?.schemaRef}
+                            apiSpecId={selectedObject?.apiSpecId} />}
                     <IconButton
                         color="primary"
                         variant="outlined"
@@ -352,13 +353,13 @@ export const ForeignKeyFormControlInput = ({
                         Edit manually
                     </MenuItem>}
             </Menu>
-            {(apiContext && selectedOperation) &&
+            {(selectedOperation) &&
                 <ModalOperationResponseSchemaSelector
                     open={true}
                     onCancel={() => setSelectedOperation(undefined)}
                     operation={selectedOperation.operation}
                     responseSchemaSelectedObserver={selectedOperation.responseSchemaSelectedObserver}
-                    apiContext={apiContext} />}
+                    />}
             {inputDescription &&
                 <MarkdownFormHelperText text={inputDescription} />}
         </FormControl>

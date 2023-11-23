@@ -80,7 +80,6 @@ export const OperationParameterFormControlInput = ({
                     disabled={disabled || parameter.readonly}
                     foreignKeys={parameterExtension.foreignKeys}
                     schema={parameter.parameter.schema}
-                    apiContext={apiContext}
                 />
             </Box>
         );

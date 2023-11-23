@@ -50,7 +50,7 @@ export const SchemaPropertyFormControlInput = ({
                 disabled={disabled}
                 readOnly={readOnly}
                 schema={propertySchema}
-                apiContext={apiContext} />
+                />
         );
     }
 
