@@ -1,5 +1,5 @@
 import { Box, Button, Input, List, ListItem, ListItemButton } from "@mui/joy";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { getStandaloneOperations } from "@/app/lib/openapi/utils";
 import { ApiSpec } from "@/app/lib/dto/ApiSpec";
 import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
@@ -40,12 +40,17 @@ export const OperationSelect = ({ defaultOperationId, onOperationSelected, onCom
         setOperationId(firstOperation.getOperationId());
         onOperationSelected(firstOperation);
     }
-    
+
     onComponentLoaded?.(selectedOperation);
 
     return (
         <Box sx={sx}>
-            <Button disabled={disabled} variant="outlined" color="neutral" onClick={() => setOpen(true)} endDecorator={<UnfoldMore />}>
+            <Button
+                disabled={disabled}
+                variant="outlined"
+                color="neutral"
+                onClick={() => setOpen(true)}
+                endDecorator={<UnfoldMore />}>
                 {selectedOperation
                     ? <OperationLabel operation={selectedOperation} mode="technical" alignPaths={false} />
                     : 'Select an operation...'
@@ -53,6 +58,7 @@ export const OperationSelect = ({ defaultOperationId, onOperationSelected, onCom
             </Button>
             <ResponsiveModal open={open} onClose={() => setOpen(false)}>
                 <Input
+                    autoFocus
                     value={searchInput}
                     onChange={event => setSearchInput(event.currentTarget.value)}
                     type="text"

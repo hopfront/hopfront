@@ -16,6 +16,7 @@ export const ResponsiveModal = ({ open, onClose, children, hasCloseButton = true
         <Modal
             aria-labelledby="close-modal-title"
             open={open}
+            disableRestoreFocus
             onClose={(_event: React.MouseEvent<HTMLButtonElement>, reason: string) => {
                 onClose(_event, reason);
             }}
