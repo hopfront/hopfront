@@ -64,7 +64,7 @@ export const SchemaPropertiesFormControlInputs = ({ schema, propertiesUpdatableV
         <>
             {properties && getInputs(properties).map((input, index) => {
                 return (
-                    <Box key={`schema-input-${index}`} sx={{ mb: 2, backgroundColor: 'blueviolet' }}>
+                    <Box key={`schema-input-${index}`} sx={{ mb: 2 }}>
                         {input}
                     </Box>
                 );
