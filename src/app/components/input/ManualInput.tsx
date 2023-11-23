@@ -1,8 +1,8 @@
-import {Dropdown, IconButton, ListItemDecorator, Menu, MenuButton, MenuItem, SvgIcon} from "@mui/joy";
+import { Dropdown, IconButton, ListItemDecorator, Menu, MenuButton, MenuItem, SvgIcon } from "@mui/joy";
 import Input from "@mui/joy/Input";
-import React, {HTMLInputTypeAttribute, useRef, useState} from "react";
-import {useDebouncedCallback} from "use-debounce";
-import {InputMenu} from "@/app/components/input/InputMenu";
+import React, { HTMLInputTypeAttribute, useRef, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
+import { InputMenu } from "@/app/components/input/InputMenu";
 
 export type ManualInputValueType = string | ReadonlyArray<string> | number | undefined;
 
@@ -23,24 +23,22 @@ export interface ManualInputProps {
 }
 
 export const ManualInput = ({
-                                type,
-                                defaultValue,
-                                placeholder,
-                                onChange,
-                                required,
-                                disabled,
-                                debounceMillis = 0,
-                                readOnly,
-                                menu,
-                                endDecorator,
-                                min,
-                                max,
-                                sx
-                            }: ManualInputProps) => {
+    type,
+    defaultValue,
+    placeholder,
+    onChange,
+    required,
+    disabled,
+    debounceMillis = 0,
+    readOnly,
+    menu,
+    endDecorator,
+    min,
+    max,
+    sx
+}: ManualInputProps) => {
 
     const inputRef = useRef<HTMLInputElement | null>(null);
-    const [showMenuIcon, setShowMenuIcon] = useState(false);
-
     const onInputChange = useDebouncedCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
             onChange(event.target.value);
@@ -51,29 +49,28 @@ export const ManualInput = ({
     return (
         <>
             <Input
-                onMouseOver={() => setShowMenuIcon(true)}
-                onMouseLeave={() => setShowMenuIcon(false)}
-                onFocus={() => setShowMenuIcon(true)}
-                onBlur={() => setShowMenuIcon(false)}
-                endDecorator={endDecorator ? endDecorator : (showMenuIcon && menu) && <Dropdown>
-                    <MenuButton
-                        tabIndex={-1}
-                        slots={{root: IconButton}}
-                        slotProps={{root: {color: 'neutral'}}}
-                    >
-                        <SvgIcon slots={{root: menu.icon}}></SvgIcon>
-                    </MenuButton>
-                    <Menu placement="bottom-start">
-                        {menu.items.map(menuItem => (
-                            <MenuItem key={menuItem.text} onClick={menuItem.onClick}>
-                                {menuItem.icon && <ListItemDecorator>
-                                    <SvgIcon slots={{root: menuItem.icon}}></SvgIcon>
-                                </ListItemDecorator>}
-                                {menuItem.text}
-                            </MenuItem>
-                        ))}
-                    </Menu>
-                </Dropdown>}
+                endDecorator={endDecorator ? endDecorator : menu &&
+                    <Dropdown>
+                        <MenuButton
+                            slots={{ root: IconButton }}
+                        >
+                            <SvgIcon slots={{ root: menu.icon }} />
+                        </MenuButton>
+                        <Menu sx={{ zIndex: 'calc(var(--joy-zIndex-modal) + 1)' }}
+                            placement="bottom-start">
+                            {menu.items.map(menuItem => (
+                                <MenuItem
+                                    key={menuItem.text}
+                                    onClick={menuItem.onClick}>
+                                    {menuItem.icon &&
+                                        <ListItemDecorator>
+                                            <SvgIcon slots={{ root: menuItem.icon }} />
+                                        </ListItemDecorator>}
+                                    {menuItem.text}
+                                </MenuItem>
+                            ))}
+                        </Menu>
+                    </Dropdown>}
                 sx={{
                     ...sx,
                     "--Input-placeholderOpacity": 0.2
@@ -91,7 +88,7 @@ export const ManualInput = ({
                         max: max,
                     }
                 }}
-                readOnly={readOnly}/>
+                readOnly={readOnly} />
         </>
     )
 }
