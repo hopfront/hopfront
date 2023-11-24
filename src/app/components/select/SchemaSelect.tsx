@@ -121,6 +121,7 @@ export const SchemaSelect = ({defaultSchemaRef, onSchemaRefSelected, schemaPredi
             </Button>
             <ResponsiveModal open={open} onClose={() => setOpen(false)}>
                 <Input
+                    autoFocus
                     value={searchInput}
                     onChange={event => setSearchInput(event.currentTarget.value)}
                     type="text"
