@@ -34,15 +34,24 @@ const getPinnedOperations = (allOperations: StandaloneOperation[]): StandaloneOp
     })
 };
 
-const savePinnedOperations = (operations: StandaloneOperation[]) => {
-    localStorage.setItem(PINNED_OPERATIONS_LOCAL_STORAGE_KEY, JSON.stringify({
-        operations: operations.map(op => {
-            return {
-                apiSpecId: op.apiSpec.id,
-                operationId: op.getOperationId()
-            } as SerializableOperation
-        }),
-    } as PinnedOperations));
+const savePinnedOperations = (operation: StandaloneOperation) => {
+    const pinnedOperationsString = localStorage.getItem(PINNED_OPERATIONS_LOCAL_STORAGE_KEY);
+    const pinnedSerializedOperations = pinnedOperationsString ? JSON.parse(pinnedOperationsString) as PinnedOperations : { operations: [] } as PinnedOperations;
+    const storedSerializableOperations = pinnedSerializedOperations.operations
+
+    if (storedSerializableOperations.find(op => op.operationId === operation.operation.operationId)) { // save unpinned
+        const updated = storedSerializableOperations.filter(op => op.operationId !== operation.operation.operationId);
+        localStorage.setItem(PINNED_OPERATIONS_LOCAL_STORAGE_KEY, JSON.stringify({
+            operations: updated,
+        } as PinnedOperations));
+    } else { // save pinned
+        localStorage.setItem(PINNED_OPERATIONS_LOCAL_STORAGE_KEY, JSON.stringify({
+            operations: [...storedSerializableOperations, {
+                apiSpecId: operation.apiSpec.id,
+                operationId: operation.getOperationId()
+            } as SerializableOperation],
+        } as PinnedOperations));
+    }
 }
 
 interface PinnedOperations {
@@ -110,7 +119,7 @@ export const OperationList = ({ operations, selectedOperation, onOperationSelect
         if (!pinnedOperations.find(operationEquals(op))) {
             pinnedOperations.push(op);
             setPinnedOperations(pinnedOperations);
-            savePinnedOperations(pinnedOperations);
+            savePinnedOperations(op);
             setUnpinnedOperations(getUnpinnedOperations(operations, pinnedOperations));
         }
     };
@@ -120,7 +129,7 @@ export const OperationList = ({ operations, selectedOperation, onOperationSelect
             .flatMap(pinnedOperation => operationEquals(unpinnedOperation)(pinnedOperation) ? [] : [pinnedOperation]);
 
         setPinnedOperations(updatedPinnedOperations);
-        savePinnedOperations(updatedPinnedOperations);
+        savePinnedOperations(unpinnedOperation);
         setUnpinnedOperations(getUnpinnedOperations(operations, updatedPinnedOperations));
     };
 
