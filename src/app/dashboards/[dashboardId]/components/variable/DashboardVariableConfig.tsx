@@ -163,7 +163,7 @@ export const DashboardVariableConfig = ({
                                             }
                                         }}
                                         readOnly={false}
-                                        foreignKeyIcon={<FilterAlt/>}/>
+                                        />
                                 </Box>
                             </ListItem>
                         );
@@ -185,7 +185,7 @@ export const DashboardVariableConfig = ({
                                 }}
                                 onDelete={() => null}
                                 readOnly={false}
-                                foreignKeyIcon={<FilterAlt/>}/>
+                                />
                         </Box>
                     </ListItem>
                 </List>

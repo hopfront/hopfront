@@ -159,8 +159,8 @@ export const ForeignKeyFormControlInput = ({
         updatableValue.onValueUpdate(cachedValue);
     }
 
-    // This part is because JoyUI ButtonGroup is buggy (menu does not close when user clicked outside of it).
-    const menuRef = useRef<HTMLDivElement>(null);
+    // Workaround because JoyUI ButtonGroup is buggy (menu does not close when user clicks outside of it).
+    const menuRef = useRef<HTMLAnchorElement>(null);
     useEffect(() => {
         const handleDocumentClick = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -293,6 +293,7 @@ export const ForeignKeyFormControlInput = ({
                             selectedSchemaRef={selectedObject?.schemaRef}
                             apiSpecId={selectedObject?.apiSpecId} />}
                     <IconButton
+                        ref={menuRef}
                         color="primary"
                         variant="outlined"
                         disabled={readOnly || disabled || relevantOperations.length === 0}
@@ -327,7 +328,6 @@ export const ForeignKeyFormControlInput = ({
             </Box>
 
             <Menu
-                ref={menuRef}
                 sx={{
                     zIndex: 'calc(var(--joy-zIndex-modal) + 1)'
                 }}
@@ -357,7 +357,7 @@ export const ForeignKeyFormControlInput = ({
                     onCancel={() => setSelectedOperation(undefined)}
                     operation={selectedOperation.operation}
                     responseSchemaSelectedObserver={selectedOperation.responseSchemaSelectedObserver}
-                    />}
+                />}
             {inputDescription &&
                 <MarkdownFormHelperText text={inputDescription} />}
         </FormControl>
