@@ -226,8 +226,6 @@ export const ForeignKeyFormControlInput = ({
         return [];
     });
 
-    console.log("relevant operations: " + relevantOperations.map(op => op.operation.path).join(', '));
-
     const shouldShowMenuOnClick = relevantOperations.length > 1 || selectedObject;
 
     const onOperationClick = (operationWithForeignKey: OperationWithForeignKey) => {
