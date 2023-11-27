@@ -62,7 +62,7 @@ export default function DashboardVariablePlaceholder({ dashboardId, variables }:
                                 <Typography
                                     level='body-sm'
                                     sx={{fontWeight: '500', lineHeight: '10px' }}>
-                                    My variable
+                                    Dashboard variable
                                     <Link
                                         title="Create new dashboard variable"
                                         aria-label="Create new dashboard variable"
