@@ -25,7 +25,7 @@
     "i": "^0.3.7",
     "jwt-decode": "^4.0.0",
     "next": "14.0.2",
-    "npm": "^10.2.3",
+    "npm": "^10.2.4",
     "react": "18.2.0",
     "react-accessible-treeview": "^2.8.0",
     "react-dom": "18.2.0",
