@@ -1,7 +1,7 @@
 import { OperationLabel } from "@/app/components/typography/OperationLabel";
 import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
 import { PushPin } from "@mui/icons-material";
-import { Box, ListItem, ListItemButton, ListItemContent, Stack, Typography } from "@mui/joy";
+import { Box, ListItem, ListItemButton, ListItemContent, Typography } from "@mui/joy";
 import IconButton from "@mui/joy/IconButton";
 import { useState } from "react";
 
@@ -10,11 +10,20 @@ export interface OperationListItemProps {
     selected: boolean
     pinned: boolean
     displayApiSpec: boolean
+    onlyDisplayTechnicalNames: boolean
     onClick: () => void
     onPin: () => void
 }
 
-export const OperationListItem = ({ operation, selected, pinned, displayApiSpec, onClick, onPin }: OperationListItemProps) => {
+export const OperationListItem = ({
+    operation,
+    selected,
+    pinned,
+    displayApiSpec,
+    onlyDisplayTechnicalNames,
+    onClick,
+    onPin
+}: OperationListItemProps) => {
     const [showPin, setShowPin] = useState(pinned);
 
     return (
@@ -22,19 +31,17 @@ export const OperationListItem = ({ operation, selected, pinned, displayApiSpec,
             endAction={showPin || pinned ? <IconButton size="sm" onClick={onPin} title={pinned ? "Unpin" : "Pin"}><PushPin /></IconButton> : undefined}
             onMouseEnter={() => setShowPin(true)}
             onMouseLeave={() => setShowPin(false)}
-        sx={{ml: 3, mr: 3}}>
+            sx={{ ml: 3, mr: 3 }}>
             <ListItemButton
                 selected={selected}
                 onClick={onClick}>
                 <ListItemContent>
-                    <Box display='flex' flexDirection='row' alignItems='baseline' gap={2}>
-                        {operation.operation.summary
-                            ? <>
-                                <Typography noWrap>{operation.operation.summary}</Typography>
-                                <OperationLabel operation={operation} mode="technical" level="body-xs" />
-                            </>
+                    <Box display='flex' flexDirection='row' alignItems='baseline' gap={1}>
+                        {operation.operation.summary && !onlyDisplayTechnicalNames
+                            ?
+                            <Typography noWrap>{operation.operation.summary}</Typography>
                             :
-                            <OperationLabel operation={operation} mode="human" alignPaths={true} />}
+                            <OperationLabel operation={operation} mode="technical" alignPaths={true} />}
                         {displayApiSpec &&
                             <Typography noWrap level="body-xs" sx={{ ml: 2 }}>
                                 {operation.apiSpec.document.info.title || 'Untitled API'}

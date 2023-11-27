@@ -1,19 +1,19 @@
-import { useAnalytics } from "@/app/hooks/analytics/useAnalytics";
-import { ChangeEvent, useEffect, useState } from "react";
-import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
-import { ApiSpec } from "@/app/lib/dto/ApiSpec";
-import { debounce } from "@mui/material";
-import { BrowseLocalStorage } from "@/app/lib/localstorage/BrowseLocalStorage";
-import { useApiSpecs } from "@/app/hooks/useApiSpecs";
-import { parseOperations } from "@/app/lib/openapi/utils";
 import EmptyApiSpecsView from "@/app/browse/components/EmptyApiSpecsView";
-import { Search } from "@mui/icons-material";
-import { Box, Input, Stack } from "@mui/joy";
-import { ApiSpecSelect } from "@/app/components/select/ApiSpecSelect";
-import LinearProgress from "@mui/joy/LinearProgress";
-import { OpenAPIV3 } from "openapi-types";
-import PathsObject = OpenAPIV3.PathsObject;
 import { OperationList } from "@/app/components/operation/OperationList";
+import { ApiSpecSelect } from "@/app/components/select/ApiSpecSelect";
+import { useAnalytics } from "@/app/hooks/analytics/useAnalytics";
+import { useApiSpecs } from "@/app/hooks/useApiSpecs";
+import { ApiSpec } from "@/app/lib/dto/ApiSpec";
+import { BrowseLocalStorage } from "@/app/lib/localstorage/BrowseLocalStorage";
+import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
+import { parseOperations } from "@/app/lib/openapi/utils";
+import { Search, Tune } from "@mui/icons-material";
+import { Box, Checkbox, Dropdown, IconButton, Input, Menu, MenuButton, MenuItem, Stack, Typography } from "@mui/joy";
+import LinearProgress from "@mui/joy/LinearProgress";
+import { debounce } from "@mui/material";
+import { OpenAPIV3 } from "openapi-types";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import PathsObject = OpenAPIV3.PathsObject;
 
 const isOperationMatchingSearch = (op: StandaloneOperation, search: string) => {
     const target = search.toLowerCase();
@@ -53,6 +53,9 @@ export const OperationListSidebar = ({ selectedOperation, onOperationSelected }:
     const [search, setSearch] = useState('');
     const [apiSpecFilter, setApiSpecFilter] = useState<ApiSpec | undefined>(getSavedFilter());
     const { data: apiSpecs, error, isLoading } = useApiSpecs();
+    const [onlyDisplayTechnicalName, setOnlyDisplayTechnicalName] = useState(
+        BrowseLocalStorage.getIsOnlyDisplayTechnicalNames()
+    );
 
     const onSearchOperation = debounce((event: ChangeEvent<HTMLInputElement>) => {
         registerEvent({ category: 'browse', action: 'browse-search-operation' });
@@ -83,6 +86,12 @@ export const OperationListSidebar = ({ selectedOperation, onOperationSelected }:
 
     const showApiSpecFilter = !apiSpecs || apiSpecs.apiSpecs.length > 1;
 
+    const setDisplayNamePreference = () => {
+        const newPreference = !onlyDisplayTechnicalName;
+        setOnlyDisplayTechnicalName(newPreference);
+        BrowseLocalStorage.setOnlyDisplayTechnicalNames(newPreference);
+    }
+
     return (
         <Stack sx={(theme) => ({
             '--operation-list-panel-padding-top': {
@@ -90,7 +99,7 @@ export const OperationListSidebar = ({ selectedOperation, onOperationSelected }:
             },
             pt: 'var(--operation-list-panel-padding-top)',
         })}>
-            <Stack direction="row" sx={(theme) => ({
+            <Stack direction="row" gap={1} sx={(theme) => ({
                 mb: 1,
                 mx: 3
             })}>
@@ -99,7 +108,7 @@ export const OperationListSidebar = ({ selectedOperation, onOperationSelected }:
                     placeholder="Search operation..."
                     startDecorator={<Search />}
                     onChange={onSearchOperation}
-                    sx={{ width: showApiSpecFilter ? '60%' : '100%', mr: 1 }}
+                    sx={{ width: showApiSpecFilter ? '60%' : '100%' }}
                 />
                 {showApiSpecFilter && <ApiSpecSelect
                     onApiSpecSelected={onApiFilterSelected}
@@ -107,12 +116,31 @@ export const OperationListSidebar = ({ selectedOperation, onOperationSelected }:
                     defaultApiSpecId={getSavedFilter()?.id}
                     sx={{ width: '40%' }}
                 />}
+                <Dropdown>
+                    <MenuButton
+                        slots={{ root: IconButton }}
+                    >
+                        <Tune />
+                    </MenuButton>
+                    <Menu placement="bottom-end">
+                        <MenuItem onClick={setDisplayNamePreference}>
+                            <Stack direction='row' alignItems='center' gap={1}>
+                                <Typography level="body-sm">Only technical names</Typography>
+                                <Checkbox
+                                    checked={onlyDisplayTechnicalName}
+                                    size="sm"
+                                />
+                            </Stack>
+                        </MenuItem>
+                    </Menu>
+                </Dropdown>
             </Stack>
             <Box>
                 {isLoading ? <LinearProgress /> :
                     <OperationList
                         operations={operations}
                         selectedOperation={selectedOperation}
+                        onlyDisplayTechnicalName={onlyDisplayTechnicalName}
                         onOperationSelected={onOperationSelected} />}
             </Box>
         </Stack>

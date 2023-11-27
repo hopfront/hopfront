@@ -1,8 +1,8 @@
-import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
-import { Box, List, ListDivider } from "@mui/joy";
-import React, { Fragment, useEffect, useMemo, useState } from "react";
-import { uniqueFilter } from "@/app/lib/openapi/utils";
 import { OperationListItem } from "@/app/components/operation/OperationListItem";
+import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
+import { uniqueFilter } from "@/app/lib/openapi/utils";
+import { Box, List, ListDivider } from "@mui/joy";
+import { Fragment, useEffect, useMemo, useState } from "react";
 
 const SELECTED_OPERATION_LOCAL_STORAGE_KEY = 'hopfront:browse:selected-operation';
 const PINNED_OPERATIONS_LOCAL_STORAGE_KEY = 'hopfront:browse:pinned-operations';
@@ -61,6 +61,7 @@ interface PinnedOperations {
 interface OperationListProps {
     operations: StandaloneOperation[],
     selectedOperation?: StandaloneOperation
+    onlyDisplayTechnicalName: boolean
     onOperationSelected: (operation: StandaloneOperation) => void
 }
 
@@ -72,7 +73,7 @@ const getUnpinnedOperations = (operations: StandaloneOperation[], pinnedOperatio
     return operations.filter(op => !pinnedOperations.find(operationEquals(op)));
 };
 
-export const OperationList = ({ operations, selectedOperation, onOperationSelected }: OperationListProps) => {
+export const OperationList = ({ operations, selectedOperation, onlyDisplayTechnicalName: onlyDisplayTechnicalNames, onOperationSelected }: OperationListProps) => {
     const cachedSelectedOperation: SerializableOperation | undefined = useMemo(() => {
         try {
             const cachedSelectedOperationString = localStorage.getItem(SELECTED_OPERATION_LOCAL_STORAGE_KEY);
@@ -140,6 +141,7 @@ export const OperationList = ({ operations, selectedOperation, onOperationSelect
                 selected={selectedOperation?.getOperationId() === op.getOperationId()}
                 pinned={pinned}
                 displayApiSpec={shouldDisplayApiSpec}
+                onlyDisplayTechnicalNames={onlyDisplayTechnicalNames}
                 onClick={() => onOperationClicked(op)}
                 onPin={() => pinned ? onOperationUnpinned(op) : onOperationPinned(op)} />
         </Fragment>;

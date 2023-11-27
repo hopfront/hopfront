@@ -3,6 +3,7 @@ import { ServerLocalStorage } from "./ServerLocalStorage";
 import {
     buildSecuritySchemeLocalStorageKeyPrefix
 } from "@/app/components/authentication/oauth2/OAuth2AuthenticationGuard";
+import { tryGetFromLocalStorage, trySetToLocalStorage } from "./utils";
 
 const buildAccessTokenLocalStorageKey = (apiSpecId: string, apiServerUrl: string) => {
     return `com.hopfront.api.${apiSpecId}.${apiServerUrl}.access-token`;
@@ -47,7 +48,7 @@ export class AuthLocalStorage {
 
     public static setAccessToken(apiContext: ApiContext, accessToken: string | undefined) {
         this.setAuth(apiContext, (specId, apiServerUrl) => {
-            this.trySetToLocalStorage(buildAccessTokenLocalStorageKey(specId, apiServerUrl), accessToken ?? '');
+            trySetToLocalStorage(buildAccessTokenLocalStorageKey(specId, apiServerUrl), accessToken ?? '');
         });
     }
 
@@ -70,50 +71,27 @@ export class AuthLocalStorage {
 
     public static setBasicAuthCredentials(apiContext: ApiContext, credentials: BasicAuthCredentials) {
         this.setAuth(apiContext, (specId, apiServerUrl) => {
-            this.trySetToLocalStorage(buildBasicAuthLocalStorageKey(specId, apiServerUrl), JSON.stringify(credentials));
+            trySetToLocalStorage(buildBasicAuthLocalStorageKey(specId, apiServerUrl), JSON.stringify(credentials));
         });
     }
 
     public static getBasicAuthCredentials(apiContext: ApiContext): BasicAuthCredentials | undefined {
         return this.getAuth(apiContext, (specId, apiServerUrl) => {
-            return this.tryGetFromLocalStorage<BasicAuthCredentials>(buildBasicAuthLocalStorageKey(specId, apiServerUrl));
+            return tryGetFromLocalStorage<BasicAuthCredentials>(buildBasicAuthLocalStorageKey(specId, apiServerUrl));
         }) as BasicAuthCredentials | undefined;
     }
 
     public static setStaticAuthCredentials(apiContext: ApiContext, credentials: StaticAuthCredentials) {
         this.setAuth(apiContext, (specId, apiServerUrl) => {
-            this.trySetToLocalStorage(buildStaticAuthLocalStorageKey(specId, apiServerUrl), JSON.stringify(credentials));
+            trySetToLocalStorage(buildStaticAuthLocalStorageKey(specId, apiServerUrl), JSON.stringify(credentials));
         });
     }
 
     public static getStaticAuthCredentials(apiContext: ApiContext): StaticAuthCredentials | undefined {
         return this.getAuth(apiContext, (specId, apiServerUrl) => {
-            return this.tryGetFromLocalStorage<StaticAuthCredentials>(buildStaticAuthLocalStorageKey(specId, apiServerUrl));
+            return tryGetFromLocalStorage<StaticAuthCredentials>(buildStaticAuthLocalStorageKey(specId, apiServerUrl));
         }) as StaticAuthCredentials | undefined;
     }
 
-    public static trySetToLocalStorage(key: string, value: string) {
-        if (typeof window === 'undefined') {
-            return;
-        }
-
-        localStorage.setItem(key, value);
-    }
-
-    public static tryGetFromLocalStorage<T>(key: string): T | undefined {
-        if (typeof window === 'undefined') {
-            return;
-        }
-
-        const value = localStorage.getItem(key);
-        if (value) {
-            try {
-                return JSON.parse(value) as T;
-            } catch (e) {
-                return;
-            }
-        }
-
-        return;
-    }
+    
 }

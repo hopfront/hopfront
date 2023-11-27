@@ -41,7 +41,7 @@ const technicalTypography = (
                 marginRight={1}
                 noWrap
                 overflow='visible'
-                width={alignPaths ? 70 : undefined}
+                width={alignPaths ? 60 : undefined}
                 color={httpMethodColor(operation.method)}
                 level={level}
                 fontWeight='bold'>
