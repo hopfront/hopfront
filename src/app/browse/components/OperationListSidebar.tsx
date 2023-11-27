@@ -125,7 +125,7 @@ export const OperationListSidebar = ({ selectedOperation, onOperationSelected }:
                     <Menu placement="bottom-end">
                         <MenuItem onClick={setDisplayNamePreference}>
                             <Stack direction='row' alignItems='center' gap={1}>
-                                <Typography level="body-sm">Only technical names</Typography>
+                                <Typography level="body-sm">Display only technical names</Typography>
                                 <Checkbox
                                     checked={onlyDisplayTechnicalName}
                                     size="sm"
