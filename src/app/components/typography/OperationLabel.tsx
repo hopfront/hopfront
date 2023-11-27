@@ -35,8 +35,8 @@ const technicalTypography = (
     alignPaths?: boolean
 ) => {
     return (
-        <Stack direction='row'>
-            <Typography
+        <Typography>
+            <Typography component='span'
                 fontFamily="monospace"
                 marginRight={1}
                 noWrap
@@ -47,10 +47,10 @@ const technicalTypography = (
                 fontWeight='bold'>
                 {operation.method.toUpperCase()}
             </Typography>
-            <Typography noWrap overflow='visible' fontFamily="monospace" level={level}>
+            <Typography component='span' noWrap overflow='visible' fontFamily="monospace" level={level}>
                 {operation.path}
             </Typography>
-        </Stack>
+        </Typography>
     );
 };
 

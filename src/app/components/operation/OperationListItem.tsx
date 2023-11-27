@@ -31,22 +31,22 @@ export const OperationListItem = ({
             endAction={showPin || pinned ? <IconButton size="sm" onClick={onPin} title={pinned ? "Unpin" : "Pin"}><PushPin /></IconButton> : undefined}
             onMouseEnter={() => setShowPin(true)}
             onMouseLeave={() => setShowPin(false)}
-            sx={{ ml: 3, mr: 3 }}>
+            sx={{ px: 2 }}>
             <ListItemButton
                 selected={selected}
                 onClick={onClick}>
                 <ListItemContent>
-                    <Box display='flex' flexDirection='row' alignItems='baseline' gap={1}>
+                    <Typography overflow='hidden' textOverflow='ellipsis'>
                         {operation.operation.summary && !onlyDisplayTechnicalNames
                             ?
-                            <Typography noWrap>{operation.operation.summary}</Typography>
+                            <Typography component='span' noWrap>{operation.operation.summary}</Typography>
                             :
                             <OperationLabel operation={operation} mode="technical" alignPaths={true} />}
                         {displayApiSpec &&
-                            <Typography noWrap level="body-xs" sx={{ ml: 2 }}>
+                            <Typography component='span' noWrap level="body-xs" sx={{ ml: 1 }}>
                                 {operation.apiSpec.document.info.title || 'Untitled API'}
                             </Typography>}
-                    </Box>
+                    </Typography>
                 </ListItemContent>
             </ListItemButton>
         </ListItem>
