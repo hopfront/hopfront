@@ -11,13 +11,7 @@ export class BrowseLocalStorage {
     }
 
     public static getFilter(): ApiSpec | undefined {
-        const value = tryGetFromLocalStorage<string>(BROWSE_FILTER_KEY);
-
-        if (!value || value === 'undefined') {
-            return;
-        } else {
-            return JSON.parse(value) as ApiSpec;
-        }
+        return tryGetFromLocalStorage<ApiSpec>(BROWSE_FILTER_KEY);
     }
 
     public static getIsOnlyDisplayTechnicalNames(): boolean {
