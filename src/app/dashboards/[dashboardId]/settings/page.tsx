@@ -1,33 +1,33 @@
 'use client';
 
-import {useParams, useRouter} from "next/navigation";
-import {Breadcrumbs, Button, Divider, FormControl, Link, Skeleton} from "@mui/joy";
-import React, {useState} from "react";
-import {Dashboard, NEW_DASHBOARD_TITLE} from "@/app/lib/model/dashboard/Dashboard";
+import { useParams, useRouter } from "next/navigation";
+import { Breadcrumbs, Button, Divider, FormControl, Link, Skeleton } from "@mui/joy";
+import React, { useState } from "react";
+import { Dashboard, NEW_DASHBOARD_TITLE } from "@/app/lib/model/dashboard/Dashboard";
 import Box from "@mui/joy/Box";
-import {KeyboardArrowRight} from "@mui/icons-material";
+import { KeyboardArrowRight } from "@mui/icons-material";
 import Typography from "@mui/joy/Typography";
 import {
     DashboardSettingsVariablesSection
 } from "@/app/dashboards/[dashboardId]/settings/components/DashboardSettingsVariablesSection";
-import {DashboardVariable} from "@/app/lib/model/dashboard/DashboardVariable";
-import {ManualInput, ManualInputValueType} from "@/app/components/input/ManualInput";
-import {useAnalytics} from "@/app/hooks/analytics/useAnalytics";
-import {DashboardApi} from "@/app/lib/api/DashboardApi";
-import {useDashboard} from "@/app/hooks/useDashboard";
-import {ConfirmModal, ConfirmModalProps} from "@/app/components/modal/ConfirmModal";
-import {EventType, useSnackbar} from "@/app/hooks/useSnackbar";
+import { DashboardVariable } from "@/app/lib/model/dashboard/DashboardVariable";
+import { ManualInput, ManualInputValueType } from "@/app/components/input/ManualInput";
+import { useAnalytics } from "@/app/hooks/analytics/useAnalytics";
+import { DashboardApi } from "@/app/lib/api/DashboardApi";
+import { useDashboard } from "@/app/hooks/useDashboard";
+import { ConfirmModal, ConfirmModalProps } from "@/app/components/modal/ConfirmModal";
+import { EventType, useSnackbar } from "@/app/hooks/useSnackbar";
 
 export default function Page() {
     const router = useRouter();
     const params = useParams();
-    const {usePageView} = useAnalytics();
+    const { usePageView } = useAnalytics();
 
     const dashboardId = params['dashboardId'] as string;
 
-    const {dashboard, error: dashboardError, isLoading, mutate} = useDashboard(dashboardId);
+    const { dashboard, error: dashboardError, isLoading, mutate } = useDashboard(dashboardId);
     const [isTitleLoading, setTitleLoading] = useState(false);
-    const {showSnackbar, Snackbar} = useSnackbar();
+    const { showSnackbar, Snackbar } = useSnackbar();
     const [confirmModalProps, setConfirmModalProps] = useState<ConfirmModalProps | undefined>();
 
     usePageView("dashboard-settings-page");
@@ -82,20 +82,19 @@ export default function Page() {
         }
 
         setTitleLoading(true);
-        DashboardApi.updateDashboard(dashboard)
+        DashboardApi.updateDashboard({ ...dashboard, title: title } as Dashboard)
             .then(() => {
-                setTitleLoading(false);
-                showSnackbar(EventType.Success, 'Dashboard title updated successfully');
+                showSnackbar(EventType.Success, `Dashboard title updated successfully`);
             })
             .catch(error => {
-                setTitleLoading(false);
                 showSnackbar(EventType.Error, `Failed to update dashboard title: ${error.toLocaleString()}`);
-            });
+            })
+            .finally(() => setTitleLoading(false));
     }
 
     return (
         <>
-            <Breadcrumbs separator={<KeyboardArrowRight/>} sx={{p: 0, pb: 1}}>
+            <Breadcrumbs separator={<KeyboardArrowRight />} sx={{ p: 0, pb: 1 }}>
                 <Link href='/dashboards' color='neutral'>
                     Dashboards
                 </Link>
@@ -108,7 +107,7 @@ export default function Page() {
 
             <Typography level='h1' gutterBottom>Settings</Typography>
 
-            <Typography level='h4' gutterBottom sx={{mt: 2}}>Title</Typography>
+            <Typography level='h4' gutterBottom sx={{ mt: 2 }}>Title</Typography>
             <FormControl>
                 <ManualInput
                     type="text"
@@ -116,17 +115,17 @@ export default function Page() {
                     onChange={onTitleChanged}
                     disabled={isLoading || isTitleLoading}
                     debounceMillis={500}
-                    sx={{mb: 1, maxWidth: '350px'}}/>
+                    sx={{ mb: 1, maxWidth: '350px' }} />
             </FormControl>
 
             <DashboardSettingsVariablesSection
                 dashboard={dashboard}
                 onVariableAdded={onVariableAdded}
                 onVariableDeleted={onVariableDeleted}
-                onVariableClick={onVariableClick}/>
+                onVariableClick={onVariableClick} />
 
-            <Divider sx={{mt: 4}}/>
-            <Typography level='h4' sx={{mt: 1}} gutterBottom>Danger Zone</Typography>
+            <Divider sx={{ mt: 4 }} />
+            <Typography level='h4' sx={{ mt: 1 }} gutterBottom>Danger Zone</Typography>
             <Button
                 disabled={!dashboard}
                 variant="outlined"
@@ -138,7 +137,7 @@ export default function Page() {
             <ConfirmModal
                 title={confirmModalProps?.title}
                 onConfirm={confirmModalProps?.onConfirm}
-                onCancel={confirmModalProps?.onCancel}/>
+                onCancel={confirmModalProps?.onCancel} />
 
             {Snackbar}
         </>

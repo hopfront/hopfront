@@ -1,7 +1,7 @@
 import { OperationLabel } from "@/app/components/typography/OperationLabel";
 import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
 import { PushPin } from "@mui/icons-material";
-import { Box, ListItem, ListItemButton, ListItemContent, Tooltip, Typography } from "@mui/joy";
+import { ListItem, ListItemButton, ListItemContent, Tooltip, Typography } from "@mui/joy";
 import IconButton from "@mui/joy/IconButton";
 import { useEffect, useRef, useState } from "react";
 

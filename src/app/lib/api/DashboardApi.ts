@@ -1,4 +1,9 @@
-import {Dashboard} from "@/app/lib/model/dashboard/Dashboard";
+import { Dashboard } from "@/app/lib/model/dashboard/Dashboard";
+import { mutate } from "swr";
+
+export async function mutateDashboard(dashboardId: string) {
+    return await mutate(`/api/dashboards/${dashboardId}`);
+}
 
 export class DashboardApi {
 
@@ -22,13 +27,15 @@ export class DashboardApi {
     }
 
     public static async updateDashboard(dashboard: Dashboard) {
-        return fetch(`/api/dashboards/${dashboard.id}`, {
+        await fetch(`/api/dashboards/${dashboard.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(dashboard),
         });
+
+        return await mutateDashboard(dashboard.id);
     }
 
     public static async deleteDashboard(dashboardId: string) {
