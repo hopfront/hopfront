@@ -34,7 +34,7 @@ export const DashboardPanelInputVariableSourceConfigurer = ({
                 {(dashboard.variables || []).length > 0 &&
                     <Select
                         sx={{
-                            minWidth: 200
+                            width: '100%'
                         }}
                         value={data.variableName}
                         onChange={(_, value) => {
