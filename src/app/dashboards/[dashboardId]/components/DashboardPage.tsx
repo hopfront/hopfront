@@ -1,29 +1,29 @@
-import {RefreshObserverRegistry} from "@/app/lib/model/RefreshObserverRegistry";
-import {Dashboard, NEW_DASHBOARD_TITLE} from "@/app/lib/model/dashboard/Dashboard";
-import {DashboardPanel} from "@/app/lib/model/dashboard/DashboardPanel";
-import {VariableWithValue} from "@/app/lib/model/dashboard/VariableWithValue";
-import {DashboardVariablesPanel} from "@/app/dashboards/[dashboardId]/components/variable/DashboardVariablesPanel";
+import { ConfirmModal, ConfirmModalProps } from "@/app/components/modal/ConfirmModal";
+import EditableLabel from "@/app/components/typography/EditableLabel";
+import { PanelCreationModal } from "@/app/dashboards/[dashboardId]/components/PanelCreationModal";
+import { DashboardVariablesPanel } from "@/app/dashboards/[dashboardId]/components/variable/DashboardVariablesPanel";
+import { useAnalytics } from "@/app/hooks/analytics/useAnalytics";
+import { RefreshObserverRegistry } from "@/app/lib/model/RefreshObserverRegistry";
+import { Dashboard, NEW_DASHBOARD_TITLE } from "@/app/lib/model/dashboard/Dashboard";
+import { DashboardPanel } from "@/app/lib/model/dashboard/DashboardPanel";
+import { DashboardVariable } from "@/app/lib/model/dashboard/DashboardVariable";
+import { VariableWithValue } from "@/app/lib/model/dashboard/VariableWithValue";
 import {
     ArrowDropDown,
     KeyboardArrowRight,
     Refresh,
     Settings
 } from "@mui/icons-material";
-import {Breadcrumbs, Dropdown, Link, Menu, MenuButton, MenuItem, Skeleton} from "@mui/joy";
+import { Breadcrumbs, Dropdown, Link, Menu, MenuButton, MenuItem, Skeleton } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
-import {useRouter} from "next/navigation";
-import {useEffect, useRef, useState} from "react";
-import {DashboardPanelGrid} from "./DashboardPanelGrid";
-import PanelPlaceholder from "./PanelPlaceholder";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { buildNewVariableName } from "../settings/components/DashboardSettingsVariablesSection";
+import { DashboardPanelGrid } from "./DashboardPanelGrid";
 import PanelConfigurationModal from "./PanelConfigurationModal";
-import UpdatableLabel from "@/app/components/typography/UpdatableLabel";
-import {buildNewVariableName} from "../settings/components/DashboardSettingsVariablesSection";
-import {useAnalytics} from "@/app/hooks/analytics/useAnalytics";
-import {ConfirmModal, ConfirmModalProps} from "@/app/components/modal/ConfirmModal";
-import {PanelCreationModal} from "@/app/dashboards/[dashboardId]/components/PanelCreationModal";
-import {DashboardVariable} from "@/app/lib/model/dashboard/DashboardVariable";
+import PanelPlaceholder from "./PanelPlaceholder";
 
 export interface DashboardPageProps {
     dashboard?: Dashboard;
@@ -46,9 +46,9 @@ const buildVariables = (dashboard: Dashboard | undefined) => {
         });
 }
 
-export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) => {
+export const DashboardPage = ({ dashboard, loading, onSave }: DashboardPageProps) => {
     const router = useRouter();
-    const {registerEvent} = useAnalytics();
+    const { registerEvent } = useAnalytics();
     const [variables, setVariables] = useState<VariableWithValue[]>([]);
     const [panelConfigurationModalOpen, setPanelConfigurationModalOpen] = useState<PanelConfigurationData>({
         isOpen: false,
@@ -86,7 +86,7 @@ export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) 
             action: 'dashboard-panel-add-clicked',
             name: dashboard?.id
         });
-        setPanelConfigurationModalOpen({isOpen: true, panelId: undefined});
+        setPanelConfigurationModalOpen({ isOpen: true, panelId: undefined });
     };
 
     const onPanelEditClick = (panel: DashboardPanel) => {
@@ -95,7 +95,7 @@ export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) 
             action: 'dashboard-panel-edit-clicked',
             name: panel.id
         });
-        setPanelConfigurationModalOpen({isOpen: true, panelId: panel.id});
+        setPanelConfigurationModalOpen({ isOpen: true, panelId: panel.id });
     };
 
     const onPanelDeleteClick = async (panel: DashboardPanel) => {
@@ -110,7 +110,7 @@ export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) 
         setConfirmModalProps({
             title: `Do you want to delete the panel '${panel.title}'?`,
             onConfirm: () => {
-                onSave({...dashboard, panels: dashboard.panels.flatMap(p => p.id === panel.id ? [] : [p])})
+                onSave({ ...dashboard, panels: dashboard.panels.flatMap(p => p.id === panel.id ? [] : [p]) })
                 setConfirmModalProps(undefined);
 
                 registerEvent({
@@ -126,13 +126,13 @@ export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) 
     const onSavePanel = (panel: DashboardPanel) => {
         if (!dashboard) return;
 
-        setPanelConfigurationModalOpen({isOpen: false, panelId: undefined});
+        setPanelConfigurationModalOpen({ isOpen: false, panelId: undefined });
 
         if (dashboard.panels.find(p => p.id === panel.id)) {
-            onSave({...dashboard, panels: dashboard?.panels.map(p => p.id === panel.id ? panel : p)});
+            onSave({ ...dashboard, panels: dashboard?.panels.map(p => p.id === panel.id ? panel : p) });
         } else {
             dashboard.panels.push(panel);
-            onSave({...dashboard});
+            onSave({ ...dashboard });
         }
     }
 
@@ -153,7 +153,7 @@ export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) 
             category: 'dashboard',
             action: 'dashboard-title-saved',
         });
-        onSave({...dashboard, title: title});
+        onSave({ ...dashboard, title: title });
     }
 
     const onVariableCreated = (variable: DashboardVariable) => {
@@ -165,26 +165,26 @@ export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) 
 
     return (
         <>
-            <Breadcrumbs separator={<KeyboardArrowRight/>} sx={{p: 0, pb: 1}}>
+            <Breadcrumbs separator={<KeyboardArrowRight />} sx={{ p: 0, pb: 1 }}>
                 <Link href='/dashboards' color='neutral'>
                     Dashboards
                 </Link>
                 <Typography><Skeleton
                     loading={!dashboard}>{dashboard?.title || NEW_DASHBOARD_TITLE}</Skeleton></Typography>
             </Breadcrumbs>
-            <Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between'}}>
-                <UpdatableLabel onSave={onSaveTitle}>
+            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                <EditableLabel onSave={onSaveTitle}>
                     <Typography level='h1'><Skeleton
                         loading={!dashboard}>{dashboard?.title || NEW_DASHBOARD_TITLE}</Skeleton></Typography>
-                </UpdatableLabel>
+                </EditableLabel>
                 <Box display='flex'>
                     <Dropdown>
                         <MenuButton
                             variant="soft"
                             color="primary"
                             disabled={!dashboard}
-                            endDecorator={<ArrowDropDown/>}
-                            sx={{mr: 1}}>
+                            endDecorator={<ArrowDropDown />}
+                            sx={{ mr: 1 }}>
                             Add
                         </MenuButton>
                         <Menu>
@@ -203,7 +203,7 @@ export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) 
                         color="neutral"
                         onClick={onRefreshClick}
                         aria-label="Refresh dashboard">
-                        <Refresh/>
+                        <Refresh />
                     </IconButton>
                     <IconButton
                         disabled={!dashboard}
@@ -212,7 +212,7 @@ export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) 
                         color="neutral"
                         onClick={onSettingsClick}
                         aria-label="Go to settings">
-                        <Settings/>
+                        <Settings />
                     </IconButton>
                 </Box>
             </Box>
@@ -228,14 +228,14 @@ export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) 
                     });
                     setVariables(updatedVariables)
                 }}
-                sx={{mb: 2, mt: 1}}/>
+                sx={{ mb: 2, mt: 1 }} />
 
             <DashboardPanelGrid
                 dashboard={dashboard}
                 variables={variables}
                 refreshObserverRegistry={refreshObserverRegistry.current}
                 onPanelEditClick={onPanelEditClick}
-                onPanelDeleteClick={onPanelDeleteClick}/>
+                onPanelDeleteClick={onPanelDeleteClick} />
 
             {((dashboard?.panels || []).length === 0 && dashboard) &&
                 <PanelPlaceholder onClick={() => {
@@ -244,8 +244,8 @@ export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) 
                         action: 'dashboard-panel-placeholder-clicked',
                         name: dashboard?.id
                     });
-                    setPanelConfigurationModalOpen({isOpen: true, panelId: undefined});
-                }}/>}
+                    setPanelConfigurationModalOpen({ isOpen: true, panelId: undefined });
+                }} />}
 
             {(dashboard && panelConfigurationModalOpen.panelId) && <PanelConfigurationModal
                 dashboard={dashboard}
@@ -253,7 +253,7 @@ export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) 
                 isLoading={loading}
                 isOpen={panelConfigurationModalOpen.isOpen}
                 onSave={onSavePanel}
-                onClose={() => setPanelConfigurationModalOpen({isOpen: false, panelId: undefined})}
+                onClose={() => setPanelConfigurationModalOpen({ isOpen: false, panelId: undefined })}
                 onVariableCreated={onVariableCreated}
             />}
 
@@ -262,7 +262,7 @@ export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) 
                 isLoading={loading}
                 isOpen={panelConfigurationModalOpen.isOpen}
                 onSave={onSavePanel}
-                onClose={() => setPanelConfigurationModalOpen({isOpen: false, panelId: undefined})}
+                onClose={() => setPanelConfigurationModalOpen({ isOpen: false, panelId: undefined })}
                 onVariableCreated={onVariableCreated}
             />}
 
@@ -270,7 +270,7 @@ export const DashboardPage = ({dashboard, loading, onSave}: DashboardPageProps) 
             <ConfirmModal
                 title={confirmModalProps?.title}
                 onConfirm={confirmModalProps?.onConfirm}
-                onCancel={confirmModalProps?.onCancel}/>
+                onCancel={confirmModalProps?.onCancel} />
         </>
     );
 }

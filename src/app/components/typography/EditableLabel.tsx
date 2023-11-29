@@ -21,12 +21,12 @@ const typographyStyles = {
     // Add other types here if needed
 }
 
-interface UpdatableLabelProps {
+interface EditableLabelProps {
     children: React.ReactNode,
     onSave: (label: string) => void
 }
 
-export default function UpdatableLabel({ children, onSave }: UpdatableLabelProps) {
+export default function EditableLabel({ children, onSave }: EditableLabelProps) {
     const onlyChild = React.Children.only(children);
 
     const [showInputMode, setShowInputMode] = useState(false);
@@ -84,7 +84,11 @@ export default function UpdatableLabel({ children, onSave }: UpdatableLabelProps
                     value={label}
                 />}
             {!showInputMode &&
-                <Box onClick={() => { setShowInputMode(true); }}>
+                <Box onClick={() => { setShowInputMode(true); }} sx={{
+                    '&:hover': {
+                        cursor: `url('/assets/pencil.png'), auto`
+                    }
+                }}>
                     {children}
                 </Box>
             }
