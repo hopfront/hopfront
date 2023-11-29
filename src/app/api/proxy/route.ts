@@ -1,5 +1,5 @@
-import {XHRFrontRequest} from "@/app/lib/dto/XHRFrontRequest";
-import {getHopFrontVersion} from "@/app/lib/openapi/utils";
+import { XHRFrontRequest } from "@/app/lib/dto/XHRFrontRequest";
+import { getHopFrontVersion } from "@/app/lib/openapi/utils";
 
 export async function POST(req: Request): Promise<Response> {
     const request: XHRFrontRequest = await req.json()
@@ -20,24 +20,31 @@ export async function POST(req: Request): Promise<Response> {
         headers['User-Agent'] = `hopfront/${(getHopFrontVersion())}`;
     }
 
-    if (request.method === 'GET') {
-        result = await fetch(request.path, {
-            method: 'GET',
-            headers: headers
-        });
-    } else if (request.method === 'POST' || request.method === 'PUT') {
-        result = await fetch(request.path, {
-            method: request.method,
-            headers: headers,
-            body: request.body
-        })
-    } else if (request.method === 'DELETE'){
-        result = await fetch(request.path, {
-            method: 'DELETE',
-            headers: headers
-        })
-    } else {
-        throw Error('Unknown method: ' + request.method);
+    try {
+        if (request.method === 'GET') {
+            result = await fetch(request.path, {
+                method: 'GET',
+                headers: headers
+            });
+        } else if (request.method === 'POST' || request.method === 'PUT') {
+            result = await fetch(request.path, {
+                method: request.method,
+                headers: headers,
+                body: request.body
+            })
+        } else if (request.method === 'DELETE') {
+            result = await fetch(request.path, {
+                method: 'DELETE',
+                headers: headers
+            })
+        } else {
+            throw Error('Unknown method: ' + request.method);
+        }
+    } catch (e) {
+        if (e instanceof Error && e.cause?.toString()?.includes('ENOTFOUND')) {
+            return new Response('Could not connect to host', { status: 503 })
+        }
+        throw e;
     }
 
     const responseHeaders = new Headers(result.headers)

@@ -54,16 +54,24 @@ export const ConnectivityTestOnboardingAccordion = ({
 
         setConnectivityTestLoading(true);
         OperationService.executeOperation(operationDefaultInputs, tryoutOperation, apiContext)
-            .then(() => {
-                setConnectivityTestSucceeded(true);
-                setConnectivityTestLoading(false);
+            .then((response) => {
+                if (response.status === 503) {
+                    onConnectivityTestFailed();
+                } else {
+                    setConnectivityTestSucceeded(true);
+                    setConnectivityTestLoading(false);
+                }
             })
             .catch(error => {
-                setConnectivityTestSucceeded(false);
-                setShowCORSSwitch(true);
-                setConnectivityTestLoading(false);
+                onConnectivityTestFailed();
             });
     };
+
+    const onConnectivityTestFailed = () => {
+        setConnectivityTestSucceeded(false);
+        setShowCORSSwitch(true);
+        setConnectivityTestLoading(false);
+    }
 
     const retryConnectivityTest = () => {
         setConnectivityTestSucceeded(undefined);
