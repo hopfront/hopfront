@@ -230,6 +230,7 @@ export const EnhancedTable = ({
                     aria-labelledby="tableTitle"
                     hoverRow
                     noWrap
+                    variant={isPreviewTable ? "outlined" : "plain"}
                     borderAxis="none"
                     sx={{
                         tableLayout: 'auto',
@@ -329,7 +330,6 @@ export const EnhancedTable = ({
                                     {arrayItemSchema && isActionsDisplayed()
                                         && <td
                                             onMouseEnter={() => {
-                                                //uncomment when ready
                                                 setShowOperationsSettings(true);
                                             }}
                                             onMouseLeave={() => setShowOperationsSettings(false)}

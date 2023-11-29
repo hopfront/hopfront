@@ -41,7 +41,7 @@ export const SingleRowScalarPropertyViewer = ({property, schema, loading = false
     } else if (typeof property === 'boolean') {
         return <Typography fontFamily="monospace"><Skeleton loading={loading}>{string}</Skeleton></Typography>;
     } else if (schema && schema.enum) {
-        return <Monospace variant="outlined"><Skeleton loading={loading}>{string}</Skeleton></Monospace>;
+        return <Typography><Skeleton loading={loading}>{string}</Skeleton></Typography>;
     } else {
         return <Typography><Skeleton loading={loading}>{string}</Skeleton></Typography>;
     }
