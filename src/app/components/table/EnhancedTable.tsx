@@ -3,11 +3,11 @@ import {
     getReferenceObjectOrUndefined,
     resolveSchemaFromSchemaOrReference
 } from "@/app/lib/openapi/utils";
-import {ArrayItemActionsMenu} from "@/app/components/operation/ArrayItemActionsMenu";
-import {SingleRowAnyPropertyViewer} from "@/app/components/property-viewer/SingleRowAnyPropertyViewer";
-import {ArrayContext} from "@/app/context/ArrayContext";
-import {AddCircle, KeyboardArrowLeft, KeyboardArrowRight, Settings} from "@mui/icons-material";
-import {Dropdown, ListItemDecorator, Menu, MenuButton, MenuItem, Sheet, Stack, SvgIcon} from "@mui/joy";
+import { ArrayItemActionsMenu } from "@/app/components/operation/ArrayItemActionsMenu";
+import { SingleRowAnyPropertyViewer } from "@/app/components/property-viewer/SingleRowAnyPropertyViewer";
+import { ArrayContext } from "@/app/context/ArrayContext";
+import { AddCircle, AutoFixHigh, KeyboardArrowLeft, KeyboardArrowRight, Settings } from "@mui/icons-material";
+import { Dropdown, ListItemDecorator, Menu, MenuButton, MenuItem, Sheet, Stack, SvgIcon } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import FormControl from "@mui/joy/FormControl";
@@ -17,12 +17,12 @@ import Option from "@mui/joy/Option";
 import Select from "@mui/joy/Select";
 import Table from "@mui/joy/Table";
 import Typography from "@mui/joy/Typography";
-import {OpenAPIV3} from "openapi-types";
-import React, {useContext, useState} from "react";
-import {ApiContext} from "@/app/lib/model/ApiContext";
-import {ResponseSchemaSelectedObserver} from "@/app/lib/model/ResponseSchemaSelectedObserver";
-import {ResponsiveModal} from "../modal/ResponsiveModal";
-import {ObjectView} from "@/app/components/property-viewer/ObjectView";
+import { OpenAPIV3 } from "openapi-types";
+import React, { useContext, useState } from "react";
+import { ApiContext } from "@/app/lib/model/ApiContext";
+import { ResponseSchemaSelectedObserver } from "@/app/lib/model/ResponseSchemaSelectedObserver";
+import { ResponsiveModal } from "../modal/ResponsiveModal";
+import { ObjectView } from "@/app/components/property-viewer/ObjectView";
 import ReferenceObject = OpenAPIV3.ReferenceObject;
 import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
 import {
@@ -85,10 +85,10 @@ function getHeadCells(array: object[], arraySchemaObject: ArraySchemaObject | un
 }
 
 const labelDisplayedRows = ({
-                                from,
-                                to,
-                                count,
-                            }: {
+    from,
+    to,
+    count,
+}: {
     from: number;
     to: number;
     count: number;
@@ -109,16 +109,16 @@ export interface EnhancedTableProps {
 }
 
 export const EnhancedTable = ({
-                                  title,
-                                  rows,
-                                  schema,
-                                  loading,
-                                  onRefreshNeeded,
-                                  apiContext,
-                                  responseSchemaSelectedObserver,
-                                  isPreviewTable = false,
-                                  sx
-                              }: EnhancedTableProps) => {
+    title,
+    rows,
+    schema,
+    loading,
+    onRefreshNeeded,
+    apiContext,
+    responseSchemaSelectedObserver,
+    isPreviewTable = false,
+    sx
+}: EnhancedTableProps) => {
 
     const arrayContext = useContext(ArrayContext);
     const [page, setPage] = React.useState(0);
@@ -131,7 +131,6 @@ export const EnhancedTable = ({
         arrayItemSchemaReference && resolveSchemaFromSchemaOrReference(arrayItemSchemaReference, apiContext.apiSpec.document);
 
     const [rowDetails, setRowDetails] = React.useState<TableData | undefined>();
-    const [showOperationsSettings, setShowOperationsSettings] = useState(false);
     const [showAddOperationModal, setShowAddOperationModal] = useState(false);
 
     const isArrayItemSelectable = (): boolean => {
@@ -181,7 +180,7 @@ export const EnhancedTable = ({
     const actionColumnWidth = 80;
     const lastColumnShadowWidth = isActionsDisplayed() ? actionColumnWidth - 20 : 0;
     return (
-        <ArrayContext.Provider value={{level: arrayContext.level + 1}}>
+        <ArrayContext.Provider value={{ level: arrayContext.level + 1 }}>
             <Sheet
                 sx={{
                     pl: 0.5,
@@ -247,175 +246,170 @@ export const EnhancedTable = ({
                     }}
                 >
                     <thead>
-                    <tr>
-                        {isArrayItemSelectable() && <th></th>}
-                        {headCells.map((headCell) => {
-                            return (
-                                <th key={headCell.label}>
-                                    {headCell.label}
-                                </th>
-                            );
-                        })}
-                        {(isActionsDisplayed() && rows?.length > 0) &&
-                            <th
-                                onMouseEnter={() => {
-                                    //uncomment when ready
-                                    setShowOperationsSettings(true);
-                                }}
-                                onMouseLeave={() => setShowOperationsSettings(false)}
-                                style={{width: `${actionColumnWidth}px`}}><Stack direction="row"
-                                                                                 justifyContent="center"><Dropdown>
-                                <MenuButton
-                                    disabled={loading}
-                                    tabIndex={-1}
-                                    slots={{root: IconButton}}
-                                    slotProps={{root: {color: 'neutral', size: 'sm'}}}
-                                >
-                                    <SvgIcon slots={{root: showOperationsSettings ? Settings : undefined}}></SvgIcon>
-                                </MenuButton>
-                                {schema?.items && <Menu placement="bottom-start">
-                                    <MenuItem onClick={() => setShowAddOperationModal(true)}>
-                                        <ListItemDecorator>
-                                            <SvgIcon slots={{root: AddCircle}}></SvgIcon>
-                                        </ListItemDecorator>
-                                        Add an operation
-                                    </MenuItem>
-                                </Menu>}
-                            </Dropdown></Stack>
-                            </th>}
-                    </tr>
+                        <tr>
+                            {isArrayItemSelectable() && <th></th>}
+                            {headCells.map((headCell) => {
+                                return (
+                                    <th key={headCell.label}>
+                                        {headCell.label}
+                                    </th>
+                                );
+                            })}
+                            {(isActionsDisplayed() && rows?.length > 0) &&
+                                <th
+                                    style={{ width: `${actionColumnWidth}px` }}>
+                                    <Stack direction="row"
+                                        justifyContent="center">
+                                        <Dropdown>
+                                            <MenuButton
+                                                disabled={loading}
+                                                tabIndex={-1}
+                                                slots={{ root: IconButton }}
+                                                slotProps={{ root: { color: 'neutral', size: 'sm' } }}
+                                            >
+                                                <SvgIcon
+                                                    slots={{ root: Settings }} />
+                                            </MenuButton>
+                                            {schema?.items && <Menu placement="bottom-start">
+                                                <MenuItem onClick={() => setShowAddOperationModal(true)}>
+                                                    <ListItemDecorator>
+                                                        <SvgIcon slots={{ root: AutoFixHigh }} />
+                                                    </ListItemDecorator>
+                                                    Add smart operation
+                                                </MenuItem>
+                                            </Menu>}
+                                        </Dropdown>
+                                    </Stack>
+                                </th>}
+                        </tr>
                     </thead>
                     <tbody>
-                    {(rows || [])
-                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        .map((rowData, index) => {
-                            const rowValues = headCells.map(headCell => {
-                                const objectPropertyValue = rowData[headCell.id];
-                                const objectPropertySchemaRef = arrayItemSchema?.properties
-                                    ? arrayItemSchema.properties[headCell.id]
-                                    : undefined;
+                        {(rows || [])
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((rowData, index) => {
+                                const rowValues = headCells.map(headCell => {
+                                    const objectPropertyValue = rowData[headCell.id];
+                                    const objectPropertySchemaRef = arrayItemSchema?.properties
+                                        ? arrayItemSchema.properties[headCell.id]
+                                        : undefined;
+
+                                    return (
+                                        <td style={{ minWidth: '100px', maxWidth: "550px" }}
+                                            key={headCell.id || index}>
+                                            <SingleRowAnyPropertyViewer
+                                                propertyValue={objectPropertyValue}
+                                                propertySchema={objectPropertySchemaRef}
+                                                loading={loading}
+                                                responseSchemaSelectedObserver={responseSchemaSelectedObserver}
+                                                apiContext={apiContext} />
+                                        </td>
+                                    );
+                                });
+
+                                const onArrayItemSelected = (event: React.MouseEvent<HTMLAnchorElement>) => {
+                                    event.stopPropagation();
+                                    if (responseSchemaSelectedObserver) {
+                                        responseSchemaSelectedObserver.onValueSelected(rowData);
+                                    }
+                                }
 
                                 return (
-                                    <td style={{minWidth: '100px', maxWidth: "550px"}}
-                                        key={headCell.id || index}>
-                                        <SingleRowAnyPropertyViewer
-                                            propertyValue={objectPropertyValue}
-                                            propertySchema={objectPropertySchemaRef}
-                                            loading={loading}
-                                            responseSchemaSelectedObserver={responseSchemaSelectedObserver}
-                                            apiContext={apiContext}/>
-                                    </td>
+                                    <tr key={rowData.tableRow || index}
+                                        onClick={(event) => onRowClicked(event, rowData)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        {isArrayItemSelectable() &&
+                                            <td><Button
+                                                disabled={loading}
+                                                onClick={(event) => {
+                                                    onArrayItemSelected(event)
+                                                }} size="sm">Pick</Button></td>}
+                                        {rowValues}
+                                        {arrayItemSchema && isActionsDisplayed()
+                                            && <td
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+                                                }}>
+                                                <Stack direction="row" justifyContent="center">
+                                                    <ArrayItemActionsMenu
+                                                        arrayItemObject={rowData}
+                                                        arrayItemSchema={arrayItemSchemaReference}
+                                                        runnableOperations={runnableOperations}
+                                                        onOperationExecuted={operation => {
+                                                            if (["POST", "PUT", "DELETE", "PATCH"].indexOf(operation.method.toUpperCase()) >= 0) {
+                                                                onRefreshNeeded();
+                                                            }
+                                                        }}
+                                                        apiContext={apiContext} />
+                                                </Stack>
+                                            </td>}
+                                    </tr>
                                 );
-                            });
-
-                            const onArrayItemSelected = (event: React.MouseEvent<HTMLAnchorElement>) => {
-                                event.stopPropagation();
-                                if (responseSchemaSelectedObserver) {
-                                    responseSchemaSelectedObserver.onValueSelected(rowData);
-                                }
-                            }
-
-                            return (
-                                <tr key={rowData.tableRow || index}
-                                    onClick={(event) => onRowClicked(event, rowData)}
-                                    style={{cursor: 'pointer'}}
-                                >
-                                    {isArrayItemSelectable() &&
-                                        <td><Button
-                                            disabled={loading}
-                                            onClick={(event) => {
-                                                onArrayItemSelected(event)
-                                            }} size="sm">Pick</Button></td>}
-                                    {rowValues}
-                                    {arrayItemSchema && isActionsDisplayed()
-                                        && <td
-                                            onMouseEnter={() => {
-                                                setShowOperationsSettings(true);
-                                            }}
-                                            onMouseLeave={() => setShowOperationsSettings(false)}
-                                            onClick={(event) => {
-                                                event.stopPropagation();
-                                            }}>
-                                            <Stack direction="row" justifyContent="center">
-                                                <ArrayItemActionsMenu
-                                                    arrayItemObject={rowData}
-                                                    arrayItemSchema={arrayItemSchemaReference}
-                                                    runnableOperations={runnableOperations}
-                                                    onOperationExecuted={operation => {
-                                                        if (["POST", "PUT", "DELETE", "PATCH"].indexOf(operation.method.toUpperCase()) >= 0) {
-                                                            onRefreshNeeded();
-                                                        }
-                                                    }}
-                                                    apiContext={apiContext}/>
-                                            </Stack>
-                                        </td>}
-                                </tr>
-                            );
-                        })}
-                    {emptyRows > 0 && (
-                        <tr>
-                            <td colSpan={columnCount}/>
-                        </tr>
-                    )}
+                            })}
+                        {emptyRows > 0 && (
+                            <tr>
+                                <td colSpan={columnCount} />
+                            </tr>
+                        )}
                     </tbody>
                     {(rows || []).length > minRowsToDisplayFooter &&
                         <tfoot>
-                        <tr>
-                            <td colSpan={columnCount}>
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 2,
-                                        justifyContent: 'flex-start',
-                                    }}
-                                >
-                                    <FormControl orientation="horizontal" size="sm">
-                                        <FormLabel>Rows per page:</FormLabel>
-                                        <Select disabled={loading} onChange={handleChangeRowsPerPage}
+                            <tr>
+                                <td colSpan={columnCount}>
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 2,
+                                            justifyContent: 'flex-start',
+                                        }}
+                                    >
+                                        <FormControl orientation="horizontal" size="sm">
+                                            <FormLabel>Rows per page:</FormLabel>
+                                            <Select disabled={loading} onChange={handleChangeRowsPerPage}
                                                 value={rowsPerPage}>
-                                            <Option value={5}>5</Option>
-                                            <Option value={10}>10</Option>
-                                            <Option value={50}>50</Option>
-                                            <Option value={100}>100</Option>
-                                        </Select>
-                                    </FormControl>
-                                    <Typography textAlign="center" sx={{minWidth: 80}}>
-                                        {labelDisplayedRows({
-                                            from: rows.length === 0 ? 0 : page * rowsPerPage + 1,
-                                            to: getLabelDisplayedRowsTo(),
-                                            count: rows.length === -1 ? -1 : rows.length,
-                                        })}
-                                    </Typography>
-                                    <Box sx={{display: 'flex', gap: 1}}>
-                                        <IconButton
-                                            disabled={loading || page === 0}
-                                            size="sm"
-                                            color="neutral"
-                                            variant="outlined"
-                                            onClick={() => handleChangePage(page - 1)}
-                                            sx={{bgcolor: 'background.surface'}}
-                                        >
-                                            <KeyboardArrowLeft/>
-                                        </IconButton>
-                                        <IconButton
-                                            size="sm"
-                                            color="neutral"
-                                            variant="outlined"
-                                            disabled={
-                                                (loading || (rows.length !== -1
-                                                    ? page >= Math.ceil(rows.length / rowsPerPage) - 1
-                                                    : false))
-                                            }
-                                            onClick={() => handleChangePage(page + 1)}
-                                            sx={{bgcolor: 'background.surface'}}
-                                        >
-                                            <KeyboardArrowRight/>
-                                        </IconButton>
+                                                <Option value={5}>5</Option>
+                                                <Option value={10}>10</Option>
+                                                <Option value={50}>50</Option>
+                                                <Option value={100}>100</Option>
+                                            </Select>
+                                        </FormControl>
+                                        <Typography textAlign="center" sx={{ minWidth: 80 }}>
+                                            {labelDisplayedRows({
+                                                from: rows.length === 0 ? 0 : page * rowsPerPage + 1,
+                                                to: getLabelDisplayedRowsTo(),
+                                                count: rows.length === -1 ? -1 : rows.length,
+                                            })}
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', gap: 1 }}>
+                                            <IconButton
+                                                disabled={loading || page === 0}
+                                                size="sm"
+                                                color="neutral"
+                                                variant="outlined"
+                                                onClick={() => handleChangePage(page - 1)}
+                                                sx={{ bgcolor: 'background.surface' }}
+                                            >
+                                                <KeyboardArrowLeft />
+                                            </IconButton>
+                                            <IconButton
+                                                size="sm"
+                                                color="neutral"
+                                                variant="outlined"
+                                                disabled={
+                                                    (loading || (rows.length !== -1
+                                                        ? page >= Math.ceil(rows.length / rowsPerPage) - 1
+                                                        : false))
+                                                }
+                                                onClick={() => handleChangePage(page + 1)}
+                                                sx={{ bgcolor: 'background.surface' }}
+                                            >
+                                                <KeyboardArrowRight />
+                                            </IconButton>
+                                        </Box>
                                     </Box>
-                                </Box>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
                         </tfoot>}
                 </Table>
             </Sheet>
@@ -428,7 +422,7 @@ export const EnhancedTable = ({
                     object={rowDetails}
                     schemaRef={arrayItemSchemaReference?.$ref}
                     loading={loading}
-                    apiContext={apiContext}/>
+                    apiContext={apiContext} />
             </ResponsiveModal>
             {schema?.items && <OperationFromObjectModal
                 open={showAddOperationModal}
@@ -436,7 +430,7 @@ export const EnhancedTable = ({
                 sampleObject={(rows || []).length > 0 && rows[0]}
                 objectSchema={schema.items}
                 onConfigurationUpdate={onRefreshNeeded}
-                apiContext={apiContext}/>}
+                apiContext={apiContext} />}
         </ArrayContext.Provider>
     );
 }

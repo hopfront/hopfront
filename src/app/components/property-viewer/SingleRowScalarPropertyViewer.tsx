@@ -1,9 +1,8 @@
+import { Skeleton } from "@mui/joy";
 import Link from "@mui/joy/Link";
 import Typography from "@mui/joy/Typography";
-import {OpenAPIV3} from "openapi-types";
+import { OpenAPIV3 } from "openapi-types";
 import NonArraySchemaObject = OpenAPIV3.NonArraySchemaObject;
-import {Monospace} from "@/app/components/typography/Monospace";
-import { Skeleton } from "@mui/joy";
 
 export interface SingleRowScalarPropertyViewerProps {
     property: any
