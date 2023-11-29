@@ -1,4 +1,4 @@
-import { Box, Input, TypographySystem } from "@mui/joy";
+import { Box, Input, TypographySystem, useColorScheme } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 
 interface TypographyStyle {
@@ -33,6 +33,7 @@ export default function EditableLabel({ children, onSave }: EditableLabelProps) 
     const [initialValue, setInitialValue] = useState('');
     const [label, setLabel] = useState('');
     const [typographyStyle, setTypographyStyle] = useState<TypographyStyle | undefined>();
+    const {mode} = useColorScheme();
 
     const save = () => {
         if (initialValue !== label) {
@@ -54,6 +55,8 @@ export default function EditableLabel({ children, onSave }: EditableLabelProps) 
         }
 
     }, [children, onlyChild])
+
+    const cursorPath = mode === 'light' ? '/assets/pencil_light.png' : '/assets/pencil_dark.png';
 
     return (
         <>
@@ -86,7 +89,7 @@ export default function EditableLabel({ children, onSave }: EditableLabelProps) 
             {!showInputMode &&
                 <Box onClick={() => { setShowInputMode(true); }} sx={{
                     '&:hover': {
-                        cursor: `url('/assets/pencil.png'), auto`
+                        cursor: `url(${cursorPath}), auto`
                     }
                 }}>
                     {children}
