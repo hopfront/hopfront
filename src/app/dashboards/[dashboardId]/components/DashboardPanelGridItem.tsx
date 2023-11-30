@@ -1,30 +1,30 @@
-import {DashboardPanel} from "@/app/lib/model/dashboard/DashboardPanel";
-import {getStandaloneOperation} from "@/app/lib/openapi/utils";
-import {ParameterWithValue} from "@/app/lib/model/ParameterWithValue";
+import { DashboardPanel } from "@/app/lib/model/dashboard/DashboardPanel";
+import { getStandaloneOperation } from "@/app/lib/openapi/utils";
+import { ParameterWithValue } from "@/app/lib/model/ParameterWithValue";
 
-import {DashboardPanelInput} from "@/app/lib/model/dashboard/DashboardPanelInput";
+import { DashboardPanelInput } from "@/app/lib/model/dashboard/DashboardPanelInput";
 import {
     DashboardPanelInputSourceConfigDataConstant
 } from "@/app/lib/model/dashboard/DashboardPanelInputSourceConfigDataConstant";
-import {useApiContext} from "@/app/hooks/useApiContext";
-import {OperationInputs} from "@/app/lib/model/OperationInputs";
+import { useApiContext } from "@/app/hooks/useApiContext";
+import { OperationInputs } from "@/app/lib/model/OperationInputs";
 import {
     DashboardPanelInputSourceConfigDataVariable
 } from "@/app/lib/model/dashboard/DashboardPanelInputSourceConfigDataVariable";
-import {VariableWithValue} from "@/app/lib/model/dashboard/VariableWithValue";
-import {DashboardPanelConfig} from "@/app/lib/model/dashboard/DashboardPanelConfig";
-import {StandaloneOperation} from "@/app/lib/model/StandaloneOperation";
-import {useEffect, useMemo, useState} from "react";
-import {OpenAPIV3} from "openapi-types";
-import {OperationService} from "@/app/lib/service/OperationService";
-import {WarningAlert} from "@/app/components/alert/WarningAlert";
+import { VariableWithValue } from "@/app/lib/model/dashboard/VariableWithValue";
+import { DashboardPanelConfig } from "@/app/lib/model/dashboard/DashboardPanelConfig";
+import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
+import { useEffect, useMemo, useState } from "react";
+import { OpenAPIV3 } from "openapi-types";
+import { OperationService } from "@/app/lib/service/OperationService";
+import { WarningAlert } from "@/app/components/alert/WarningAlert";
 import ParameterObject = OpenAPIV3.ParameterObject;
-import {RefreshObserverRegistry} from "@/app/lib/model/RefreshObserverRegistry";
-import {DashboardPanelContainer} from "@/app/dashboards/[dashboardId]/components/DashboardPanelContainer";
-import {ErrorAlert} from "@/app/components/operation/response/ErrorAlert";
-import {ApiContext} from "@/app/lib/model/ApiContext";
-import {AuthService} from "@/app/lib/service/AuthService";
-import {DashboardPanelContent} from "@/app/dashboards/[dashboardId]/components/DashboardPanelContent";
+import { RefreshObserverRegistry } from "@/app/lib/model/RefreshObserverRegistry";
+import { DashboardPanelContainer } from "@/app/dashboards/[dashboardId]/components/DashboardPanelContainer";
+import { ErrorAlert } from "@/app/components/operation/response/ErrorAlert";
+import { ApiContext } from "@/app/lib/model/ApiContext";
+import { AuthService } from "@/app/lib/service/AuthService";
+import { DashboardPanelContent } from "@/app/dashboards/[dashboardId]/components/DashboardPanelContent";
 
 export interface OperationAsyncResponse {
     response: Response | undefined
@@ -83,18 +83,20 @@ export interface DashboardPanelGridItemProps {
     onAuthRequired: (apiContext: ApiContext) => void
     onEditClick: () => void
     onDeleteClick: () => void
+    onPanelTitleChanged: (panel: DashboardPanel) => void
 }
 
 export const DashboardPanelGridItem = ({
-                                           panel,
-                                           variables,
-                                           refreshObserverRegistry,
-                                           onAuthRequired,
-                                           onEditClick,
-                                           onDeleteClick
-                                       }: DashboardPanelGridItemProps) => {
+    panel,
+    variables,
+    refreshObserverRegistry,
+    onAuthRequired,
+    onEditClick,
+    onDeleteClick,
+    onPanelTitleChanged
+}: DashboardPanelGridItemProps) => {
 
-    const {data: apiContext, error, isLoading} = useApiContext(panel.config.apiSpecId);
+    const { data: apiContext, error, isLoading } = useApiContext(panel.config.apiSpecId);
 
     const authStatus = AuthService.getApiAuthenticationStatus(apiContext);
 
@@ -162,18 +164,25 @@ export const DashboardPanelGridItem = ({
         return !p.value && p.parameter.required;
     });
 
+    const onPanelTitleEdited = (newTitle: string) => {
+        onPanelTitleChanged({
+            ...panel,
+            title: newTitle
+        });
+    }
+
     if (parameterWithoutRequiredValue) {
         return (
             <DashboardPanelContainer title={panel.title} loading={isLoading || operationResponse.loading}
-                                     onEditClick={onEditClick} onDeleteClick={onDeleteClick}>
-                <WarningAlert title={`Missing parameter '${parameterWithoutRequiredValue.parameter.name}'`}/>
+                onEditClick={onEditClick} onDeleteClick={onDeleteClick} onPanelTitleChanged={onPanelTitleEdited}>
+                <WarningAlert title={`Missing parameter '${parameterWithoutRequiredValue.parameter.name}'`} />
             </DashboardPanelContainer>
         );
     } else if (error || operationResponse.error) {
         return (
             <DashboardPanelContainer title={panel.title} loading={isLoading || operationResponse.loading}
-                                     onEditClick={onEditClick} onDeleteClick={onDeleteClick}>
-                <ErrorAlert error={error || operationResponse.error} apiContext={apiContext}/>
+                onEditClick={onEditClick} onDeleteClick={onDeleteClick} onPanelTitleChanged={onPanelTitleEdited}>
+                <ErrorAlert error={error || operationResponse.error} apiContext={apiContext} />
             </DashboardPanelContainer>
         );
     } else if (apiContext && operation) {
@@ -182,13 +191,14 @@ export const DashboardPanelGridItem = ({
                 title={panel.title}
                 loading={isLoading || operationResponse.loading}
                 onEditClick={onEditClick}
-                onDeleteClick={onDeleteClick}>
+                onDeleteClick={onDeleteClick}
+                onPanelTitleChanged={onPanelTitleEdited}>
 
                 <DashboardPanelContent
                     panel={panel}
                     operation={operation}
                     response={operationResponse}
-                    apiContext={apiContext}/>
+                    apiContext={apiContext} />
             </DashboardPanelContainer>
         );
     } else {

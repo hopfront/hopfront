@@ -1,20 +1,22 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Card from "@mui/joy/Card";
 import {
     Box, CardContent,
     CircularProgress, Dropdown, IconButton, ListItemDecorator, Menu, MenuButton, MenuItem, Stack, Typography
 } from "@mui/joy";
-import {Delete, Edit, MoreVert} from "@mui/icons-material";
+import { Delete, Edit, MoreVert } from "@mui/icons-material";
+import EditableLabel from "@/app/components/typography/EditableLabel";
 
 export interface DashboardPanelContainerProps {
     title: string
     loading?: boolean
     onEditClick: () => void
     onDeleteClick: () => void
+    onPanelTitleChanged: (title: string) => void
     children?: React.ReactNode
 }
 
-export const DashboardPanelContainer = ({title, loading = false, onEditClick, onDeleteClick, children}: DashboardPanelContainerProps) => {
+export const DashboardPanelContainer = ({ title, loading = false, onEditClick, onDeleteClick, onPanelTitleChanged, children }: DashboardPanelContainerProps) => {
     const [showMoreButton, setShowMoreButton] = useState(false);
 
     return (
@@ -29,18 +31,20 @@ export const DashboardPanelContainer = ({title, loading = false, onEditClick, on
                     alignItems: 'center',
                 }}
             >
-                <Typography level="body-lg">
-                    <Typography>{title}</Typography>
-                </Typography>
+                <EditableLabel onSave={onPanelTitleChanged}>
+                    <Typography level="body-lg">
+                        <Typography>{title}</Typography>
+                    </Typography>
+                </EditableLabel>
 
                 <Stack direction="row">
-                    {loading && <Typography><CircularProgress size="sm"/></Typography>}
+                    {loading && <Typography><CircularProgress size="sm" /></Typography>}
                     <Dropdown>
                         <MenuButton
-                            slots={{root: IconButton}}
-                            slotProps={{root: {variant: 'plain', color: 'neutral'}}}
+                            slots={{ root: IconButton }}
+                            slotProps={{ root: { variant: 'plain', color: 'neutral' } }}
                         >
-                            {showMoreButton && <MoreVert/>}
+                            {showMoreButton && <MoreVert />}
                         </MenuButton>
                         <Menu placement='bottom-start'>
                             <MenuItem onClick={() => {
@@ -48,7 +52,7 @@ export const DashboardPanelContainer = ({title, loading = false, onEditClick, on
                                 onEditClick();
                             }}>
                                 <ListItemDecorator>
-                                    <Edit/>
+                                    <Edit />
                                 </ListItemDecorator>
                                 Edit
                             </MenuItem>
@@ -57,7 +61,7 @@ export const DashboardPanelContainer = ({title, loading = false, onEditClick, on
                                 onDeleteClick();
                             }}>
                                 <ListItemDecorator>
-                                    <Delete/>
+                                    <Delete />
                                 </ListItemDecorator>
                                 Delete
                             </MenuItem>

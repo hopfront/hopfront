@@ -17,6 +17,10 @@ const typographyStyles = {
         fontSize: 'var(--joy-fontSize-xl3)',
         fontWeight: 'var(--joy-fontWeight-xl)',
         lineHeight: 'var(--joy-lineHeight-xs)'
+    } as TypographyStyle,
+    'body-lg': {
+        fontSize: 'var(--joy-fontSize-lg)',
+        lineHeight: 'var(--joy-lineHeight-md)'
     } as TypographyStyle
     // Add other types here if needed
 }
@@ -33,7 +37,7 @@ export default function EditableLabel({ children, onSave }: EditableLabelProps) 
     const [initialValue, setInitialValue] = useState('');
     const [label, setLabel] = useState('');
     const [typographyStyle, setTypographyStyle] = useState<TypographyStyle | undefined>();
-    const {mode} = useColorScheme();
+    const { mode } = useColorScheme();
 
     const save = () => {
         if (initialValue !== label) {

@@ -156,6 +156,15 @@ export const DashboardPage = ({ dashboard, loading, onSave }: DashboardPageProps
         onSave({ ...dashboard, title: title });
     }
 
+    const onPanelTitleChanged = (panel: DashboardPanel) => {
+        if (!dashboard) return;
+        registerEvent({
+            category: 'dashboard-panel',
+            action: 'dashboard-panel-title-saved',
+        });
+        onSave({ ...dashboard, panels: dashboard.panels.map(p => p.id === panel.id ? panel : p) });
+    }
+
     const onVariableCreated = (variable: DashboardVariable) => {
         onSave({
             ...dashboard,
@@ -235,7 +244,8 @@ export const DashboardPage = ({ dashboard, loading, onSave }: DashboardPageProps
                 variables={variables}
                 refreshObserverRegistry={refreshObserverRegistry.current}
                 onPanelEditClick={onPanelEditClick}
-                onPanelDeleteClick={onPanelDeleteClick} />
+                onPanelDeleteClick={onPanelDeleteClick}
+                onPanelTitleChanged={onPanelTitleChanged} />
 
             {((dashboard?.panels || []).length === 0 && dashboard) &&
                 <PanelPlaceholder onClick={() => {

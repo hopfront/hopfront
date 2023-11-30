@@ -19,6 +19,7 @@ export interface DashboardPanelGridProps {
     refreshObserverRegistry: RefreshObserverRegistry
     onPanelEditClick: (panel: DashboardPanel) => void
     onPanelDeleteClick: (panel: DashboardPanel) => void
+    onPanelTitleChanged: (panel: DashboardPanel) => void
 }
 
 export const DashboardPanelGrid = ({
@@ -27,6 +28,7 @@ export const DashboardPanelGrid = ({
                                        refreshObserverRegistry,
                                        onPanelEditClick,
                                        onPanelDeleteClick,
+                                       onPanelTitleChanged
                                    }: DashboardPanelGridProps) => {
 
     const [authRequiredContext, setAuthRequiredContext] = useState<AuthRequiredContext | undefined>();
@@ -53,7 +55,8 @@ export const DashboardPanelGrid = ({
                     apiContext: apiContext
                 })}
                 onEditClick={() => onPanelEditClick(panel)}
-                onDeleteClick={() => onPanelDeleteClick(panel)}/>
+                onDeleteClick={() => onPanelDeleteClick(panel)}
+                onPanelTitleChanged={onPanelTitleChanged}/>
         </Box>);
 
     if (authRequiredContext) {
