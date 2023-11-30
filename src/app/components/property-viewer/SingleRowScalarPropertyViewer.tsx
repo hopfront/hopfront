@@ -22,9 +22,13 @@ const isValidHttpUrl = (str: string): boolean => {
     return url.protocol === "http:" || url.protocol === "https:";
 }
 
-export const SingleRowScalarPropertyViewer = ({property, schema, loading = false}: SingleRowScalarPropertyViewerProps) => {
+export const SingleRowScalarPropertyViewer = ({ property, schema, loading = false }: SingleRowScalarPropertyViewerProps) => {
     if (!property) {
-        return <Typography><Skeleton loading={loading}>-</Skeleton></Typography>
+        return <Typography>
+            <Skeleton loading={loading}>
+                -
+            </Skeleton>
+        </Typography>
     }
 
     const string = property.toString();
@@ -32,16 +36,38 @@ export const SingleRowScalarPropertyViewer = ({property, schema, loading = false
     if (isValidHttpUrl(string)) {
         return (
             <span onClick={(event) => event.stopPropagation()}>
-                <Link href={string}><Typography><Skeleton loading={loading}>{string}</Skeleton></Typography></Link>
+                <Link href={string}>
+                    <Typography sx={{ wordBreak: 'break-word' }}>
+                        <Skeleton loading={loading}>
+                            {string}
+                        </Skeleton>
+                    </Typography>
+                </Link>
             </span>
         );
     } else if (schema && (schema.format === 'date-time' || schema.format === 'date')) {
-        return <Typography><Skeleton loading={loading}>{new Date(property).toLocaleString()}</Skeleton></Typography>;
+        return <Typography sx={{ wordBreak: 'break-word' }}>
+            <Skeleton loading={loading}>
+                {new Date(property).toLocaleString()}
+            </Skeleton>
+        </Typography>;
     } else if (typeof property === 'boolean') {
-        return <Typography fontFamily="monospace"><Skeleton loading={loading}>{string}</Skeleton></Typography>;
+        return <Typography fontFamily="monospace">
+            <Skeleton loading={loading}>
+                {string}
+            </Skeleton>
+        </Typography>;
     } else if (schema && schema.enum) {
-        return <Typography><Skeleton loading={loading}>{string}</Skeleton></Typography>;
+        return <Typography sx={{ wordBreak: 'break-word' }}>
+            <Skeleton loading={loading}>
+                {string}
+            </Skeleton>
+        </Typography>;
     } else {
-        return <Typography><Skeleton loading={loading}>{string}</Skeleton></Typography>;
+        return <Typography sx={{ wordBreak: 'break-word' }}>
+            <Skeleton loading={loading}>
+                {string}
+            </Skeleton>
+        </Typography>;
     }
 }
