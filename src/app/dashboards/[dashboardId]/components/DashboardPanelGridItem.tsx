@@ -173,7 +173,7 @@ export const DashboardPanelGridItem = ({
         return (
             <DashboardPanelContainer title={panel.title} loading={isLoading || operationResponse.loading}
                                      onEditClick={onEditClick} onDeleteClick={onDeleteClick}>
-                <ErrorAlert error={error || operationResponse.error}/>
+                <ErrorAlert error={error || operationResponse.error} apiContext={apiContext}/>
             </DashboardPanelContainer>
         );
     } else if (apiContext && operation) {
