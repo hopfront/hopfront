@@ -53,8 +53,10 @@ export const ObjectView = ({object, schemaRef, loading = false, apiContext, resp
                 undefined
             </Typography>
         }
+
+        const direction = Array.isArray(value) ? "column" : "row";
         return [(
-            <Stack key={objectKey} direction="row" sx={{mb: 1}}>
+            <Stack key={objectKey} direction={direction} sx={{mb: 1}}>
                 {key}
                 <SingleRowAnyPropertyViewer
                     propertyValue={value}

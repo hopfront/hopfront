@@ -179,12 +179,18 @@ export const EnhancedTable = ({
     const columnCount = (isArrayItemSelectable() ? 1 : 0) + headCells.length + (isActionsDisplayed() ? 1 : 0);
     const actionColumnWidth = 80;
     const lastColumnShadowWidth = isActionsDisplayed() ? actionColumnWidth - 20 : 0;
+    const borderTableStyle = isPreviewTable ? {
+        border: '1px solid',
+        borderColor: 'divider',
+    } : {};
+
     return (
         <ArrayContext.Provider value={{ level: arrayContext.level + 1 }}>
             <Sheet
                 sx={{
                     pl: 0.5,
-                    overflow: 'auto', borderRadius: 'sm', ...sx,
+                    overflow: 'auto', 
+                    borderRadius: 'sm',
                     '--TableCell-height': '40px',
                     // the number is the amount of the header rows.
                     '--TableHeader-height': 'calc(1 * var(--TableCell-height))',
@@ -215,6 +221,8 @@ export const EnhancedTable = ({
                     backgroundPosition:
                         'var(--Table-firstColumnWidth) var(--TableCell-height), calc(100% - var(--Table-lastColumnWidth)) var(--TableCell-height), var(--Table-firstColumnWidth) var(--TableCell-height), calc(100% - var(--Table-lastColumnWidth)) var(--TableCell-height)',
                     backgroundColor: 'background.surface',
+                    ...borderTableStyle,
+                    ...sx
                 }}
             >
                 {title && <Typography
@@ -229,7 +237,6 @@ export const EnhancedTable = ({
                     aria-labelledby="tableTitle"
                     hoverRow
                     noWrap
-                    variant={isPreviewTable ? "outlined" : "plain"}
                     borderAxis="none"
                     sx={{
                         tableLayout: 'auto',
