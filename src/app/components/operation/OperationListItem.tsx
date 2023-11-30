@@ -32,7 +32,6 @@ export const OperationListItem = ({
         const checkOverflow = () => {
             const current = itemLabelRef.current;
             if (current) {
-                console.log(operation.path, current.offsetWidth, current.scrollWidth)
                 const isOverflowing = current.offsetWidth < current.scrollWidth;
                 setShowTooltip(isOverflowing);
             }

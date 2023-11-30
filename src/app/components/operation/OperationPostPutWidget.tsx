@@ -10,6 +10,7 @@ import { OperationService } from "@/app/lib/service/OperationService";
 import { Box, Card } from "@mui/joy";
 import LinearProgress from "@mui/joy/LinearProgress";
 import { useState } from "react";
+import { ErrorAlert } from "./response/ErrorAlert";
 
 export interface OperationPostPutWidgetProps {
     operation: StandaloneOperation
@@ -21,15 +22,15 @@ export interface OperationPostPutWidgetProps {
 }
 
 export const OperationPostPutWidget = ({
-                                           operation,
-                                           defaultInputs,
-                                           onResponse,
-                                           onError,
-                                           responseSchemaSelectedObserver,
-                                           apiContext
-                                       }: OperationPostPutWidgetProps) => {
+    operation,
+    defaultInputs,
+    onResponse,
+    onError,
+    responseSchemaSelectedObserver,
+    apiContext
+}: OperationPostPutWidgetProps) => {
 
-    const {registerEvent} = useAnalytics();
+    const { registerEvent } = useAnalytics();
     const [operationInputs, setOperationInputs] =
         useState(getOperationDefaultInputs(operation, defaultInputs));
     const [loading, setLoading] = useState(false);
@@ -84,9 +85,9 @@ export const OperationPostPutWidget = ({
                 apiContext={apiContext}
             />
             {loading &&
-                <LinearProgress sx={{mt: 1}}/>}
+                <LinearProgress sx={{ mt: 1 }} />}
             {response &&
-                <Box sx={{mt: 2}}>
+                <Box sx={{ mt: 2 }}>
                     <Card>
                         <OperationResponse
                             operation={operation}
@@ -99,7 +100,7 @@ export const OperationPostPutWidget = ({
                     </Card>
                 </Box>}
             {error &&
-                <p style={{color: 'red'}}>An error occurred: {JSON.stringify(error.message)}</p>}
+                <ErrorAlert error={error} apiContext={apiContext} />}
         </>
     );
 }

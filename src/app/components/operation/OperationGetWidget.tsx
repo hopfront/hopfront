@@ -114,7 +114,7 @@ export const OperationGetWidget = ({
                 </Card>
 
             }
-            <ErrorAlert error={error}/>
+            <ErrorAlert error={error} apiContext={apiContext}/>
         </>
     );
 }

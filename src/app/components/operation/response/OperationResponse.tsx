@@ -1,21 +1,19 @@
-import {useEffect, useState} from "react";
-import {OpenAPIV3} from "openapi-types";
-import {OperationResponseBodyObject} from "./OperationResponseBodyObject";
-import {ResponseAlert} from "../../alert/ResponseAlert";
-import {getMediaType, resolveSchemaFromSchemaOrReference} from "@/app/lib/openapi/utils";
-import {ApiContext} from "@/app/lib/model/ApiContext";
-import {ResponseSchemaSelectedObserver} from "@/app/lib/model/ResponseSchemaSelectedObserver";
-import {EnhancedTable} from "@/app/components/table/EnhancedTable";
+import { ProblemAlert } from "@/app/components/alert/ProblemAlert";
+import { ErrorAlert } from "@/app/components/operation/response/ErrorAlert";
+import { buildSuccessBodyOrProblem } from "@/app/components/operation/response/utils";
+import { EnhancedTable } from "@/app/components/table/EnhancedTable";
+import { ApiContext } from "@/app/lib/model/ApiContext";
+import { ResponseSchemaSelectedObserver } from "@/app/lib/model/ResponseSchemaSelectedObserver";
+import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
+import { getMediaType, resolveSchemaFromSchemaOrReference } from "@/app/lib/openapi/utils";
+import Typography from "@mui/joy/Typography";
+import { OpenAPIV3 } from "openapi-types";
+import { useEffect, useState } from "react";
+import { ResponseAlert } from "../../alert/ResponseAlert";
 import EmptyTable from "../../table/EmptyTable";
+import { OperationResponseBodyObject } from "./OperationResponseBodyObject";
 import ResponseObject = OpenAPIV3.ResponseObject;
 import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
-import Typography from "@mui/joy/Typography";
-import {buildSuccessBodyOrProblem} from "@/app/components/operation/response/utils";
-import {ErrorAlert} from "@/app/components/operation/response/ErrorAlert";
-import {ProblemAlert} from "@/app/components/alert/ProblemAlert";
-import {StandaloneOperation} from "@/app/lib/model/StandaloneOperation";
-import {AuthService} from "@/app/lib/service/AuthService";
-import {ApiAuthenticationStatus} from "@/app/lib/model/ApiAuthenticationStatus";
 
 interface OperationResponseProps {
     operation: StandaloneOperation
@@ -27,18 +25,17 @@ interface OperationResponseProps {
 }
 
 export const OperationResponse = ({
-                                      operation,
-                                      response,
-                                      onRefreshNeeded,
-                                      loading,
-                                      responseSchemaSelectedObserver,
-                                      apiContext
-                                  }: OperationResponseProps) => {
+    operation,
+    response,
+    onRefreshNeeded,
+    loading,
+    responseSchemaSelectedObserver,
+    apiContext
+}: OperationResponseProps) => {
 
     const openAPIResponses = operation.operation.responses;
 
     const [responseText, setResponseText] = useState<string | undefined>();
-    const [authStatus, setAuthStatus] = useState<ApiAuthenticationStatus | undefined>();
 
     useEffect(() => {
         if (!response) {
@@ -48,23 +45,21 @@ export const OperationResponse = ({
         if (!response.bodyUsed) {
             response.text()
                 .then(text => {
-                    setAuthStatus(AuthService.getApiAuthenticationStatus(apiContext));
                     setResponseText(text);
                 });
         }
     }, [response, responseText]);
 
-    const {body, problem} = buildSuccessBodyOrProblem(response.status, responseText);
+    const { body, problem } = buildSuccessBodyOrProblem(response.status, responseText);
 
     if (problem) {
-        return <ProblemAlert problem={problem} authenticationContext={authStatus && {
-            authenticationStatus: authStatus,
-            apiSpecId: apiContext.apiSpec.id
-        }}/>;
+        return (
+            <ProblemAlert problem={problem} apiContext={apiContext} />
+        );
     }
 
     if (!body) {
-        return <ResponseAlert response={response} operation={operation.operation}/>
+        return <ResponseAlert response={response} operation={operation.operation} />
     }
 
     const contentType = response.headers.get('content-type');
@@ -78,7 +73,7 @@ export const OperationResponse = ({
     const mediaType = getMediaType(openAPIResponseObject, contentType);
 
     if (!mediaType) {
-        return <ErrorAlert error={new Error("Couldn't find schema for response object")}/>
+        return <ErrorAlert error={new Error("Couldn't find schema for response object")} />
     }
 
     if (Array.isArray(body)) {
@@ -92,9 +87,9 @@ export const OperationResponse = ({
                 loading={loading}
                 onRefreshNeeded={onRefreshNeeded}
                 apiContext={apiContext}
-                responseSchemaSelectedObserver={responseSchemaSelectedObserver}/>;
+                responseSchemaSelectedObserver={responseSchemaSelectedObserver} />;
         } else {
-            return <EmptyTable/>;
+            return <EmptyTable />;
         }
     } else if (typeof body === 'object') {
         if (!mediaType.schema) {
@@ -103,7 +98,7 @@ export const OperationResponse = ({
                 mediaType={mediaType}
                 loading={loading}
                 responseSchemaSelectedObserver={responseSchemaSelectedObserver}
-                apiContext={apiContext}/>;
+                apiContext={apiContext} />;
         } else {
             const schema = resolveSchemaFromSchemaOrReference(mediaType.schema, apiContext.apiSpec.document);
 
@@ -117,7 +112,7 @@ export const OperationResponse = ({
 
                 if (onlyPropertySchema.type === "array") {
                     if (body[arrayPropertyName]?.length === 0) {
-                        return <EmptyTable/>;
+                        return <EmptyTable />;
                     }
                     return <EnhancedTable
                         rows={body[arrayPropertyName]}
@@ -125,7 +120,7 @@ export const OperationResponse = ({
                         loading={loading}
                         onRefreshNeeded={onRefreshNeeded}
                         apiContext={apiContext}
-                        responseSchemaSelectedObserver={responseSchemaSelectedObserver}/>;
+                        responseSchemaSelectedObserver={responseSchemaSelectedObserver} />;
 
                 }
             } else if (schema.properties && schemaPropertyNames.length === 2) {
@@ -146,7 +141,7 @@ export const OperationResponse = ({
                                 loading={loading}
                                 onRefreshNeeded={onRefreshNeeded}
                                 apiContext={apiContext}
-                                responseSchemaSelectedObserver={responseSchemaSelectedObserver}/>;
+                                responseSchemaSelectedObserver={responseSchemaSelectedObserver} />;
                         }
                     }
 
@@ -158,7 +153,7 @@ export const OperationResponse = ({
                 mediaType={mediaType}
                 loading={loading}
                 responseSchemaSelectedObserver={responseSchemaSelectedObserver}
-                apiContext={apiContext}/>;
+                apiContext={apiContext} />;
         }
     } else {
         return (

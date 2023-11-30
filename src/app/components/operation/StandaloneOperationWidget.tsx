@@ -17,7 +17,7 @@ export const StandaloneOperationWidget = ({operation}: StandaloneOperationWidget
     }
 
     if (error) {
-        return <ErrorAlert error={error}/>;
+        return <ErrorAlert error={error} apiContext={apiContext}/>;
     }
 
     return <ApiOperationWidget operation={operation} apiContext={apiContext}/>;

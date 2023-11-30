@@ -1,14 +1,15 @@
-import {Warning} from "@mui/icons-material";
+import { Warning } from "@mui/icons-material";
 import Typography from "@mui/joy/Typography";
-import {Alert} from "@mui/joy";
-import React, {ReactNode} from "react";
+import { Alert, Box, Stack } from "@mui/joy";
+import React, { ReactNode } from "react";
 
 export interface WarningAlertProps {
     title: ReactNode
+    headerActionButton?: ReactNode,
     children?: React.ReactNode;
 }
 
-export const WarningAlert = ({title, children}: WarningAlertProps) => {
+export const WarningAlert = ({ title, headerActionButton, children }: WarningAlertProps) => {
     return (
         <Alert
             sx={{
@@ -18,12 +19,15 @@ export const WarningAlert = ({title, children}: WarningAlertProps) => {
             startDecorator={<Warning />}
             variant="soft"
             color="warning">
-            <div>
-                <div>{title}</div>
+            <Box>
+                <Stack direction={'row'} justifyContent={'space-between'}>
+                    {title}
+                    {headerActionButton}
+                </Stack>
                 <Typography level="body-sm" color="warning">
                     {children}
                 </Typography>
-            </div>
+            </Box>
         </Alert>
     );
 }

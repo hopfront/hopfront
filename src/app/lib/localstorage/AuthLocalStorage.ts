@@ -17,6 +17,10 @@ const buildStaticAuthLocalStorageKey = (apiSpecId: string, apiServerUrl: string)
     return `com.hopfront.api.${apiSpecId}.${apiServerUrl}.static-auth`;
 }
 
+const buildDoNotShowAgainCorsWarningLocalStorageKey = (apiSpecId: string) => {
+    return `com.hopfront.api.${apiSpecId}.do-not-show-again-cors-warning`;
+}
+
 export interface BasicAuthCredentials {
     username: string,
     password: string
@@ -93,5 +97,11 @@ export class AuthLocalStorage {
         }) as StaticAuthCredentials | undefined;
     }
 
-    
+    public static getDoNotShowAgainCorsWarning(apiSpecId: string): boolean | undefined {
+        return tryGetFromLocalStorage<boolean>(buildDoNotShowAgainCorsWarningLocalStorageKey(apiSpecId));
+    }
+
+    public static setDoNotShowAgainCorsWarning(apiSpecId: string, doNotShowAgain: boolean) {
+        trySetToLocalStorage(buildDoNotShowAgainCorsWarningLocalStorageKey(apiSpecId), JSON.stringify(doNotShowAgain));
+    }
 }

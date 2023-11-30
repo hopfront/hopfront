@@ -99,7 +99,6 @@ export const DashboardPanelChartContent = ({
                                            }: DashboardPanelChartContentProps) => {
 
     const [responseText, setResponseText] = useState<string | undefined>();
-    const [authStatus, setAuthStatus] = useState<ApiAuthenticationStatus | undefined>();
 
     const response = operationResponse.response;
 
@@ -122,10 +121,7 @@ export const DashboardPanelChartContent = ({
     if (problem) {
         return <ProblemAlert
             problem={problem}
-            authenticationContext={authStatus && {
-                authenticationStatus: authStatus,
-                apiSpecId: apiContext.apiSpec.id
-            }}
+            apiContext={apiContext}
             onClose={() => setResponseText(undefined)}/>;
     }
 
