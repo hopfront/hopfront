@@ -14,9 +14,6 @@ import { ParameterWithValue } from "@/app/lib/model/ParameterWithValue";
 import { ApiContext } from "../model/ApiContext";
 import {SecurityScheme} from "@/app/lib/model/SecurityScheme";
 import {getSecurityScheme} from "@/app/lib/openapi/utils";
-import {
-    buildSecuritySchemeLocalStorageKeyPrefix
-} from "@/app/components/authentication/oauth2/OAuth2AuthenticationGuard";
 
 const buildUrl = (
     parameters: ParameterWithValue[],

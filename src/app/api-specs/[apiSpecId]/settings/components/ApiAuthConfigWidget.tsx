@@ -1,17 +1,18 @@
-import { InfoAlert } from "@/app/components/alert/InfoAlert"
-import { EventType, useSnackbar } from "@/app/hooks/useSnackbar"
-import { ApiConfigApi } from "@/app/lib/api/ApiConfigApi"
-import { ApiAuthenticationConfig, AuthenticationType } from "@/app/lib/dto/ApiAuthenticationConfig"
-import { AuthLocalStorage } from "@/app/lib/localstorage/AuthLocalStorage"
-import { ApiContext } from "@/app/lib/model/ApiContext"
-import { UpdatableValue } from "@/app/lib/model/UpdatableValue"
-import { KeyboardArrowDown } from "@mui/icons-material"
-import { Box, CircularProgress, Typography } from "@mui/joy"
+import {EventType, useSnackbar} from "@/app/hooks/useSnackbar"
+import {ApiConfigApi} from "@/app/lib/api/ApiConfigApi"
+import {ApiAuthenticationConfig, AuthenticationType} from "@/app/lib/dto/ApiAuthenticationConfig"
+import {AuthLocalStorage} from "@/app/lib/localstorage/AuthLocalStorage"
+import {ApiContext} from "@/app/lib/model/ApiContext"
+import {UpdatableValue} from "@/app/lib/model/UpdatableValue"
+import {KeyboardArrowDown} from "@mui/icons-material"
+import {Box, CircularProgress, Typography} from "@mui/joy"
 import Option from '@mui/joy/Option'
-import Select, { selectClasses } from "@mui/joy/Select"
-import { useEffect, useMemo, useState } from "react"
-import { useDebouncedCallback } from "use-debounce"
+import Select, {selectClasses} from "@mui/joy/Select"
+import {useEffect, useMemo, useState} from "react"
+import {useDebouncedCallback} from "use-debounce"
 import AuthenticationTypeComponent from "./AuthenticationTypeComponent"
+import {SecuritySchemeList} from "@/app/api-specs/[apiSpecId]/settings/components/security-schemes/SecuritySchemeList";
+import FormControl from "@mui/joy/FormControl";
 
 interface ApiAuthenticationProps {
     apiContext: ApiContext,
@@ -24,11 +25,11 @@ const getSavedAuthenticationOrDefault = (authenticationConfig: ApiAuthentication
     };
 }
 
-export const ApiAuthConfigWidget = ({ apiContext, sx }: ApiAuthenticationProps) => {
+export const ApiAuthConfigWidget = ({apiContext, sx}: ApiAuthenticationProps) => {
     const [saving, setSaving] = useState(false);
     const debouncedSaveAuthentication = useDebouncedCallback((specId: string, currentAuth: ApiAuthenticationConfig) => {
         setSaving(true);
-        ApiConfigApi.saveApiConfig(specId, { authenticationConfig: currentAuth })
+        ApiConfigApi.saveApiConfig(specId, {authenticationConfig: currentAuth})
             .then(() => {
                 if (currentAuth.authenticationType === 'ACCESS_TOKEN') {
                     AuthLocalStorage.setAccessToken(apiContext, undefined);
@@ -43,11 +44,11 @@ export const ApiAuthConfigWidget = ({ apiContext, sx }: ApiAuthenticationProps) 
     }, [apiContext.config.authenticationConfig]);
     const [currentAuth, setCurrentAuth] = useState<ApiAuthenticationConfig>(initialAuth);
     const [authType, setAuthType] = useState<AuthenticationType>(initialAuth.authenticationType);
-    const { showSnackbar, Snackbar } = useSnackbar();
+    const {showSnackbar, Snackbar} = useSnackbar();
 
     const updateFormCallback = useMemo(() => {
         return {
-            value: { ...initialAuth, authenticationType: authType },
+            value: {...initialAuth, authenticationType: authType},
             onValueUpdate: (value) => {
                 value && setCurrentAuth(value)
             }
@@ -55,7 +56,7 @@ export const ApiAuthConfigWidget = ({ apiContext, sx }: ApiAuthenticationProps) 
     }, [authType, initialAuth])
 
     useEffect(() => {
-        setCurrentAuth((auth) => ({ ...auth, authenticationType: authType }))
+        setCurrentAuth((auth) => ({...auth, authenticationType: authType}))
     }, [authType])
 
     useEffect(() => {
@@ -65,47 +66,44 @@ export const ApiAuthConfigWidget = ({ apiContext, sx }: ApiAuthenticationProps) 
     }, [currentAuth, initialAuth, apiContext.apiSpec.id])
 
     return (
-        <Box sx={{ ...sx }}>
-            <InfoAlert>
-                <Typography level='body-sm'>
-                    Configure the authentication type and settings for your API requests here. <br />
-                    Note that you&apos;re only setting up the authentication method; user credentials will be requested
-                    as needed while using HopFront. <br />
-                    These settings apply to all API requests made through this configuration.
-                </Typography>
-            </InfoAlert>
-            <form style={{ marginTop: '24px' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', pb: 1 }}>
-                    <Select
-                        onChange={(_, value) => {
-                            setAuthType(value as AuthenticationType);
-                        }}
-                        indicator={<KeyboardArrowDown />}
-                        slotProps={{
-                            button: {
-                                id: 'import-mode-select',
-                                'aria-labelledby': 'select-label select-button',
-                            }
-                        }}
-                        value={authType}
-                        endDecorator={saving && <CircularProgress size="sm" />}
-                        disabled={saving}
-                        sx={{
-                            width: '15%',
-                            minWidth: '250px',
-                            [`& .${selectClasses.indicator}`]: {
-                                transition: '0.2s',
-                                [`&.${selectClasses.expanded}`]: {
-                                    transform: 'rotate(180deg)',
+        <Box sx={{...sx}}>
+            <SecuritySchemeList apiContext={apiContext}/>
+            <form style={{marginTop: '24px'}}>
+                <Box sx={{display: 'flex', alignItems: 'center', pb: 1}}>
+                    <FormControl>
+                        <Typography level="title-lg">Global Authentication</Typography>
+                        <Typography level="body-sm" sx={{mb: 1}}>Below is the authentication which is a applied globally to the API.</Typography>
+                        <Select
+                            onChange={(_, value) => {
+                                setAuthType(value as AuthenticationType);
+                            }}
+                            indicator={<KeyboardArrowDown/>}
+                            slotProps={{
+                                button: {
+                                    id: 'import-mode-select',
+                                    'aria-labelledby': 'select-label select-button',
+                                }
+                            }}
+                            value={authType}
+                            endDecorator={saving && <CircularProgress size="sm"/>}
+                            disabled={saving}
+                            sx={{
+                                width: '15%',
+                                minWidth: '250px',
+                                [`& .${selectClasses.indicator}`]: {
+                                    transition: '0.2s',
+                                    [`&.${selectClasses.expanded}`]: {
+                                        transform: 'rotate(180deg)',
+                                    },
                                 },
-                            },
-                        }}
-                    >
-                        <Option value="STATIC">Static Header/Query Param</Option>
-                        <Option value="BASIC_AUTH">Basic Auth</Option>
-                        <Option value="ACCESS_TOKEN">Access Token</Option>
-                        <Option value="NONE">None</Option>
-                    </Select>
+                            }}
+                        >
+                            <Option value="STATIC">Static Header/Query Param</Option>
+                            <Option value="BASIC_AUTH">Basic Auth</Option>
+                            <Option value="ACCESS_TOKEN">Access Token</Option>
+                            <Option value="NONE">None</Option>
+                        </Select>
+                    </FormControl>
                 </Box>
                 <AuthenticationTypeComponent
                     type={authType}
