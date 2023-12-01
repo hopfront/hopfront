@@ -1,6 +1,8 @@
 import { WarningAlert } from "@/app/components/alert/WarningAlert";
 import { ResponsiveModal } from "@/app/components/modal/ResponsiveModal";
 import { Box, Button, Stack, Typography } from "@mui/joy";
+import {ButtonRow} from "@/app/components/button/ButtonRow";
+import {Warning} from "@mui/icons-material";
 
 interface SkipNoDefaultServersModalProps {
     showModal: boolean
@@ -18,14 +20,14 @@ export default function skipNoDefaultServersModal({ showModal, onCancel, onConti
                 </Typography>
             </WarningAlert>
 
-            <Stack direction='row' sx={{ mt: 2 }} gap={1}>
-                <Button onClick={() => onCancel()}>
+            <ButtonRow sx={{mt: 2}} align="right">
+                <Button variant="outlined" onClick={() => onCancel()}>
                     Cancel
                 </Button>
-                <Button color='warning' onClick={() => onContinue()}>
+                <Button startDecorator={<Warning/>} color='warning' onClick={() => onContinue()}>
                     Continue without configured servers
                 </Button>
-            </Stack>
+            </ButtonRow>
         </ResponsiveModal>
     )
 }
