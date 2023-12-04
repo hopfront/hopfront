@@ -2,7 +2,7 @@
 
 [HopFront](https://hopfront.com/) is the best way to interact with APIs.
 
-![HopFront Screenshot](https://assets-global.website-files.com/6509ca11e3b6da53bf4fc5f3/6526a6f8a09c665151916bcb_Screenshot%202023-10-11%20at%2015.44.39-p-1080.png)
+![HopFront Screenshot](https://assets-global.website-files.com/6509ca11e3b6da53bf4fc5f3/655759bca870a588237dd248_Group%2030-p-1080.png)
 
 ## Features
 - Set up in _literally_ 2 minutes.
