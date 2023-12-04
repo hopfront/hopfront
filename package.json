@@ -13,7 +13,7 @@
     "@emotion/styled": "^11.11.0",
     "@fontsource/public-sans": "^5.0.15",
     "@jonkoops/matomo-tracker-react": "^0.7.0",
-    "@mui/icons-material": "^5.14.18",
+    "@mui/icons-material": "^5.14.19",
     "@mui/joy": "^5.0.0-beta.16",
     "@readme/openapi-parser": "^2.5.0",
     "@types/node": "20.10.3",
