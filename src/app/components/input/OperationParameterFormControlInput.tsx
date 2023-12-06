@@ -1,5 +1,4 @@
 import { OperationParameterFetchValueModal } from "@/app/components/foreign-keys/OperationParameterFetchValueModal";
-import { ForeignKeyFormControlInput } from "@/app/components/input/ForeignKeyFormControlInput";
 import { InputMenu } from "@/app/components/input/InputMenu";
 import { SchemaFormControlInput } from "@/app/components/input/SchemaFormControlInput";
 import { ParameterExtension } from "@/app/lib/dto/OpenApiExtensions";
@@ -56,58 +55,33 @@ export const OperationParameterFormControlInput = ({
             disabled={disabled}
             debounceMillis={debounceMillis}
             menu={menu}
+            foreignKeys={parameterExtension?.foreignKeys ?? []}
             apiContext={apiContext} />;
     }
 
-    if (parameterExtension && parameterExtension.foreignKeys.length > 0) {
-        return (
-            <Box
-                key={`${operation.path}:${parameter.parameter.name}`}
-                sx={{ mb: INPUT_MARGIN_BOTTOM }}>
-                <ForeignKeyFormControlInput
-                    inputDescription={parameter.parameter.description}
-                    inputLabel={parameter.parameter.name}
-                    updatableValue={{
-                        value: parameter.value,
-                        onValueUpdate: (value) => {
-                            onValueChanged({
-                                parameter: parameter.parameter,
-                                value: value,
-                                readonly: parameter.readonly
-                            });
-                        }
-                    }}
-                    disabled={disabled || parameter.readonly}
-                    foreignKeys={parameterExtension.foreignKeys}
-                    schema={parameter.parameter.schema}
-                />
-            </Box>
-        );
-    } else {
-        return (
-            <Box
-                key={`${operation.path}:${parameter.parameter.name}`}
-                sx={{ mb: INPUT_MARGIN_BOTTOM }}>
-                {buildSchemaFormControlInput({
-                    icon: Settings,
-                    items: [{
-                        icon: AutoFixHigh,
-                        text: 'Fetch value from an other operation',
-                        onClick: () => setFetchValueModalOpen(true)
-                    }]
-                })}
-                <OperationParameterFetchValueModal
-                    operation={operation}
-                    parameter={parameter.parameter}
-                    open={fetchValueModalOpen}
-                    onClose={() => setFetchValueModalOpen(false)}
-                    onConfigurationUpdate={() => {
-                        setFetchValueModalOpen(false);
-                        router.refresh();
-                    }}
-                    inputWithoutForeignKeyPreview={buildSchemaFormControlInput(undefined)}
-                    apiContext={apiContext} />
-            </Box>
-        );
-    }
+    return (
+        <Box
+            key={`${operation.path}:${parameter.parameter.name}`}
+            sx={{ mb: INPUT_MARGIN_BOTTOM }}>
+            {buildSchemaFormControlInput({
+                icon: Settings,
+                items: [{
+                    icon: AutoFixHigh,
+                    text: 'Fetch value from an other operation',
+                    onClick: () => setFetchValueModalOpen(true)
+                }]
+            })}
+            <OperationParameterFetchValueModal
+                operation={operation}
+                parameter={parameter.parameter}
+                open={fetchValueModalOpen}
+                onClose={() => setFetchValueModalOpen(false)}
+                onConfigurationUpdate={() => {
+                    setFetchValueModalOpen(false);
+                    router.refresh();
+                }}
+                inputWithoutForeignKeyPreview={buildSchemaFormControlInput(undefined)}
+                apiContext={apiContext} />
+        </Box>
+    );
 }

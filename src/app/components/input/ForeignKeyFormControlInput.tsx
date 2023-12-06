@@ -26,11 +26,11 @@ import ReferenceObject = OpenAPIV3.ReferenceObject;
 import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
 import SchemaObject = OpenAPIV3.SchemaObject;
 
-const getForeignKeyWithinSchema = (schemaRef: ReferenceObject, foreignKeys: ForeignKey[], document: OpenAPIV3.Document): ForeignKey | undefined => {
+export const getForeignKeyWithinSchema = (schemaRef: ReferenceObject, foreignKeys: ForeignKey[], document: OpenAPIV3.Document): ForeignKey | undefined => {
     return foreignKeys.find(foreignKey => schemaContainsForeignKey(schemaRef, foreignKey, document));
 }
 
-const schemaContainsPropertyName = (schema: SchemaObject, propertyName: string): boolean => {
+export const schemaContainsPropertyName = (schema: SchemaObject, propertyName: string): boolean => {
     for (const otherSchemaPropertyName in schema.properties) {
         if (otherSchemaPropertyName === propertyName) {
             return true;
@@ -40,7 +40,7 @@ const schemaContainsPropertyName = (schema: SchemaObject, propertyName: string):
     return false;
 }
 
-const schemaContainsForeignKey = (schemaRef: ReferenceObject, foreignKey: ForeignKey, document: OpenAPIV3.Document): boolean => {
+export const schemaContainsForeignKey = (schemaRef: ReferenceObject, foreignKey: ForeignKey, document: OpenAPIV3.Document): boolean => {
     const schema = getSchemaByRef(schemaRef.$ref, document);
 
     if (schemaRef.$ref === foreignKey.schemaRef) {
@@ -92,18 +92,18 @@ const getCachedSelectedObject = (cacheKey: string | undefined): any | undefined 
     }
 }
 
-interface SelectedObject {
+export interface SelectedObject {
     value: any
     schemaRef?: string
     apiSpecId: string
 }
 
-interface SelectedOperation {
+export interface SelectedOperation {
     operation: StandaloneOperation
     responseSchemaSelectedObserver: ResponseSchemaSelectedObserver
 }
 
-interface OperationWithForeignKey {
+export interface OperationWithForeignKey {
     operation: StandaloneOperation
     foreignKey: ForeignKey;
 }
@@ -281,6 +281,7 @@ export const ForeignKeyFormControlInput = ({
                         schema={schema}
                         required={required}
                         readOnly={readOnly}
+                        foreignKeys={[]}
                         debounceMillis={500} />}
                 <ButtonGroup
                     ref={anchorRef}

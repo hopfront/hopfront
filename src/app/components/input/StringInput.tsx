@@ -1,12 +1,14 @@
-import {UpdatableValue} from "@/app/lib/model/UpdatableValue";
+import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
 import Option from "@mui/joy/Option";
 import Select from "@mui/joy/Select";
-import {OpenAPIV3} from "openapi-types";
-import {HTMLInputTypeAttribute, SyntheticEvent} from "react";
+import { OpenAPIV3 } from "openapi-types";
+import { HTMLInputTypeAttribute, SyntheticEvent } from "react";
 import NonArraySchemaObject = OpenAPIV3.NonArraySchemaObject;
-import {Monospace} from "../typography/Monospace";
-import {InputMenu} from "@/app/components/input/InputMenu";
-import {ManualInput, ManualInputValueType} from "@/app/components/input/ManualInput";
+import { Monospace } from "../typography/Monospace";
+import { InputMenu } from "@/app/components/input/InputMenu";
+import { ManualInput, ManualInputValueType } from "@/app/components/input/ManualInput";
+import SmartManualInput from "./SmartManualInput";
+import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
 
 export interface StringInputProps {
     name?: string,
@@ -16,16 +18,18 @@ export interface StringInputProps {
     required?: boolean
     readOnly?: boolean
     menu?: InputMenu
+    foreignKeys: ForeignKey[]
 }
 
 export const StringInput = ({
-                                updatableValue,
-                                schemaObject,
-                                debounceMillis = 0,
-                                required,
-                                readOnly,
-                                menu
-                            }: StringInputProps) => {
+    updatableValue,
+    schemaObject,
+    debounceMillis = 0,
+    required,
+    readOnly,
+    menu,
+    foreignKeys
+}: StringInputProps) => {
     const enumValues = schemaObject.enum as string[];
 
     if (enumValues) {
@@ -74,7 +78,8 @@ export const StringInput = ({
                 };
 
                 return (
-                    <ManualInput
+                    <SmartManualInput
+                        updatableValue={updatableValue}
                         type={inputType()}
                         required={required}
                         placeholder={schemaObject.example}
@@ -82,7 +87,8 @@ export const StringInput = ({
                         debounceMillis={debounceMillis}
                         defaultValue={updatableValue.value}
                         readOnly={readOnly || schemaObject.readOnly}
-                        menu={menu}/>
+                        menu={menu}
+                        foreignKeys={foreignKeys} />
                 );
             }
         }

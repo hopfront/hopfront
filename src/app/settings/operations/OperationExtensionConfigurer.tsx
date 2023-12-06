@@ -92,6 +92,7 @@ export const OperationExtensionConfigurer = ({
                                 value: undefined,
                                 onValueUpdate: value => null
                             }}
+                            foreignKeys={[]}
                             apiContext={apiContext}/>;
 
                     return (

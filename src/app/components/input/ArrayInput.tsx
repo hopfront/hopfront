@@ -1,4 +1,4 @@
-import {ApiContext, SchemaOrReference} from "@/app/lib/model/ApiContext";
+import { ApiContext, SchemaOrReference } from "@/app/lib/model/ApiContext";
 import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
 import { randomInternalId, resolveSchemaFromSchemaOrReference } from "@/app/lib/openapi/utils";
 import { ArrayItemInput } from "@/app/components/input/ArrayItemInput";
@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { ModalFormObject } from "../modal/ModalFormObject";
 import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
 import Typography from "@mui/joy/Typography";
+import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
 
 interface ArrayItem {
     internalId: string
@@ -20,11 +21,12 @@ export interface ArrayInputProps {
     updatableValue: UpdatableValue<any[]>
     schema: SchemaOrReference
     apiContext: ApiContext
+    foreignKeys: ForeignKey[]
 }
 
 const RANDOM_INTERNAL_ID_LENGTH = 8;
 
-export const ArrayInput = ({ updatableValue, schema, apiContext }: ArrayInputProps) => {
+export const ArrayInput = ({ updatableValue, schema, apiContext, foreignKeys }: ArrayInputProps) => {
     const [creationModalOpen, setCreationModalOpen] = useState(false);
     const [modalRefresher, setModalRefresher] = useState(0);
 
@@ -88,6 +90,7 @@ export const ArrayInput = ({ updatableValue, schema, apiContext }: ArrayInputPro
         <Stack direction="column" spacing={1}>
             {items.map(item => {
                 return <ArrayItemInput
+                    foreignKeys={foreignKeys}
                     key={item.internalId}
                     updatableValue={{
                         value: item.value,

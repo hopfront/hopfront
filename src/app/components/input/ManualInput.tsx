@@ -15,7 +15,6 @@ export interface ManualInputProps {
     disabled?: boolean
     readOnly?: boolean
     debounceMillis?: number
-    menu?: InputMenu
     endDecorator?: React.ReactNode
     min?: number
     max?: number
@@ -31,14 +30,12 @@ export const ManualInput = ({
     disabled,
     debounceMillis = 0,
     readOnly,
-    menu,
     endDecorator,
     min,
     max,
-    sx
+    sx,
 }: ManualInputProps) => {
 
-    const inputRef = useRef<HTMLInputElement | null>(null);
     const onInputChange = useDebouncedCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
             onChange(event.target.value);
@@ -47,48 +44,24 @@ export const ManualInput = ({
     );
 
     return (
-        <>
-            <Input
-                endDecorator={endDecorator ? endDecorator : menu &&
-                    <Dropdown>
-                        <MenuButton
-                            slots={{ root: IconButton }}
-                        >
-                            <SvgIcon slots={{ root: menu.icon }} />
-                        </MenuButton>
-                        <Menu sx={{ zIndex: 'calc(var(--joy-zIndex-modal) + 1)' }}
-                            placement="bottom-start">
-                            {menu.items.map(menuItem => (
-                                <MenuItem
-                                    key={menuItem.text}
-                                    onClick={menuItem.onClick}>
-                                    {menuItem.icon &&
-                                        <ListItemDecorator>
-                                            <SvgIcon slots={{ root: menuItem.icon }} />
-                                        </ListItemDecorator>}
-                                    {menuItem.text}
-                                </MenuItem>
-                            ))}
-                        </Menu>
-                    </Dropdown>}
-                sx={{
-                    ...sx,
-                    "--Input-placeholderOpacity": 0.2
-                }}
-                type={type}
-                defaultValue={defaultValue}
-                placeholder={placeholder}
-                required={required}
-                disabled={disabled || readOnly}
-                onChange={onInputChange}
-                slotProps={{
-                    input: {
-                        ref: inputRef,
-                        min: min,
-                        max: max,
-                    }
-                }}
-                readOnly={readOnly} />
-        </>
+        <Input
+            sx={{
+                ...sx,
+                "--Input-placeholderOpacity": 0.2
+            }}
+            type={type}
+            defaultValue={defaultValue}
+            placeholder={placeholder}
+            required={required}
+            endDecorator={endDecorator}
+            disabled={disabled || readOnly}
+            onChange={onInputChange}
+            slotProps={{
+                input: {
+                    min: min,
+                    max: max,
+                }
+            }}
+            readOnly={readOnly} />
     )
 }

@@ -37,6 +37,7 @@ export const SchemaFormControlInputs = ({
             );
         } else if (!schemaObject || !schemaObject.properties) {
             return (<SchemaFormControlInput
+                foreignKeys={[]}
                 key='null-schema-property'
                 updatableValue={inputsUpdatableValue}
                 label={'Default text field'}

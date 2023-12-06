@@ -8,6 +8,7 @@ import {SchemaInput} from "@/app/components/input/SchemaInput";
 import {ApiContext, SchemaOrReference} from "@/app/lib/model/ApiContext";
 import {InputMenu} from "@/app/components/input/InputMenu";
 import Typography from "@mui/joy/Typography";
+import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
 
 const getDescription = (schema: SchemaOrReference | undefined): string | undefined => {
     if (schema && schema.hasOwnProperty('description')) {
@@ -27,6 +28,7 @@ export interface SchemaFormControlInputProps {
     readOnly?: boolean
     debounceMillis?: number
     menu?: InputMenu
+    foreignKeys: ForeignKey[]
     apiContext: ApiContext
 }
 
@@ -39,6 +41,7 @@ export const SchemaFormControlInput = ({
                                            readOnly,
                                            debounceMillis = 0,
                                            menu,
+                                           foreignKeys,
                                            apiContext
                                        }: SchemaFormControlInputProps) => {
 
@@ -54,6 +57,7 @@ export const SchemaFormControlInput = ({
                 readOnly={readOnly}
                 debounceMillis={debounceMillis}
                 menu={menu}
+                foreignKeys={foreignKeys}
                 apiContext={apiContext}/>
             {description && <MarkdownFormHelperText text={description}/>}
         </FormControl>

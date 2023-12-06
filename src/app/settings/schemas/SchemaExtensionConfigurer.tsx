@@ -145,6 +145,7 @@ export const SchemaExtensionConfigurer = ({
                             onValueUpdate: () => null
                         }}
                         label={propertyExtension.label || propertyExtension.propertyName}
+                        foreignKeys={[]}
                         apiContext={apiContext}/>
 
                     return (

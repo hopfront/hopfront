@@ -1,15 +1,15 @@
-import {ParameterWithValue} from "@/app/lib/model/ParameterWithValue";
-import {getRequestBodyDefinitions} from "@/app/lib/openapi/utils";
-import {SchemaObjectArrayInput} from "@/app/components/input/SchemaObjectArrayInput";
-import {OperationInputs} from "@/app/lib/model/OperationInputs";
-import {Button} from "@mui/joy";
-import {OpenAPIV3} from "openapi-types";
-import {FormEvent, FormEventHandler, useEffect, useMemo, useState} from "react";
+import { ParameterWithValue } from "@/app/lib/model/ParameterWithValue";
+import { getRequestBodyDefinitions } from "@/app/lib/openapi/utils";
+import { SchemaObjectArrayInput } from "@/app/components/input/SchemaObjectArrayInput";
+import { OperationInputs } from "@/app/lib/model/OperationInputs";
+import { Button } from "@mui/joy";
+import { OpenAPIV3 } from "openapi-types";
+import { FormEvent, FormEventHandler, useEffect, useMemo, useState } from "react";
 import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
-import {StandaloneOperation} from "@/app/lib/model/StandaloneOperation";
-import {ApiContext} from "@/app/lib/model/ApiContext";
-import {OperationParametersFormControlInputs} from "@/app/components/input/OperationParametersFormControlInputs";
-import {OperationBodyInput} from "@/app/components/input/RequestBodyInput";
+import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
+import { ApiContext } from "@/app/lib/model/ApiContext";
+import { OperationParametersFormControlInputs } from "@/app/components/input/OperationParametersFormControlInputs";
+import { SchemaFormControlInputs } from "../input/SchemaFormControlInputs";
 
 export interface OperationInputFormProps {
     operation: StandaloneOperation
@@ -23,15 +23,15 @@ export interface OperationInputFormProps {
 }
 
 export const OperationInputForm = ({
-                                       operation,
-                                       operationInputs,
-                                       submitLabel = "Submit",
-                                       loading,
-                                       debounceMillis = 0,
-                                       onChange,
-                                       onSubmit,
-                                       apiContext
-                                   }: OperationInputFormProps) => {
+    operation,
+    operationInputs,
+    submitLabel = "Submit",
+    loading,
+    debounceMillis = 0,
+    onChange,
+    onSubmit,
+    apiContext
+}: OperationInputFormProps) => {
 
     const [arraySchemaObject, setArraySchemaObject] = useState<ArraySchemaObject | undefined>(undefined);
 
@@ -109,11 +109,11 @@ export const OperationInputForm = ({
                 onValueChanged={onParametersChanged}
                 disabled={loading}
                 debounceMillis={debounceMillis}
-                apiContext={apiContext}/>
+                apiContext={apiContext} />
 
             {arraySchemaObject &&
                 <SchemaObjectArrayInput
-                    sx={{mb: 2}}
+                    sx={{ mb: 2 }}
                     arrayUpdatableValue={{
                         value: operationInputs.body?.content,
                         onValueUpdate: onBodyContentUpdate
@@ -123,14 +123,15 @@ export const OperationInputForm = ({
                 />}
 
             {!arraySchemaObject && currentRequestBodyDefinition &&
-                <OperationBodyInput
-                    requestBodyDefinition={currentRequestBodyDefinition}
-                    bodyContent={{
+                <SchemaFormControlInputs
+                    inputsUpdatableValue={{
                         value: operationInputs.body?.content,
                         onValueUpdate: value => onBodyContentUpdate(value)
                     }}
+                    schema={currentRequestBodyDefinition.schema}
                     readonlyProperties={operationInputs.body?.readonlyProperties}
-                    apiContext={apiContext}/>}
+                    apiContext={apiContext}
+                />}
             {onSubmit && <Button type="submit" loading={loading}>{submitLabel}</Button>}
         </form>
     );

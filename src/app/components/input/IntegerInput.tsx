@@ -7,6 +7,8 @@ import NonArraySchemaObject = OpenAPIV3.NonArraySchemaObject;
 import { Monospace } from "@/app/components/typography/Monospace";
 import { ManualInput, ManualInputValueType } from "@/app/components/input/ManualInput";
 import { InputMenu } from "@/app/components/input/InputMenu";
+import SmartManualInput from "./SmartManualInput";
+import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
 
 export interface IntegerInputProps {
     updatableValue: UpdatableValue<number>
@@ -15,9 +17,10 @@ export interface IntegerInputProps {
     required?: boolean
     readOnly?: boolean
     menu?: InputMenu
+    foreignKeys: ForeignKey[]
 }
 
-export const IntegerInput = ({ updatableValue, schemaObject, debounceMillis, required, readOnly, menu }: IntegerInputProps) => {
+export const IntegerInput = ({ updatableValue, schemaObject, debounceMillis, required, readOnly, menu, foreignKeys }: IntegerInputProps) => {
     const enumValues = schemaObject.enum as number[];
 
     if (enumValues) {
@@ -47,7 +50,9 @@ export const IntegerInput = ({ updatableValue, schemaObject, debounceMillis, req
         };
 
         return (
-            <ManualInput
+            <SmartManualInput
+                foreignKeys={foreignKeys}
+                updatableValue={updatableValue}
                 type="number"
                 defaultValue={updatableValue.value}
                 debounceMillis={debounceMillis}

@@ -1,11 +1,9 @@
 import { SchemaPropertyFetchValueModal } from "@/app/components/foreign-keys/SchemaPropertyFetchValueModal";
-import { ForeignKeyFormControlInput } from "@/app/components/input/ForeignKeyFormControlInput";
 import { InputMenu } from "@/app/components/input/InputMenu";
 import { SchemaFormControlInput } from "@/app/components/input/SchemaFormControlInput";
 import { PropertyExtension } from "@/app/lib/dto/OpenApiExtensions";
 import { ApiContext, SchemaOrReference } from "@/app/lib/model/ApiContext";
 import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
-import { resolveSchemaFromSchemaOrReference } from "@/app/lib/openapi/utils";
 import { AutoFixHigh, Settings } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -36,23 +34,6 @@ export const SchemaPropertyFormControlInput = ({
 
     const router = useRouter();
     const [fetchValueModalOpen, setFetchValueModalOpen] = useState(false);
-    const propertySchemaObject =
-        resolveSchemaFromSchemaOrReference(propertySchema, apiContext.apiSpec.document);
-
-    if (propertyExtension && propertyExtension.foreignKeys.length > 0) {
-        return (
-            <ForeignKeyFormControlInput
-                updatableValue={updatableValue}
-                inputLabel={propertyName}
-                inputDescription={propertySchemaObject.description}
-                foreignKeys={propertyExtension.foreignKeys}
-                required={required}
-                disabled={disabled}
-                readOnly={readOnly}
-                schema={propertySchema}
-                />
-        );
-    }
 
     const buildSchemaFormControlInput = (menu: InputMenu | undefined) => {
         return <SchemaFormControlInput
@@ -63,6 +44,7 @@ export const SchemaPropertyFormControlInput = ({
             disabled={disabled}
             readOnly={readOnly}
             menu={menu}
+            foreignKeys={propertyExtension?.foreignKeys ?? []}
             apiContext={apiContext} />;
     }
 
