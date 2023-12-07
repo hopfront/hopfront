@@ -1,6 +1,6 @@
 import CssBaseline from '@mui/joy/CssBaseline';
 import GlobalStyles from '@mui/joy/GlobalStyles';
-import {CssVarsProvider, extendTheme} from '@mui/joy/styles';
+import { CssVarsProvider, extendTheme } from '@mui/joy/styles';
 import * as React from 'react';
 
 const theme = extendTheme({
@@ -14,6 +14,15 @@ const theme = extendTheme({
             }
         },
     },
+    components: {
+        JoyInput: {
+            styleOverrides: {
+                root: {
+                    '--Input-placeholderOpacity': 0.2,
+                },
+            },
+        }
+    }
 });
 
 export interface ThemeProviderProps {

@@ -1,9 +1,9 @@
+import { InstanceRepository } from "@/app/api/lib/repository/InstanceRepository";
+import { InstanceSetup } from "@/app/lib/model/InstanceProperties";
 import { NextResponse } from "next/server";
-import {InstanceSetup} from "@/app/lib/model/InstanceProperties";
-import {HopFrontPropertiesRepository} from "@/app/api/lib/repository/HopFrontPropertiesRepository";
 
 export async function POST(req: Request) {
     const setup: InstanceSetup = await req.json()
-    HopFrontPropertiesRepository.addInstancePropertySetup(setup);
+    InstanceRepository.addInstancePropertySetup(setup);
     return NextResponse.json({});
 }

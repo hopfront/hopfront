@@ -161,7 +161,6 @@ export default function SmartManualInput({
                 <Input
                     sx={{
                         ...sx,
-                        "--Input-placeholderOpacity": 0.2
                     }}
                     type={type}
                     defaultValue={defaultValue}

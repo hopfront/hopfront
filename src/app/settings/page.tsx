@@ -1,21 +1,20 @@
 'use client';
 
-import ApiCard from "@/app/settings/components/ApiCard";
 import EmptyApiSpecsView from "@/app/browse/components/EmptyApiSpecsView";
-import {useApiSpecs} from "@/app/hooks/useApiSpecs";
+import { useAnalytics } from "@/app/hooks/analytics/useAnalytics";
+import { useApiSpecs } from "@/app/hooks/useApiSpecs";
+import ApiCard from "@/app/settings/components/ApiCard";
+import { FileUpload } from "@mui/icons-material";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
-import {useRouter} from "next/navigation";
-import {useAnalytics} from "@/app/hooks/analytics/useAnalytics";
-import {useInstanceProperties} from "@/app/hooks/useInstanceProperties";
-import {FileUpload} from "@mui/icons-material";
+import { useRouter } from "next/navigation";
+import AdministratorRoleSettings from "./components/AdministratorRoleSettings";
 
 export default function Page() {
     const router = useRouter();
-    const {usePageView} = useAnalytics();
-    const {data: properties, error: propertiesError, isLoading: propertiesLoading} = useInstanceProperties();
-    const {data, error, isLoading} = useApiSpecs();
+    const { usePageView } = useAnalytics();
+    const { data, error, isLoading } = useApiSpecs();
 
     usePageView("settings-page");
 
@@ -34,23 +33,23 @@ export default function Page() {
     return (
         <Box>
             {data.apiSpecs.length === 0 ?
-                <EmptyApiSpecsView/> :
-                <>
-                    <Typography level="h1" sx={{mb: 4}}>HopFront Settings</Typography>
-                    <Box sx={{mb: 4}}>
-                        <Box display='flex' alignItems='center' gap={2} sx={{mb: 1}}>
-                            <Typography level='h2'>API Specifications</Typography>
+                <EmptyApiSpecsView /> :
+                <Box>
+                    <Typography level="h1" sx={{ mb: 4 }}>Settings</Typography>
+                    <Box>
+                        <Box display='flex' alignItems='center' gap={2} sx={{ mb: 1 }}>
+                            <Typography level='h3'>API Specifications</Typography>
                             <Button
                                 variant="outlined"
                                 title='Add an OpenApi specification'
                                 onClick={() => router.push('/settings/apis/imports')}
-                                startDecorator={<FileUpload/>}>
+                                startDecorator={<FileUpload />}>
                                 Import
                             </Button>
                         </Box>
                         {data.apiSpecs.map(apiSpec => {
                             return (
-                                <Box key={apiSpec.id} sx={{mb: 1}}>
+                                <Box key={apiSpec.id} sx={{ mb: 1 }}>
                                     <ApiCard
                                         api={apiSpec}
                                         href={`./api-specs/${apiSpec.id}/settings`}
@@ -59,7 +58,13 @@ export default function Page() {
                             );
                         })}
                     </Box>
-                </>}
+
+                    {false && <><Box sx={{ mt: 4 }}>
+                        <Typography level='h3' gutterBottom>Instance settings</Typography>
+                        <Typography level='title-lg'>Administrator permissions</Typography>
+                    </Box>
+                    <AdministratorRoleSettings /></>}
+                </Box>}
         </Box>
     );
 }
