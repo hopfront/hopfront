@@ -1,11 +1,11 @@
 import useSWR, { mutate } from "swr";
-import { InstanceAdminStatus } from "../lib/model/InstanceAdminStatus";
 import { fetcher } from "../lib/api/utils";
+import { InstanceAdminStatus } from "../lib/model/InstanceAdminStatus";
 
-export const mutateAdministratorStatus = () => {
+export const mutateAdminStatus = () => {
     return mutate(`/api/instance/admin-status`);
 }
 
-export default function useAdministratorStatus() {
+export default function useAdminStatus() {
     return useSWR<InstanceAdminStatus>('/api/instance/admin-status', fetcher);
 }

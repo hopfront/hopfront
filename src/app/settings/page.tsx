@@ -9,7 +9,7 @@ import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
 import { useRouter } from "next/navigation";
-import AdministratorRoleSettings from "./components/AdministratorRoleSettings";
+import AdminStatusSettings from "./components/AdminStatusSettings";
 
 export default function Page() {
     const router = useRouter();
@@ -63,7 +63,7 @@ export default function Page() {
                         <Typography level='h3' gutterBottom>Instance settings</Typography>
                         <Typography level='title-lg'>Administrator permissions</Typography>
                     </Box>
-                    <AdministratorRoleSettings /></>}
+                        <AdminStatusSettings /></>}
                 </Box>}
         </Box>
     );
