@@ -11,7 +11,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@fontsource/public-sans": "^5.0.15",
+    "@fontsource/public-sans": "^5.0.16",
     "@jonkoops/matomo-tracker-react": "^0.7.0",
     "@mui/icons-material": "^5.14.19",
     "@mui/joy": "^5.0.0-beta.16",
