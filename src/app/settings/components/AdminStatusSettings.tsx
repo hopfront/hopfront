@@ -2,7 +2,7 @@
 
 import { ErrorAlert } from "@/app/components/operation/response/ErrorAlert";
 import useAdminStatus from "@/app/hooks/useAdminStatus";
-import { LinearProgress } from "@mui/joy";
+import { LinearProgress, Typography } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import { useEffect, useState } from "react";
 import { DisableAdminRole } from "./DisableAdminRole";
@@ -10,14 +10,9 @@ import { EnableAdminRole } from "./EnableAdminRole";
 
 export default function AdminStatusSettings() {
     const { data: adminStatus, isLoading: isAdminStatusLoading, error: adminStatusError } = useAdminStatus();
-    const [isAdminRoleEnabled, setIsAdminRoleEnabled] = useState<boolean | undefined>();
-    const [isAdminStatusEditable, setIsAdminStatusEditable] = useState<boolean>(adminStatus?.isEditable ?? true)
 
-    useEffect(() => {
-        if (adminStatus) {
-            setIsAdminRoleEnabled(!!adminStatus.password && adminStatus.password.length > 0);
-        }
-    }, [adminStatus]);
+    const isAdminRoleEnabled = !!adminStatus?.password && adminStatus.password.length > 0;
+    const isAdminStatusEditable = adminStatus?.isEditable === true;
 
     if (isAdminStatusLoading) {
         return <LinearProgress sx={{ mt: 2 }} />;
@@ -27,12 +22,16 @@ export default function AdminStatusSettings() {
         return <ErrorAlert error={adminStatusError} />
     }
 
+    if (isAdminStatusEditable === false) {
+        return <Typography>Not editable</Typography>
+    }
+
     return (
         <Box>
-            {!isAdminRoleEnabled && adminStatus &&
+            {!isAdminRoleEnabled && adminStatus && isAdminStatusEditable &&
                 <EnableAdminRole
                     adminStatus={adminStatus} />}
-            {isAdminRoleEnabled && adminStatus &&
+            {isAdminRoleEnabled && adminStatus && isAdminStatusEditable &&
                 <DisableAdminRole
                     adminStatus={adminStatus} />
             }

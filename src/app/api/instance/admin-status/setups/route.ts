@@ -5,7 +5,10 @@ export async function PUT(req: Request): Promise<Response> {
     const envPassword = InstanceRepository.getAdminPasswordEnvironmentVariable();
 
     if (envPassword && envPassword.length > 0) {
-        throw new Error(`Cannot change admin password when environment variable ${envPassword} is set`);
+        return new Response(
+            JSON.stringify({ message: 'Cannot change admin password when HOPFRONT_ADMIN_PASSWORD environment variable is set' }),
+            { status: 404 }
+        );
     }
 
     const body = await req.json() as InstanceAdminStatus;

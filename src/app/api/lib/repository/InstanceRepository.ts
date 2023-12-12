@@ -47,7 +47,13 @@ export class InstanceRepository {
 
     static getInstanceAdminStatus(): InstanceAdminStatus {
         if (fileExists(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_STATUS_FILE)) {
-            return JSON.parse(readFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_STATUS_FILE)) as InstanceAdminStatus;
+            const adminStatus = JSON.parse(readFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_STATUS_FILE)) as InstanceAdminStatus;
+            const envPassword = this.getAdminPasswordEnvironmentVariable();
+            if (envPassword && envPassword.length > 0) {
+                adminStatus.isEditable = false;
+                adminStatus.password = undefined;
+            }
+            return adminStatus;
         } else {
             const newInstanceAdminStatus: InstanceAdminStatus = {
                 isEditable: true
