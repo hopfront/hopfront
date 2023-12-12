@@ -9,7 +9,7 @@ import FormLabel from "@mui/joy/FormLabel";
 import { useState } from "react";
 import { ImportMode } from "./ImportApiSpec";
 import SkipNoDefaultServersModal from "./SkipNoDefaultServersModal";
-import {Problem} from "@/app/lib/dto/Problem";
+import { Problem } from "@/app/lib/dto/Problem";
 
 type TextApiSpecImportProps = {
     onTextImportSucceeded: (mode: ImportMode, apiSpecId: string) => void,
