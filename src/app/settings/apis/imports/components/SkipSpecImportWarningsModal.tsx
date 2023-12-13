@@ -32,7 +32,7 @@ export default function SkipSpecImportWarningsModal({ showModal, onCancel, onCon
             {problem?.codes?.includes(ApiErrorCode.SpecValidationError) &&
                 <Box sx={{mt: 2}}>
                     <Typography level="title-md">Your specification includes some formatting errors:</Typography>
-                    <Typography>To get details about the errors present in your file, submit it to the official Open API specification parser at <Link>https://apitools.dev/swagger-parser/online/</Link></Typography>
+                    <Typography>To get details about the errors present in your file, submit it to the official Open API specification parser at <Link component='a' href="https://apitools.dev/swagger-parser/online/" target="_blank" rel="noreferrer">https://apitools.dev/swagger-parser/online/</Link></Typography>
                 </Box>}
 
             <ButtonRow sx={{ mt: 2 }} align="right">
