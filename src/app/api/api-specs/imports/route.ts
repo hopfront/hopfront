@@ -57,6 +57,16 @@ const getSpecValidationProblemOrUndefined = async (apiSpec: OpenAPIV3.Document):
     } : undefined;
 }
 
+const checkSpecVersion = (apiSpec: OpenAPIV3.Document) => {
+    const specVersion = apiSpec.openapi;
+
+    if (!specVersion?.startsWith("3")) {
+        throw {
+            message : `HopFront supports only OpenAPI specifications with a version equal to or greater than v3.0.0.`
+        };
+    }
+}
+
 export async function POST(req: Request) {
     const body: ApiSpecImportRequestBody = await req.json()
 
@@ -71,6 +81,8 @@ export async function POST(req: Request) {
             const api = await OpenAPIParser.parse(body.apiSpecBaseUrl);
             const apiSpecId = buildApiSpecId(existingApiSpecs);
             const defaultApiBaseUrl = resolveApiBaseUrl(getApiServers(api as OpenAPIV3.Document)[0]);
+
+            checkSpecVersion(api as OpenAPIV3.Document);
 
             if ((defaultApiBaseUrl && defaultApiBaseUrl.startsWith("http")) || skipSpecImportWarnings) {
                 OpenAPIRepository.getInstance().saveApiSpec(apiSpecId, JSON.stringify(api));
@@ -93,6 +105,8 @@ export async function POST(req: Request) {
                 .replace(/"type"\s*:\s*"Object"/gi, '"type": "object"')
                 .replace(/"type"\s*:\s*"JSON"/gi, '"type": "object"');
             const parsedOpenApi = JSON.parse(normalizedPlainText);
+
+            checkSpecVersion(parsedOpenApi as OpenAPIV3.Document);
 
             let specValidationProblem: Problem | undefined;
 
@@ -120,6 +134,7 @@ export async function POST(req: Request) {
             });
         }
     } catch (error: any) {
+
         return problemResponse({
             status: 400,
             title: 'Failed to validate OpenAPI spec',
