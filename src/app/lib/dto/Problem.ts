@@ -5,5 +5,5 @@ export interface Problem {
     title: string
     status: number
     detail?: string,
-    code?: ApiErrorCode
+    codes?: ApiErrorCode[]
 }

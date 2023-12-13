@@ -1,5 +1,5 @@
-import {ApiSpecImportRequestBody} from "@/app/lib/dto/ApiSpecImportRequestBody";
-import {mutate} from "swr";
+import { ApiSpecImportRequestBody } from "@/app/lib/dto/ApiSpecImportRequestBody";
+import { mutate } from "swr";
 
 const mutateApiSpecList = () => {
     return mutate(`/api/api-specs`);
@@ -7,7 +7,7 @@ const mutateApiSpecList = () => {
 
 export class ApiSpecsApi {
 
-    public static async importApiSpecAsUrl(url: string, skipNoDefaultServers: boolean): Promise<string> {
+    public static async importApiSpecAsUrl(url: string, skipSpecImportWarnings: boolean): Promise<string> {
         return fetch('/api/api-specs/imports', {
             method: 'POST',
             headers: {
@@ -15,7 +15,7 @@ export class ApiSpecsApi {
             },
             body: JSON.stringify({
                 apiSpecBaseUrl: url,
-                skipNoDefaultServers: skipNoDefaultServers
+                skipSpecImportWarnings: skipSpecImportWarnings
             } as ApiSpecImportRequestBody)
         }).then(async response => {
             if (response.status >= 200 && response.status < 300) {
@@ -31,7 +31,7 @@ export class ApiSpecsApi {
         });
     }
 
-    public static async importApiSpecAsPlainText(text: string, skipNoDefaultServers: boolean): Promise<string> {
+    public static async importApiSpecAsPlainText(text: string, skipSpecImportWarnings: boolean): Promise<string> {
         return fetch('/api/api-specs/imports', {
             method: 'POST',
             headers: {
@@ -39,7 +39,7 @@ export class ApiSpecsApi {
             },
             body: JSON.stringify({
                 apiSpecPlainText: text,
-                skipNoDefaultServers: skipNoDefaultServers,
+                skipSpecImportWarnings: skipSpecImportWarnings,
             } as ApiSpecImportRequestBody),
         }).then(async response => {
             if (response.status >= 200 && response.status < 300) {

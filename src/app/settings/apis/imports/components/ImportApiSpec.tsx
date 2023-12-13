@@ -1,7 +1,7 @@
 'use client'
 
-import { ApiErrorCode } from "@/app/common/ApiErrorCode";
 import { ErrorAlert } from "@/app/components/operation/response/ErrorAlert";
+import { Problem } from "@/app/lib/dto/Problem";
 import TextApiSpecImport from "@/app/settings/apis/imports/components/TextApiSpecImport";
 import UrlApiSpecImport from "@/app/settings/apis/imports/components/UrlApiSpecImport";
 import { KeyboardArrowDown } from "@mui/icons-material";
@@ -9,7 +9,6 @@ import { Box, FormControl, FormLabel } from "@mui/joy";
 import Option from '@mui/joy/Option';
 import Select, { selectClasses } from "@mui/joy/Select";
 import { useState } from "react";
-import { Problem } from "@/app/lib/dto/Problem";
 
 export type ImportMode = 'url' | 'file';
 
@@ -22,18 +21,18 @@ export default function ImportApiSpec({ onImportSucceeded, sx }: ImportApiSpecPr
     const [importMode, setImportMode] = useState<ImportMode>('url');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Problem | undefined>(undefined);
-    const [showNoDefaultServersWarningModal, setShowNoDefaultServersWarningModal] = useState<boolean>(false);
+    const [warningModalProblem, setWarningModalProblem] = useState<Problem | undefined>(undefined);
 
     const onImportFailed = (problem: Problem) => {
-        if (problem.code === ApiErrorCode.NoDefaultServersError) {
-            setShowNoDefaultServersWarningModal(true);
+        if (problem.codes && problem.codes.length > 0) {
+            setWarningModalProblem(problem);
         } else {
             setError(problem);
         }
     }
 
     const onModalClose = () => {
-        setShowNoDefaultServersWarningModal(false);
+        setWarningModalProblem(undefined);
     }
 
     return (
@@ -73,15 +72,15 @@ export default function ImportApiSpec({ onImportSucceeded, sx }: ImportApiSpecPr
                 <UrlApiSpecImport
                     onUrlImportSucceeded={onImportSucceeded}
                     onUrlImportFailed={onImportFailed}
-                    showWarningModal={showNoDefaultServersWarningModal}
+                    warningModalProblem={warningModalProblem}
                     onWarningModalClose={onModalClose}
                     onLoading={loading => setLoading(loading)} />}
 
             {importMode === 'file' &&
                 <TextApiSpecImport
                     onTextImportSucceeded={onImportSucceeded}
-                    onTextApiImportFailed={(problem) => { onImportFailed(problem); console.log("import failed callback with problem : ", problem)}}
-                    showWarningModal={showNoDefaultServersWarningModal}
+                    onTextApiImportFailed={(problem) => { onImportFailed(problem); console.log("import failed callback with problem : ", problem) }}
+                    warningModalProblem={warningModalProblem}
                     onWarningModalClose={onModalClose}
                     onLoading={loading => setLoading(loading)} />}
 

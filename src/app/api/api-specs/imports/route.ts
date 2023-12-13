@@ -1,14 +1,15 @@
-import {OpenAPIRepository} from "@/app/api/lib/repository/OpenAPIRepository";
+import { OpenAPIRepository } from "@/app/api/lib/repository/OpenAPIRepository";
 import OpenAPIParser from "@readme/openapi-parser";
 
-import {problemResponse} from "@/app/api/lib/utils/utils";
-import {ApiSpecImportRequestBody} from "@/app/lib/dto/ApiSpecImportRequestBody";
-import {getApiServers, randomInternalId, resolveApiBaseUrl} from "@/app/lib/openapi/utils";
-import {NextResponse} from "next/server";
-import {OpenAPIV3} from "openapi-types";
-import {OpenAPIExtensionService} from "@/app/api/lib/service/OpenAPIExtensionService";
+import { OpenAPIExtensionService } from "@/app/api/lib/service/OpenAPIExtensionService";
+import { problemResponse } from "@/app/api/lib/utils/utils";
 import { ApiErrorCode } from "@/app/common/ApiErrorCode";
-import {ApiSpec} from "@/app/lib/dto/ApiSpec";
+import { ApiSpec } from "@/app/lib/dto/ApiSpec";
+import { ApiSpecImportRequestBody } from "@/app/lib/dto/ApiSpecImportRequestBody";
+import { Problem } from "@/app/lib/dto/Problem";
+import { getApiServers, randomInternalId, resolveApiBaseUrl } from "@/app/lib/openapi/utils";
+import { NextResponse } from "next/server";
+import { OpenAPIV3 } from "openapi-types";
 
 const resolveDefaultApiBaseUrl = (openApiV3: OpenAPIV3.Document<{}>) => {
     const apiServers = getApiServers(openApiV3);
@@ -33,12 +34,35 @@ const buildApiSpecId = (existingApiSpecs: ApiSpec[]) => {
     return apiSPecIdHypothesis;
 }
 
+const getSpecValidationProblemOrUndefined = async (apiSpec: OpenAPIV3.Document): Promise<Problem | undefined> => {
+    const errorCodes = [];
+    const defaultApiBaseUrl = resolveDefaultApiBaseUrl(apiSpec as OpenAPIV3.Document);
+
+    if (!defaultApiBaseUrl || !defaultApiBaseUrl.startsWith("http")) {
+        errorCodes.push(ApiErrorCode.NoDefaultServersError);
+    }
+
+    try {
+        await OpenAPIParser.validate(apiSpec);
+    } catch (error: any) {
+        console.log('Error validating OpenAPI spec', error);
+        errorCodes.push(ApiErrorCode.SpecValidationError);
+    }
+
+    return errorCodes.length > 0 ? {
+        status: 400,
+        title: 'OpenAPI spec validation failed',
+        detail: '',
+        codes: errorCodes
+    } : undefined;
+}
+
 export async function POST(req: Request) {
     const body: ApiSpecImportRequestBody = await req.json()
 
     console.log(`Importing OpenAPI...`);
 
-    const skipNoDefaultServersError = body.skipNoDefaultServers || false;
+    const skipSpecImportWarnings = body.skipSpecImportWarnings || false;
 
     const existingApiSpecs = OpenAPIRepository.getInstance().getApiSpecs();
 
@@ -48,7 +72,7 @@ export async function POST(req: Request) {
             const apiSpecId = buildApiSpecId(existingApiSpecs);
             const defaultApiBaseUrl = resolveApiBaseUrl(getApiServers(api as OpenAPIV3.Document)[0]);
 
-            if ((defaultApiBaseUrl && defaultApiBaseUrl.startsWith("http")) || skipNoDefaultServersError) {
+            if ((defaultApiBaseUrl && defaultApiBaseUrl.startsWith("http")) || skipSpecImportWarnings) {
                 OpenAPIRepository.getInstance().saveApiSpec(apiSpecId, JSON.stringify(api));
                 OpenAPIExtensionService.createDocumentExtension({
                     id: apiSpecId,
@@ -59,33 +83,34 @@ export async function POST(req: Request) {
                     status: 400,
                     title: 'OpenAPI specification is missing a valid default server.',
                     detail: '',
-                    code: ApiErrorCode.NoDefaultServersError
+                    codes: [ApiErrorCode.NoDefaultServersError]
                 });
             }
 
-            return NextResponse.json({'apiSpecId': apiSpecId}, {status: 201, statusText: 'Created'});
+            return NextResponse.json({ 'apiSpecId': apiSpecId }, { status: 201, statusText: 'Created' });
         } else if (body.apiSpecPlainText) {
-            const parsedOpenApi = JSON.parse(body.apiSpecPlainText);
-            const validatedOpenApi = await OpenAPIParser.validate(parsedOpenApi);
-            const defaultApiBaseUrl = resolveDefaultApiBaseUrl(validatedOpenApi as OpenAPIV3.Document);
+            const normalizedPlainText = body.apiSpecPlainText
+                .replace(/"type"\s*:\s*"Object"/gi, '"type": "object"')
+                .replace(/"type"\s*:\s*"JSON"/gi, '"type": "object"');
+            const parsedOpenApi = JSON.parse(normalizedPlainText);
 
-            if ((defaultApiBaseUrl && defaultApiBaseUrl.startsWith("http")) || skipNoDefaultServersError) {
+            let specValidationProblem: Problem | undefined;
+
+            if (!body.skipSpecImportWarnings) {
+                specValidationProblem = await getSpecValidationProblemOrUndefined(parsedOpenApi as OpenAPIV3.Document);
+            }
+
+            if (!specValidationProblem || skipSpecImportWarnings) {
                 const apiSpecId = buildApiSpecId(existingApiSpecs);
-                OpenAPIRepository.getInstance().saveApiSpec(apiSpecId, body.apiSpecPlainText);
+                OpenAPIRepository.getInstance().saveApiSpec(apiSpecId, normalizedPlainText);
                 const documentSpec = OpenAPIRepository.getInstance().getDocumentSpec(apiSpecId)!;
                 OpenAPIExtensionService.createDocumentExtension({
                     id: apiSpecId,
                     document: JSON.parse(documentSpec) as OpenAPIV3.Document
-                })
-
-                return NextResponse.json({'apiSpecId': apiSpecId}, {status: 201, statusText: 'Created'});
-            } else {
-                return problemResponse({
-                    status: 400,
-                    title: 'OpenAPI specification is missing a valid default server.',
-                    detail: '',
-                    code: ApiErrorCode.NoDefaultServersError
                 });
+                return NextResponse.json({ 'apiSpecId': apiSpecId }, { status: 201, statusText: 'Created' });
+            } else {
+                return problemResponse(specValidationProblem);
             }
         } else {
             return problemResponse({

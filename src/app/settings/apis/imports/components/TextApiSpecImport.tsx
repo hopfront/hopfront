@@ -1,6 +1,7 @@
 'use client'
 
 import { ApiSpecsApi } from "@/app/lib/api/ApiSpecsApi";
+import { Problem } from "@/app/lib/dto/Problem";
 import { CircularProgress, Textarea } from "@mui/joy";
 import Button from "@mui/joy/Button";
 import FormControl from "@mui/joy/FormControl";
@@ -8,20 +9,20 @@ import FormHelperText from "@mui/joy/FormHelperText";
 import FormLabel from "@mui/joy/FormLabel";
 import { useState } from "react";
 import { ImportMode } from "./ImportApiSpec";
-import SkipNoDefaultServersModal from "./SkipNoDefaultServersModal";
-import { Problem } from "@/app/lib/dto/Problem";
+import SkipNoDefaultServersModal from "./SkipSpecImportWarningsModal";
 
 type TextApiSpecImportProps = {
     onTextImportSucceeded: (mode: ImportMode, apiSpecId: string) => void,
     onTextApiImportFailed: (problem: Problem) => void,
-    showWarningModal: boolean,
+    warningModalProblem: Problem | undefined,
     onWarningModalClose: () => void
     onLoading: (loading: boolean) => void
 }
 
-export default function TextApiSpecImport({ onTextImportSucceeded, onTextApiImportFailed, showWarningModal, onLoading, onWarningModalClose }: TextApiSpecImportProps) {
+export default function TextApiSpecImport({ onTextImportSucceeded, onTextApiImportFailed, warningModalProblem, onLoading, onWarningModalClose }: TextApiSpecImportProps) {
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState<string | undefined>();
+    const [problem, setProblem] = useState<Problem | undefined>(undefined);
 
     function onFormSubmit() {
         if (!text) {
@@ -31,11 +32,11 @@ export default function TextApiSpecImport({ onTextImportSucceeded, onTextApiImpo
         importApi(text, false);
     }
 
-    const importApi = (text: string, skipDefaultServersRequirement: boolean) => {
+    const importApi = (text: string, skipSpecImportWarnings: boolean) => {
         setLoading(true);
         onLoading(true);
 
-        ApiSpecsApi.importApiSpecAsPlainText(text, skipDefaultServersRequirement)
+        ApiSpecsApi.importApiSpecAsPlainText(text, skipSpecImportWarnings)
             .then(apiSpecId => onTextImportSucceeded('file', apiSpecId))
             .catch((problem: Problem) => onTextApiImportFailed(problem))
             .finally(() => {
@@ -87,9 +88,10 @@ export default function TextApiSpecImport({ onTextImportSucceeded, onTextApiImpo
             </Button>
 
             <SkipNoDefaultServersModal
-                showModal={showWarningModal}
+                showModal={warningModalProblem != undefined}
                 onCancel={() => onWarningModalClose()}
-                onContinue={() => importApiWithoutDefaultServers()} />
+                onContinue={() => importApiWithoutDefaultServers()}
+                problem={warningModalProblem} />
         </>
     )
 };
