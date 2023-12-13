@@ -24,7 +24,7 @@ export default function SkipSpecImportWarningsModal({ showModal, onCancel, onCon
                         No default servers configured:
                     </Typography>
                     <Typography>
-                        You are attempting to import an OpenAPI specification that lacks a valid default server (e.g., "https://mybaseurl.com").<br />
+                        You are attempting to import an OpenAPI specification that lacks a valid default server (e.g., &quot;https://mybaseurl.com&quot;).<br />
                         We recommend updating your API specification to include default servers before importing. However, if you choose not to, you can still proceed and later configure custom servers in the API settings.
                     </Typography>
                 </Box>}
