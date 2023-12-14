@@ -1,10 +1,10 @@
 'use client';
 
+import { WarningAlert } from "@/app/components/alert/WarningAlert";
 import { ErrorAlert } from "@/app/components/operation/response/ErrorAlert";
 import useAdminStatus from "@/app/hooks/useAdminStatus";
 import { LinearProgress, Typography } from "@mui/joy";
 import Box from "@mui/joy/Box";
-import { useEffect, useState } from "react";
 import { DisableAdminRole } from "./DisableAdminRole";
 import { EnableAdminRole } from "./EnableAdminRole";
 
@@ -23,7 +23,14 @@ export default function AdminStatusSettings() {
     }
 
     if (isAdminStatusEditable === false) {
-        return <Typography>Not editable</Typography>
+        return <Box>
+            <WarningAlert title='Admin role is not editable'>
+                <Typography>
+                    The admin password is set through the HOPFRONT_ADMIN_PASSWORD environment variable, which takes precedence over HopFront settings.<br />
+                    To add or modify the admin password directly in HopFront, you must first remove the HOPFRONT_ADMIN_PASSWORD environment variable.
+                </Typography>
+            </WarningAlert>
+        </Box>
     }
 
     return (
