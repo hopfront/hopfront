@@ -5,7 +5,7 @@ import {useRouter} from "next/navigation"
 import {useEffect, useState} from "react"
 import ThreeDotsLoader from "../misc/ThreeDotsLoader"
 import Header from "./Header"
-import Sidebar from "./Sidebar"
+import Sidebar from "./sidebar/Sidebar"
 import {useApiSpecs} from "@/app/hooks/useApiSpecs"
 import {useInstanceProperties} from "@/app/hooks/useInstanceProperties";
 

@@ -51,7 +51,7 @@ export class InstanceRepository {
             const envPassword = this.getAdminPasswordEnvironmentVariable();
             if (envPassword && envPassword.length > 0) {
                 adminStatus.isEditable = false;
-                adminStatus.password = undefined;
+                adminStatus.password = envPassword;
             }
             return adminStatus;
         } else {

@@ -1,4 +1,4 @@
-import ColorSchemeToggle from '@/app/components/base/ColorSchemeToggle';
+import ColorSchemeToggle from '@/app/components/base/sidebar/ColorSchemeToggle';
 import { toggleSidebar } from '@/app/components/base/utils';
 import { Menu } from '@mui/icons-material';
 import GlobalStyles from '@mui/joy/GlobalStyles';

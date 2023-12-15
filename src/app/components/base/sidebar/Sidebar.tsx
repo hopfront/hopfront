@@ -1,18 +1,20 @@
-import {closeSidebar} from "@/app/components/base/utils";
+import ColorSchemeToggle from "@/app/components/base/sidebar/ColorSchemeToggle";
+import { closeSidebar } from "@/app/components/base/utils";
+import { FeedbackModal } from "@/app/components/modal/FeedbackModal";
+import useAdminStatus from "@/app/hooks/useAdminStatus";
 import {
     Dashboard,
     Explore, Feedback, Settings
 } from "@mui/icons-material";
+import { Stack } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import GlobalStyles from "@mui/joy/GlobalStyles";
-import Sheet from "@mui/joy/Sheet";
-import {usePathname, useRouter} from "next/navigation";
-import * as React from "react";
-import ColorSchemeToggle from "@/app/components/base/ColorSchemeToggle";
-import {Stack} from "@mui/joy";
 import IconButton from "@mui/joy/IconButton";
-import {useState} from "react";
-import {FeedbackModal} from "@/app/components/modal/FeedbackModal";
+import Sheet from "@mui/joy/Sheet";
+import { usePathname, useRouter } from "next/navigation";
+import * as React from "react";
+import { useState } from "react";
+import { AdminAuthenticationButton } from "./AdminAuthenticationButton";
 
 interface ListItemSelectableButtonProps {
     label: string
@@ -26,8 +28,16 @@ type SelectedMenuItem = "browse" | "dashboards" | "settings";
 export default function Sidebar() {
     const router = useRouter();
     const [feedbackOpen, setFeedbackOpen] = useState(false);
+    const { data: adminStatus, isLoading: isAdminStatusLoading, error: adminStatusError } = useAdminStatus();
+    const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
     const path = usePathname();
     const segments = path.split('/');
+
+    const onAdminAuthenticationSubmit = (password: string) => {
+        if (password === adminStatus?.password) {
+            setIsAdminAuthenticated(true);
+        }
+    }
 
     const getSelectedMenuItem = (): SelectedMenuItem | undefined => {
         const root = segments[1];
@@ -51,13 +61,13 @@ export default function Sidebar() {
 
     const selectedMenuItem = getSelectedMenuItem();
 
-    const SidebarButton = ({label, icon, route, selected}: ListItemSelectableButtonProps) => {
+    const SidebarButton = ({ label, icon, route, selected }: ListItemSelectableButtonProps) => {
         return (
             <IconButton
                 title={label}
                 onClick={() => router.push(route)}
                 color={selected ? 'primary' : undefined}
-                sx={{mb: 1}}>
+                sx={{ mb: 1 }}>
                 {icon}
             </IconButton>
         )
@@ -129,34 +139,39 @@ export default function Sidebar() {
                 <SidebarButton
                     route={'/browse'}
                     selected={selectedMenuItem === 'browse'}
-                    icon={<Explore/>}
+                    icon={<Explore />}
                     label="Browse"
                 />
 
                 <SidebarButton
                     route={'/dashboards'}
                     selected={selectedMenuItem === 'dashboards'}
-                    icon={<Dashboard/>}
+                    icon={<Dashboard />}
                     label="Dashboards"
                 />
 
                 <SidebarButton
                     route={'/settings'}
                     selected={selectedMenuItem === 'settings'}
-                    icon={<Settings/>}
+                    icon={<Settings />}
                     label="Settings"
                 />
             </Box>
-            <Stack>
+            <Stack gap={1}>
                 <IconButton
                     title="Give us feedback!"
                     onClick={() => setFeedbackOpen(true)}
-                    sx={{mb: 1}}>
-                    <Feedback/>
+                >
+                    <Feedback />
                 </IconButton>
-                <ColorSchemeToggle/>
+                {adminStatus?.password && adminStatus.password.length > 0 &&
+                    <AdminAuthenticationButton
+                        onAuthenticationSubmit={onAdminAuthenticationSubmit}
+                        isAuthenticated={isAdminAuthenticated}
+                    />}
+                <ColorSchemeToggle />
             </Stack>
-            <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)}/>
+            <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
         </Sheet>
     );
 }
