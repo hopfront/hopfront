@@ -5,8 +5,8 @@ import { ProblemAlert } from "@/app/components/alert/ProblemAlert";
 import { WarningAlert } from "@/app/components/alert/WarningAlert";
 import { ResponsiveModal } from "@/app/components/modal/ResponsiveModal";
 import { InstanceApi } from "@/app/lib/api/InstanceApi";
+import { InstanceAdminStatus } from "@/app/lib/dto/InstanceAdminStatus";
 import { Problem } from "@/app/lib/dto/Problem";
-import { InstanceAdminStatus } from "@/app/lib/model/InstanceAdminStatus";
 import { AdminPanelSettings, East } from "@mui/icons-material";
 import { FormControl, FormLabel, Input, Stack } from "@mui/joy";
 import Box from "@mui/joy/Box";
@@ -14,13 +14,7 @@ import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
 import { useState } from "react";
 
-interface EnableAdminRoleProps {
-    adminStatus: InstanceAdminStatus,
-}
-
-export const EnableAdminRole = (
-    { adminStatus }: EnableAdminRoleProps
-) => {
+export const EnableAdminRole = () => {
     const [enableAdminRoleModalOpen, setEnableAdminRoleModalOpen] = useState(false);
     const [adminPassword, setAdminPassword] = useState<string>('');
     const [isSubmitAdminStatusLoading, setIsSubmitAdminStatusLoading] = useState(false);
@@ -39,26 +33,29 @@ export const EnableAdminRole = (
             return;
         }
 
-        InstanceApi.saveAdminStatus({
-            ...adminStatus,
-            password: adminPassword
-        }).then(async (response) => {
-            let errorMessage = 'An unknown error occurred';
-            try {
-                const errorData = await response.json();
-                errorMessage = errorData.message || errorData.detail || JSON.stringify(errorData)
-            } catch (e) {
-                console.log('Error parsing admin status error', e);
-            }
+        InstanceApi.updateAdminPassword({ password: adminPassword })
+            .then(async (response) => {
+                if (response.ok) {
+                    setEnableAdminRoleModalOpen(false);
+                    return;
+                }
 
-            setSubmitAdminStatusError({
-                title: 'We failed to activate admin role',
-                status: response.status,
-                detail: errorMessage
+                let errorMessage = 'An unknown error occurred';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.message || errorData.detail || JSON.stringify(errorData)
+                } catch (e) {
+                    console.log('Error parsing admin status error', e);
+                }
+
+                setSubmitAdminStatusError({
+                    title: 'We failed to activate admin role',
+                    status: response.status,
+                    detail: errorMessage
+                })
+            }).finally(() => {
+                setIsSubmitAdminStatusLoading(false);
             })
-        }).finally(() => {
-            setIsSubmitAdminStatusLoading(false);
-        })
 
     }
 

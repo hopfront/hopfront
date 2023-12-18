@@ -1,5 +1,4 @@
 import { InstanceRepository } from "@/app/api/lib/repository/InstanceRepository";
-import { InstanceAdminStatus } from "@/app/lib/model/InstanceAdminStatus";
 
 export async function PUT(req: Request): Promise<Response> {
     const envPassword = InstanceRepository.getAdminPasswordEnvironmentVariable();
@@ -11,8 +10,11 @@ export async function PUT(req: Request): Promise<Response> {
         );
     }
 
-    const body = await req.json() as InstanceAdminStatus;
-    InstanceRepository.saveInstanceAdminStatus(body);
+    const body = await req.json() as InstanceAdminPasswordRequest;
+    InstanceRepository.saveInstanceAdminAuth({
+        from: 'local',
+        password: body.password,
+    });
 
     return new Response(null, { status: 204 });
 }

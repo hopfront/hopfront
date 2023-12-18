@@ -11,7 +11,7 @@ import { EnableAdminRole } from "./EnableAdminRole";
 export default function AdminStatusSettings() {
     const { data: adminStatus, isLoading: isAdminStatusLoading, error: adminStatusError } = useAdminStatus();
 
-    const isAdminRoleEnabled = !!adminStatus?.password && adminStatus.password.length > 0;
+    const isAdminRoleEnabled = adminStatus?.isEnabled === true;
     const isAdminStatusEditable = adminStatus?.isEditable === true;
 
     if (isAdminStatusLoading) {
@@ -36,11 +36,9 @@ export default function AdminStatusSettings() {
     return (
         <Box>
             {!isAdminRoleEnabled && adminStatus && isAdminStatusEditable &&
-                <EnableAdminRole
-                    adminStatus={adminStatus} />}
+                <EnableAdminRole />}
             {isAdminRoleEnabled && adminStatus && isAdminStatusEditable &&
-                <DisableAdminRole
-                    adminStatus={adminStatus} />
+                <DisableAdminRole />
             }
         </Box>
     );

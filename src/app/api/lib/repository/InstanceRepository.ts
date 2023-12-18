@@ -1,18 +1,23 @@
-import { fileExists, readFile, writeFile } from "@/app/api/lib/repository/utils";
-import { InstanceAdminStatus } from "@/app/lib/model/InstanceAdminStatus";
-import { InstanceProperties, InstanceSetup } from "@/app/lib/model/InstanceProperties";;
+import { deleteFile, fileExists, readFile, writeFile } from "@/app/api/lib/repository/utils";
+import { InstanceAdminStatus } from "@/app/lib/dto/InstanceAdminStatus";
+import { InstanceProperties, InstanceSetup } from "@/app/lib/model/InstanceProperties";
 import { randomUUID } from "crypto";
+;
 
 const _INSTANCE_DIRECTORY = 'instance';
 const _INSTANCE_PROPERTIES_FILE = 'properties.json'
-const _INSTANCE_ADMIN_STATUS_FILE = 'admin_status.json'
+const _INSTANCE_ADMIN_AUTH_FILE = 'admin_auth.json'
 
 const saveInstanceProperties = (newInstanceConfig: InstanceProperties) => {
     writeFile(_INSTANCE_DIRECTORY, _INSTANCE_PROPERTIES_FILE, JSON.stringify(newInstanceConfig));
 }
 
-const saveInstanceAdminStatus = (newAdminStatus: InstanceAdminStatus) => {
-    writeFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_STATUS_FILE, JSON.stringify(newAdminStatus));
+const saveInstanceAdminAuth = (newAdminAuth: InstanceAdminAuth) => {
+    writeFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_FILE, JSON.stringify(newAdminAuth));
+}
+
+const deleteInstanceAdminAuth = () => {
+    deleteFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_FILE);
 }
 
 export class InstanceRepository {
@@ -46,26 +51,58 @@ export class InstanceRepository {
     }
 
     static getInstanceAdminStatus(): InstanceAdminStatus {
-        if (fileExists(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_STATUS_FILE)) {
-            const adminStatus = JSON.parse(readFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_STATUS_FILE)) as InstanceAdminStatus;
-            const envPassword = this.getAdminPasswordEnvironmentVariable();
-            if (envPassword && envPassword.length > 0) {
-                adminStatus.isEditable = false;
-                adminStatus.password = envPassword;
+        const envPassword = this.getAdminPasswordEnvironmentVariable();
+
+        if (fileExists(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_FILE)) {
+            const adminAuth = JSON.parse(readFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_FILE)) as InstanceAdminAuth;
+
+            if (adminAuth && adminAuth.from === 'env' && (!envPassword || envPassword.length === 0)) { 
+                deleteInstanceAdminAuth(); // env password removed, we clear admin auth configuration
+                return {
+                    isEnabled: true,
+                    isEditable: true
+                }
+            } else if (adminAuth && adminAuth.from === 'env') {
+                return {
+                    isEnabled: true,
+                    isEditable: false
+                }
+            } else if (adminAuth && adminAuth.from === 'local' && envPassword && envPassword.length > 0) {
+                saveInstanceAdminAuth({ // switching from local to env password overrides local configuration
+                    from: 'env',
+                    password: envPassword
+                })
+                return {
+                    isEnabled: true,
+                    isEditable: false
+                }
+            } else if (adminAuth && adminAuth.from === 'local' && adminAuth.password && adminAuth.password.length > 0) {
+                return {
+                    isEnabled: true,
+                    isEditable: true
+                }
+            } else {
+                return {
+                    isEnabled: false,
+                    isEditable: true
+                }
             }
-            return adminStatus;
-        } else {
-            const newInstanceAdminStatus: InstanceAdminStatus = {
+        } else if (envPassword && envPassword.length > 0) { // first configuration done by environment variable
+            saveInstanceAdminAuth({ from: 'env', password: envPassword })
+            return {
+                isEnabled: false,
                 isEditable: true
             };
-
-            saveInstanceAdminStatus(newInstanceAdminStatus);
-            return newInstanceAdminStatus;
+        } else { // never configured yet
+            return {
+                isEnabled: false,
+                isEditable: true
+            };
         }
     }
 
-    static saveInstanceAdminStatus(newAdminStatus: InstanceAdminStatus) {
-        saveInstanceAdminStatus(newAdminStatus);
+    static saveInstanceAdminAuth(newAdminAuth: InstanceAdminAuth) {
+        saveInstanceAdminAuth(newAdminAuth);
     }
 
     static getAdminPasswordEnvironmentVariable(): string | undefined {

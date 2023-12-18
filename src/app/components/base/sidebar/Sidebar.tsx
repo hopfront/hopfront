@@ -34,9 +34,7 @@ export default function Sidebar() {
     const segments = path.split('/');
 
     const onAdminAuthenticationSubmit = (password: string) => {
-        if (password === adminStatus?.password) {
-            setIsAdminAuthenticated(true);
-        }
+        // TODO
     }
 
     const getSelectedMenuItem = (): SelectedMenuItem | undefined => {
@@ -164,7 +162,7 @@ export default function Sidebar() {
                 >
                     <Feedback />
                 </IconButton>
-                {adminStatus?.password && adminStatus.password.length > 0 &&
+                {adminStatus &&
                     <AdminAuthenticationButton
                         onAuthenticationSubmit={onAdminAuthenticationSubmit}
                         isAuthenticated={isAdminAuthenticated}

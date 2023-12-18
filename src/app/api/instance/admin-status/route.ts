@@ -1,5 +1,5 @@
 
-import { InstanceAdminStatus } from "@/app/lib/model/InstanceAdminStatus";
+import { InstanceAdminStatus } from "@/app/lib/dto/InstanceAdminStatus";
 import { NextResponse } from "next/server";
 import { InstanceRepository } from "../../lib/repository/InstanceRepository";
 

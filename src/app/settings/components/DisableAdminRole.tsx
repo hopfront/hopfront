@@ -6,44 +6,41 @@ import { WarningAlert } from "@/app/components/alert/WarningAlert";
 import { ResponsiveModal } from "@/app/components/modal/ResponsiveModal";
 import { InstanceApi } from "@/app/lib/api/InstanceApi";
 import { Problem } from "@/app/lib/dto/Problem";
-import { InstanceAdminStatus } from "@/app/lib/model/InstanceAdminStatus";
 import { Stack } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
 import { useState } from "react";
 
-interface DisableAdminRoleProps {
-    adminStatus: InstanceAdminStatus
-}
-export const DisableAdminRole = (
-    { adminStatus }: DisableAdminRoleProps
-) => {
+export const DisableAdminRole = () => {
     const [disableAdminRoleModalOpen, setDisableAdminRoleModalOpen] = useState(false);
     const [submitAdminStatusError, setSubmitAdminStatusError] = useState<Problem | undefined>();
     const [isSubmitAdminStatusLoading, setIsSubmitAdminStatusLoading] = useState(false);
 
     const onDisableAdminRole = () => {
-        InstanceApi.saveAdminStatus({
-            ...adminStatus,
-            password: undefined
-        }).then(async (response) => {
-            let errorMessage = 'An unknown error occurred';
-            try {
-                const errorData = await response.json();
-                errorMessage = errorData.message || errorData.detail || JSON.stringify(errorData)
-            } catch (e) {
-                console.log('Error parsing admin status error', e);
-            }
+        InstanceApi.updateAdminPassword({ password: '' })
+            .then(async (response) => {
+                if (response.ok) {
+                    setDisableAdminRoleModalOpen(false);
+                    return;
+                }
 
-            setSubmitAdminStatusError({
-                title: 'We failed to disable your admin role',
-                status: response.status,
-                detail: errorMessage
+                let errorMessage = 'An unknown error occurred';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.message || errorData.detail || JSON.stringify(errorData)
+                } catch (e) {
+                    console.log('Error parsing admin status error', e);
+                }
+
+                setSubmitAdminStatusError({
+                    title: 'We failed to disable your admin role',
+                    status: response.status,
+                    detail: errorMessage
+                })
+            }).finally(() => {
+                setIsSubmitAdminStatusLoading(false);
             })
-        }).finally(() => {
-            setIsSubmitAdminStatusLoading(false);
-        })
     }
 
     return (
