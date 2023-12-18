@@ -17,7 +17,7 @@
     "@mui/joy": "^5.0.0-beta.17",
     "@readme/openapi-parser": "^2.5.0",
     "@types/node": "20.10.4",
-    "@types/react": "18.2.37",
+    "@types/react": "18.2.45",
     "@types/react-dom": "18.2.17",
     "allotment": "^1.19.3",
     "eslint": "8.55.0",
