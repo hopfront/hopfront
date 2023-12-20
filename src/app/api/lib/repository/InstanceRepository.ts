@@ -16,6 +16,14 @@ const saveInstanceAdminAuth = (newAdminAuth: InstanceAdminAuth) => {
     writeFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_FILE, JSON.stringify(newAdminAuth));
 }
 
+const getInstanceAdminAuth = (): InstanceAdminAuth | undefined => {
+    if (fileExists(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_FILE)) {
+        return JSON.parse(readFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_FILE)) as InstanceAdminAuth
+    } else {
+        return undefined;
+    }
+}
+
 const deleteInstanceAdminAuth = () => {
     deleteFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_FILE);
 }
@@ -56,7 +64,7 @@ export class InstanceRepository {
         if (fileExists(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_FILE)) {
             const adminAuth = JSON.parse(readFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_FILE)) as InstanceAdminAuth;
 
-            if (adminAuth && adminAuth.from === 'env' && (!envPassword || envPassword.length === 0)) { 
+            if (adminAuth && adminAuth.from === 'env' && (!envPassword || envPassword.length === 0)) {
                 deleteInstanceAdminAuth(); // env password removed, we clear admin auth configuration
                 return {
                     isEnabled: true,
@@ -107,5 +115,15 @@ export class InstanceRepository {
 
     static getAdminPasswordEnvironmentVariable(): string | undefined {
         return process.env.HOPFRONT_ADMIN_PASSWORD;
+    }
+
+    static isAdminPasswordValid(password: string): boolean {
+        const saved = getInstanceAdminAuth()?.password
+        if (saved) {
+            // TODO hash + salt
+            return password === saved
+        } else {
+            return false;
+        }
     }
 }

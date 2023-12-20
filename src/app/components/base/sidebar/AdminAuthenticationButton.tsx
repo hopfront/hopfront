@@ -1,8 +1,12 @@
 'use client'
 
-import { AdminPanelSettings } from "@mui/icons-material"
-import { Button, FormControl, FormLabel, IconButton, Input, Stack, Typography } from "@mui/joy"
+import { InstanceApi } from "@/app/lib/api/InstanceApi";
+import { AdminAuthRequest } from "@/app/lib/dto/AdminAuthRequest";
+import { Problem } from "@/app/lib/dto/Problem";
+import { AdminPanelSettings } from "@mui/icons-material";
+import { Button, FormControl, FormLabel, IconButton, Input, Stack, Typography } from "@mui/joy";
 import { ChangeEvent, useState } from "react";
+import { ProblemAlert } from "../../alert/ProblemAlert";
 import { ResponsiveModal } from "../../modal/ResponsiveModal";
 
 interface AdminAuthenticationButtonProps {
@@ -14,15 +18,34 @@ export const AdminAuthenticationButton = ({ isAuthenticated, onAuthenticationSub
     const [adminPassword, setAdminPassword] = useState<string>('');
     const [isAuthenticationLoading, setIsAuthenticationLoading] = useState<boolean>(false);
     const [showAdminAuthentication, setShowAdminAuthentication] = useState<boolean>(false);
+    const [authenticationError, setAuthenticationError] = useState<Problem | undefined>();
 
     const onSubmitAdminAuthentication = (event: ChangeEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         setIsAuthenticationLoading(true);
-        setTimeout(() => {
-            setIsAuthenticationLoading(false);
-            setShowAdminAuthentication(false);
-        }, 1000);
+        setAuthenticationError(undefined);
+
+        InstanceApi.authenticateAdmin({ password: adminPassword } as AdminAuthRequest)
+            .then(async (res) => {
+                const body = await res.json();
+                if (res.ok) {
+                    // TODO store tokens in a secured cookie
+                    // TODO and refresh UI
+                    console.log("body", body)
+                    setShowAdminAuthentication(false);
+                } else if (res.status === 403) {
+                    setAuthenticationError({ title: 'Wrong credentials', status: 403 } as Problem)
+                } else {
+                    setAuthenticationError({ title: 'An unknown error occurred', status: res.status } as Problem)
+                }
+            })
+            .catch((e) => {
+                setAuthenticationError({ title: 'An unknown error occurred', status: -1, detail: e?.message } as Problem)
+            })
+            .finally(() => {
+                setIsAuthenticationLoading(false);
+            })
 
         onAuthenticationSubmit(adminPassword);
     }
@@ -61,7 +84,8 @@ export const AdminAuthenticationButton = ({ isAuthenticated, onAuthenticationSub
                                 Submit
                             </Button>
                         </Stack>
-
+                        {authenticationError &&
+                            <ProblemAlert problem={authenticationError} />}
                     </FormControl>
                 </form>
             </ResponsiveModal>
