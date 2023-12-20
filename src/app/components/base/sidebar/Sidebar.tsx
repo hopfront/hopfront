@@ -15,6 +15,7 @@ import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import { useState } from "react";
 import { AdminAuthenticationButton } from "./AdminAuthenticationButton";
+import { AdminContext } from "@/app/context/AdminContext";
 
 interface ListItemSelectableButtonProps {
     label: string
@@ -26,10 +27,9 @@ interface ListItemSelectableButtonProps {
 type SelectedMenuItem = "browse" | "dashboards" | "settings";
 
 export default function Sidebar() {
+    const adminContext = React.useContext(AdminContext);
     const router = useRouter();
     const [feedbackOpen, setFeedbackOpen] = useState(false);
-    const { data: adminStatus, isLoading: isAdminStatusLoading, error: adminStatusError } = useAdminStatus();
-    const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
     const path = usePathname();
     const segments = path.split('/');
 
@@ -162,10 +162,10 @@ export default function Sidebar() {
                 >
                     <Feedback />
                 </IconButton>
-                {adminStatus &&
+                {adminContext.adminStatus?.isEnabled === true &&
                     <AdminAuthenticationButton
                         onAuthenticationSubmit={onAdminAuthenticationSubmit}
-                        isAuthenticated={isAdminAuthenticated}
+                        isAuthenticated={adminContext.isTokenExpired === false}
                     />}
                 <ColorSchemeToggle />
             </Stack>

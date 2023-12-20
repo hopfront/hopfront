@@ -1,26 +1,22 @@
 'use client';
 
 import { WarningAlert } from "@/app/components/alert/WarningAlert";
-import { ErrorAlert } from "@/app/components/operation/response/ErrorAlert";
-import useAdminStatus from "@/app/hooks/useAdminStatus";
+import { AdminContext } from "@/app/context/AdminContext";
 import { LinearProgress, Typography } from "@mui/joy";
 import Box from "@mui/joy/Box";
+import { useContext } from "react";
 import { DisableAdminRole } from "./DisableAdminRole";
 import { EnableAdminRole } from "./EnableAdminRole";
 
 export default function AdminStatusSettings() {
-    const { data: adminStatus, isLoading: isAdminStatusLoading, error: adminStatusError } = useAdminStatus();
+    const adminContext = useContext(AdminContext);
 
-    const isAdminRoleEnabled = adminStatus?.isEnabled === true;
-    const isAdminStatusEditable = adminStatus?.isEditable === true;
-
-    if (isAdminStatusLoading) {
-        return <LinearProgress sx={{ mt: 2 }} />;
+    if (adminContext.adminStatus === undefined) {
+        return <LinearProgress />
     }
 
-    if (adminStatusError) {
-        return <ErrorAlert error={adminStatusError} />
-    }
+    const isAdminRoleEnabled = adminContext?.adminStatus?.isEnabled === true;
+    const isAdminStatusEditable = adminContext?.adminStatus?.isEditable === true;
 
     if (isAdminStatusEditable === false) {
         return <Box>
@@ -35,9 +31,9 @@ export default function AdminStatusSettings() {
 
     return (
         <Box>
-            {!isAdminRoleEnabled && adminStatus && isAdminStatusEditable &&
+            {!isAdminRoleEnabled && isAdminStatusEditable &&
                 <EnableAdminRole />}
-            {isAdminRoleEnabled && adminStatus && isAdminStatusEditable &&
+            {isAdminRoleEnabled && isAdminStatusEditable &&
                 <DisableAdminRole />
             }
         </Box>

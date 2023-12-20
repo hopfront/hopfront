@@ -1,22 +1,23 @@
+import { AdminContextProvider } from "@/app/context/AdminContext"
+import { useApiSpecs } from "@/app/hooks/useApiSpecs"
+import { useInstanceProperties } from "@/app/hooks/useInstanceProperties"
 import Onboarding from "@/app/onboarding/Onboarding"
-import {ONBOARDING_STEPS, OnBoardingStep} from "@/app/onboarding/model/OnboardingModel"
-import {Box} from "@mui/joy"
-import {useRouter} from "next/navigation"
-import {useEffect, useState} from "react"
+import { ONBOARDING_STEPS, OnBoardingStep } from "@/app/onboarding/model/OnboardingModel"
+import { Box } from "@mui/joy"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 import ThreeDotsLoader from "../misc/ThreeDotsLoader"
 import Header from "./Header"
 import Sidebar from "./sidebar/Sidebar"
-import {useApiSpecs} from "@/app/hooks/useApiSpecs"
-import {useInstanceProperties} from "@/app/hooks/useInstanceProperties";
 
 export interface NavigationProps {
     children: React.ReactNode
 }
 
-export default function Navigation({children}: NavigationProps) {
+export default function Navigation({ children }: NavigationProps) {
     const router = useRouter();
-    const {data: properties, isLoading: isPropertiesLoading, error: propertiesError} = useInstanceProperties();
-    const {data: apiSpecsData, error: apiSpecsError, isLoading: isApiSpecsLoading} = useApiSpecs();
+    const { data: properties, isLoading: isPropertiesLoading, error: propertiesError } = useInstanceProperties();
+    const { data: apiSpecsData, error: apiSpecsError, isLoading: isApiSpecsLoading } = useApiSpecs();
     const [setupsToShow, setSetupsToShow] = useState<OnBoardingStep[]>([]);
     const [showContent, setShowContent] = useState<boolean>(false);
 
@@ -65,39 +66,41 @@ export default function Navigation({children}: NavigationProps) {
                 alignItems="center"
                 justifyContent='center'
             >
-                {(isPropertiesLoading || isApiSpecsLoading) && <ThreeDotsLoader color={"primary.500"} size={12}/>}
+                {(isPropertiesLoading || isApiSpecsLoading) && <ThreeDotsLoader color={"primary.500"} size={12} />}
             </Box>
 
             <Box>
                 {showContent &&
-                    <Box sx={{
-                        display: 'flex',
-                        position: 'absolute',
-                        top: 0,
-                        right: 0,
-                        left: 0,
-                        bottom: 0,
-                        width: '100vw',
-                        height: '100vh'
-                    }}>
-                        <Header/>
-                        <Sidebar/>
-                        <Box
-                            component="main"
-                            className="MainContent"
-                            sx={{
-                                flex: 1,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                minWidth: 0,
-                                height: '100dvh',
-                                gap: 1,
-                                overflow: 'auto',
-                            }}
-                        >
-                            {children}
+                    <AdminContextProvider>
+                        <Box sx={{
+                            display: 'flex',
+                            position: 'absolute',
+                            top: 0,
+                            right: 0,
+                            left: 0,
+                            bottom: 0,
+                            width: '100vw',
+                            height: '100vh'
+                        }}>
+                            <Header />
+                            <Sidebar />
+                            <Box
+                                component="main"
+                                className="MainContent"
+                                sx={{
+                                    flex: 1,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    minWidth: 0,
+                                    height: '100dvh',
+                                    gap: 1,
+                                    overflow: 'auto',
+                                }}
+                            >
+                                {children}
+                            </Box>
                         </Box>
-                    </Box>}
+                    </AdminContextProvider>}
                 {!isPropertiesLoading && !isApiSpecsLoading && !propertiesError && setupsToShow.length > 0 &&
                     <Box
                         position='absolute'
@@ -119,7 +122,7 @@ export default function Navigation({children}: NavigationProps) {
                         <Onboarding
                             steps={setupsToShow}
                             apiSpecs={apiSpecsData?.apiSpecs ?? []}
-                            onOnboardingCompleted={onOnboardingCompleted}/>
+                            onOnboardingCompleted={onOnboardingCompleted} />
                     </Box>}
             </Box>
         </>
