@@ -18,7 +18,7 @@ export const DisableAdminRole = () => {
     const [isSubmitAdminStatusLoading, setIsSubmitAdminStatusLoading] = useState(false);
 
     const onDisableAdminRole = () => {
-        InstanceApi.updateAdminPassword({ password: '' })
+        InstanceApi.logoutAdmin()
             .then(async (response) => {
                 if (response.ok) {
                     setDisableAdminRoleModalOpen(false);

@@ -32,10 +32,6 @@ export default function Sidebar() {
     const path = usePathname();
     const segments = path.split('/');
 
-    const onAdminAuthenticationSubmit = (password: string) => {
-        // TODO
-    }
-
     const getSelectedMenuItem = (): SelectedMenuItem | undefined => {
         const root = segments[1];
 
@@ -163,7 +159,6 @@ export default function Sidebar() {
                 </IconButton>
                 {adminContext.adminStatus?.isEnabled === true &&
                     <AdminAuthenticationButton
-                        onAuthenticationSubmit={onAdminAuthenticationSubmit}
                         isAuthenticated={adminContext.isAuthenticated === true}
                     />}
                 <ColorSchemeToggle />

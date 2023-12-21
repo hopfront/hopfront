@@ -10,11 +10,10 @@ import { ProblemAlert } from "../../alert/ProblemAlert";
 import { ResponsiveModal } from "../../modal/ResponsiveModal";
 
 interface AdminAuthenticationButtonProps {
-    isAuthenticated: boolean,
-    onAuthenticationSubmit: (password: string) => void
+    isAuthenticated: boolean
 }
 
-export const AdminAuthenticationButton = ({ isAuthenticated, onAuthenticationSubmit }: AdminAuthenticationButtonProps) => {
+export const AdminAuthenticationButton = ({ isAuthenticated }: AdminAuthenticationButtonProps) => {
     const [adminPassword, setAdminPassword] = useState<string>('');
     const [isAuthenticationLoading, setIsAuthenticationLoading] = useState<boolean>(false);
     const [showAdminAuthentication, setShowAdminAuthentication] = useState<boolean>(false);
@@ -42,8 +41,6 @@ export const AdminAuthenticationButton = ({ isAuthenticated, onAuthenticationSub
             .finally(() => {
                 setIsAuthenticationLoading(false);
             })
-
-        onAuthenticationSubmit(adminPassword);
     }
 
     return (
