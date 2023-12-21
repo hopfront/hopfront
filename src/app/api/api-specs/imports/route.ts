@@ -10,6 +10,8 @@ import { Problem } from "@/app/lib/dto/Problem";
 import { getApiServers, randomInternalId, resolveApiBaseUrl } from "@/app/lib/openapi/utils";
 import { NextResponse } from "next/server";
 import { OpenAPIV3 } from "openapi-types";
+import { InstanceRepository } from "../../lib/repository/InstanceRepository";
+import { cookies } from "next/headers";
 
 const resolveDefaultApiBaseUrl = (openApiV3: OpenAPIV3.Document<{}>) => {
     const apiServers = getApiServers(openApiV3);
@@ -68,6 +70,10 @@ const checkSpecVersion = (apiSpec: OpenAPIV3.Document) => {
 }
 
 export async function POST(req: Request) {
+    if (!InstanceRepository.isUserAuthorized(cookies())) {
+        return new NextResponse(null, { status: 403 })
+    }
+    
     const body: ApiSpecImportRequestBody = await req.json()
 
     console.log(`Importing OpenAPI...`);

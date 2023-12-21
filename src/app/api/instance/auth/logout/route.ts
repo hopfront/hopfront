@@ -1,12 +1,17 @@
 import { InstanceRepository } from "@/app/api/lib/repository/InstanceRepository";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(): Promise<Response> {
+    if (!InstanceRepository.isUserAuthorized(cookies())) {
+        return new NextResponse(null, { status: 403 })
+    }
+    
     InstanceRepository.saveInstanceAdminAuth({
         from: 'local',
         password: ''
     })
-    
+
     const response = new NextResponse(null, { status: 200 });
 
     response.cookies.set('accessToken', '',

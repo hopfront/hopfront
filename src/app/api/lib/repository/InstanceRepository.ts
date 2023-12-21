@@ -2,6 +2,8 @@ import { deleteFile, fileExists, readFile, writeFile } from "@/app/api/lib/repos
 import { InstanceAdminStatus } from "@/app/lib/dto/InstanceAdminStatus";
 import { InstanceProperties, InstanceSetup } from "@/app/lib/model/InstanceProperties";
 import { randomUUID } from "crypto";
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
+import { isTokenValid } from "../utils/utils";
 ;
 
 const _INSTANCE_DIRECTORY = 'instance';
@@ -125,5 +127,16 @@ export class InstanceRepository {
         } else {
             return false;
         }
+    }
+
+    static isUserAuthorized(cookies: ReadonlyRequestCookies): boolean {
+        const token = cookies.get('accessToken')?.value;
+        const adminStatus = this.getInstanceAdminStatus();
+        
+        if (adminStatus.isEnabled && (!token || !isTokenValid(token, 'access_token'))) {
+            return false;
+        }
+
+        return true;
     }
 }
