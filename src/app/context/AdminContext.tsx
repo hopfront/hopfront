@@ -1,12 +1,12 @@
 'use client'
 
 import { createContext, useEffect, useState } from "react";
+import useAdminInfo from "../hooks/useAdminInfo";
 import { InstanceAdminStatus } from "../lib/dto/InstanceAdminStatus";
-import useAdminStatus from "../hooks/useAdminStatus";
 
 interface AdminContext {
     adminStatus?: InstanceAdminStatus
-    isTokenExpired?: boolean
+    isAuthenticated?: boolean
 }
 
 interface AdminContextProviderProps {
@@ -16,18 +16,19 @@ interface AdminContextProviderProps {
 export const AdminContext = createContext({} as AdminContext);
 
 export const AdminContextProvider = ({ children }: AdminContextProviderProps) => {
-    const { data, isLoading, error } = useAdminStatus();
-    const [isTokenExpired, setIsTokenExpired] = useState<boolean | undefined>(undefined);
+    const { data, isLoading, error } = useAdminInfo();
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean | undefined>(undefined);
     const [adminStatus, setAdminStatus] = useState<InstanceAdminStatus | undefined>();
 
     useEffect(() => {
         if (data) {
-            setAdminStatus(data);
+            setAdminStatus(data.adminStatus);
+            setIsAuthenticated(data.isAuthenticated)
         }
     }, [data])
-    
+
     return (
-        <AdminContext.Provider value={{ adminStatus, isTokenExpired }}>
+        <AdminContext.Provider value={{ adminStatus, isAuthenticated }}>
             {children}
         </AdminContext.Provider>
     )

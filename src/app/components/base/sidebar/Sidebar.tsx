@@ -1,7 +1,7 @@
 import ColorSchemeToggle from "@/app/components/base/sidebar/ColorSchemeToggle";
 import { closeSidebar } from "@/app/components/base/utils";
 import { FeedbackModal } from "@/app/components/modal/FeedbackModal";
-import useAdminStatus from "@/app/hooks/useAdminStatus";
+import { AdminContext } from "@/app/context/AdminContext";
 import {
     Dashboard,
     Explore, Feedback, Settings
@@ -15,7 +15,6 @@ import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import { useState } from "react";
 import { AdminAuthenticationButton } from "./AdminAuthenticationButton";
-import { AdminContext } from "@/app/context/AdminContext";
 
 interface ListItemSelectableButtonProps {
     label: string
@@ -165,7 +164,7 @@ export default function Sidebar() {
                 {adminContext.adminStatus?.isEnabled === true &&
                     <AdminAuthenticationButton
                         onAuthenticationSubmit={onAdminAuthenticationSubmit}
-                        isAuthenticated={adminContext.isTokenExpired === false}
+                        isAuthenticated={adminContext.isAuthenticated === true}
                     />}
                 <ColorSchemeToggle />
             </Stack>

@@ -28,11 +28,7 @@ export const AdminAuthenticationButton = ({ isAuthenticated, onAuthenticationSub
 
         InstanceApi.authenticateAdmin({ password: adminPassword } as AdminAuthRequest)
             .then(async (res) => {
-                const body = await res.json();
                 if (res.ok) {
-                    // TODO store tokens in a secured cookie
-                    // TODO and refresh UI
-                    console.log("body", body)
                     setShowAdminAuthentication(false);
                 } else if (res.status === 403) {
                     setAuthenticationError({ title: 'Wrong credentials', status: 403 } as Problem)
