@@ -1,40 +1,13 @@
-import { InstanceRepository } from "@/app/api/lib/repository/InstanceRepository"
-import { AdminAuthResponse } from "@/app/lib/dto/AdminAuthResponse"
-import { sign } from 'jsonwebtoken'
-import { NextResponse } from "next/server"
-
-const generateTokens = (): AdminAuthResponse => {
-    const accessToken = sign({}, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '15m' })
-    const refreshToken = sign({}, process.env.REFRESH_TOKEN_SECRET as string, { expiresIn: '24h' })
-
-    return { accessToken, refreshToken }
-}
+import { InstanceRepository } from "@/app/api/lib/repository/InstanceRepository";
+import { AuthenticationService } from "@/app/api/lib/service/AuthenticationService";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request): Promise<Response> {
     const body = await req.json() as InstanceAdminPasswordRequest
 
     if (InstanceRepository.isAdminPasswordValid(body.password)) {
-        const tokens = generateTokens();
-
         const response = new NextResponse(null, { status: 200 });
-        response.cookies.set('accessToken', tokens.accessToken,
-            {
-                httpOnly: true,
-                secure: true,
-                path: '/',
-                maxAge: 60 * 15, // 15m
-                sameSite: 'strict'
-            }
-        );
-        response.cookies.set('refreshToken', tokens.refreshToken,
-            {
-                httpOnly: true,
-                secure: true,
-                path: '/',
-                maxAge: 60 * 60 * 24, // 24h
-                sameSite: 'strict'
-            });
-        return response;
+        return AuthenticationService.addCookieTokensToResponse(response);
     } else {
         return NextResponse.json({ message: 'Wrong credentials' }, { status: 403 });
     }

@@ -3,7 +3,7 @@ import { InstanceAdminStatus } from "@/app/lib/dto/InstanceAdminStatus";
 import { InstanceProperties, InstanceSetup } from "@/app/lib/model/InstanceProperties";
 import { randomUUID } from "crypto";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
-import { isTokenValid } from "../utils/utils";
+import { AuthenticationService } from "../service/AuthenticationService";
 ;
 
 const _INSTANCE_DIRECTORY = 'instance';
@@ -132,8 +132,8 @@ export class InstanceRepository {
     static isUserAuthorized(cookies: ReadonlyRequestCookies): boolean {
         const token = cookies.get('accessToken')?.value;
         const adminStatus = this.getInstanceAdminStatus();
-        
-        if (adminStatus.isEnabled && (!token || !isTokenValid(token, 'access_token'))) {
+
+        if (adminStatus.isEnabled && (!token || !AuthenticationService.isTokenValid(token, 'access_token'))) {
             return false;
         }
 

@@ -1,4 +1,6 @@
 import { InstanceRepository } from "@/app/api/lib/repository/InstanceRepository";
+import { AuthenticationService } from "@/app/api/lib/service/AuthenticationService";
+import { NextResponse } from "next/server";
 
 export async function PUT(req: Request): Promise<Response> {
     const envPassword = InstanceRepository.getAdminPasswordEnvironmentVariable();
@@ -16,5 +18,7 @@ export async function PUT(req: Request): Promise<Response> {
         password: body.password,
     });
 
-    return new Response(null, { status: 204 });
+    const response = new NextResponse(null, { status: 204 });
+
+    return AuthenticationService.addCookieTokensToResponse(response);
 }
