@@ -6,29 +6,38 @@ import { InstanceAdminStatus } from "../lib/dto/InstanceAdminStatus";
 
 interface AdminContext {
     adminStatus?: InstanceAdminStatus
-    isAuthenticated?: boolean
+    isAuthenticated?: boolean,
+    isLoading: boolean
 }
 
 interface AdminContextProviderProps {
     children: React.ReactNode
 }
 
-export const AdminContext = createContext({} as AdminContext);
+export const AdminContext = createContext({ isLoading: true } as AdminContext);
+
+export const shouldShowAdminContent = (adminContext: AdminContext): boolean => {
+    return adminContext.adminStatus?.isEnabled === false ||
+        (adminContext.adminStatus?.isEnabled === true && adminContext.isAuthenticated === true);
+}
 
 export const AdminContextProvider = ({ children }: AdminContextProviderProps) => {
-    const { data, isLoading, error } = useAdminInfo();
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean | undefined>(undefined);
-    const [adminStatus, setAdminStatus] = useState<InstanceAdminStatus | undefined>();
+    const { data, isLoading: isAdminInfoLoading, error } = useAdminInfo();
+
+    const [adminInfo, setAdminInfo] = useState<AdminContext>({ isLoading: true })
 
     useEffect(() => {
         if (data) {
-            setAdminStatus(data.adminStatus);
-            setIsAuthenticated(data.isAuthenticated)
+            setAdminInfo({ adminStatus: data.adminStatus, isAuthenticated: data.isAuthenticated, isLoading: false })
+        } else if (error) {
+            setAdminInfo({ isLoading: false })
+        } else if (isAdminInfoLoading) {
+            setAdminInfo({ isLoading: true })
         }
     }, [data])
 
     return (
-        <AdminContext.Provider value={{ adminStatus, isAuthenticated }}>
+        <AdminContext.Provider value={adminInfo}>
             {children}
         </AdminContext.Provider>
     )

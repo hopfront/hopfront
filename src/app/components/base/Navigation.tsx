@@ -66,7 +66,7 @@ export default function Navigation({ children }: NavigationProps) {
                 alignItems="center"
                 justifyContent='center'
             >
-                {(isPropertiesLoading || isApiSpecsLoading) && <ThreeDotsLoader color={"primary.500"} size={12} />}
+                {(isPropertiesLoading || isApiSpecsLoading) && <ThreeDotsLoader />}
             </Box>
 
             <Box>

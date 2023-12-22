@@ -10,16 +10,33 @@ import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
 import { useRouter } from "next/navigation";
 import AdminStatusSettings from "./components/AdminStatusSettings";
+import { useContext } from "react";
+import { AdminContext, shouldShowAdminContent } from "../context/AdminContext";
+import ThreeDotsLoader from "../components/misc/ThreeDotsLoader";
+
+const loader = () => {
+    return (
+        <Box display='flex' alignContent='center' justifyContent='center' sx={{ width: '100vw', height: '100vh' }}>
+            <ThreeDotsLoader />
+        </Box>
+    )
+}
 
 export default function Page() {
     const router = useRouter();
     const { usePageView } = useAnalytics();
     const { data, error, isLoading } = useApiSpecs();
+    const adminContext = useContext(AdminContext);
 
     usePageView("settings-page");
 
-    if (isLoading) {
-        return <div>loading...</div>
+    if (isLoading || adminContext.isLoading) {
+        return (loader())
+    }
+
+    if (!shouldShowAdminContent(adminContext)) {
+        router.replace('/403');
+        return (loader); // Just while redirection is triggered.
     }
 
     if (error) {

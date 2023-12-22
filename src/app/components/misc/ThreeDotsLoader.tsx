@@ -5,7 +5,7 @@ type ThreeDotsLoaderProps = {
     color?: string;
 };
 
-export default function ThreeDotsLoader({ size = 10, color = 'black' }: ThreeDotsLoaderProps) {
+export default function ThreeDotsLoader({ size = 12, color = 'var(--joy-palette-primary-500)' }: ThreeDotsLoaderProps) {
     return (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000000 }}>
             <Box

@@ -1,7 +1,7 @@
 import ColorSchemeToggle from "@/app/components/base/sidebar/ColorSchemeToggle";
 import { closeSidebar } from "@/app/components/base/utils";
 import { FeedbackModal } from "@/app/components/modal/FeedbackModal";
-import { AdminContext } from "@/app/context/AdminContext";
+import { AdminContext, shouldShowAdminContent } from "@/app/context/AdminContext";
 import {
     Dashboard,
     Explore, Feedback, Settings
@@ -143,12 +143,13 @@ export default function Sidebar() {
                     label="Dashboards"
                 />
 
-                <SidebarButton
-                    route={'/settings'}
-                    selected={selectedMenuItem === 'settings'}
-                    icon={<Settings />}
-                    label="Settings"
-                />
+                {shouldShowAdminContent(adminContext) &&
+                    <SidebarButton
+                        route={'/settings'}
+                        selected={selectedMenuItem === 'settings'}
+                        icon={<Settings />}
+                        label="Settings"
+                    />}
             </Box>
             <Stack gap={1}>
                 <IconButton
