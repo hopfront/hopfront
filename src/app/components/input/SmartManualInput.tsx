@@ -1,3 +1,5 @@
+'use client'
+
 import { useApiSpecs } from "@/app/hooks/useApiSpecs";
 import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
 import { SchemaOrReference } from "@/app/lib/model/ApiContext";
@@ -5,7 +7,7 @@ import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
 import { getStandaloneOperations } from "@/app/lib/openapi/utils";
 import { Box, Input, MenuItem, MenuList } from "@mui/joy";
 import { OpenAPIV3 } from "openapi-types";
-import { HTMLInputTypeAttribute, useEffect, useRef, useState } from "react";
+import { HTMLInputTypeAttribute, useContext, useEffect, useRef, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { ModalOperationResponseSchemaSelector } from "../foreign-keys/ModalOperationResponseSchemaSelector";
 import { OperationLabel } from "../typography/OperationLabel";
@@ -16,6 +18,7 @@ import ResponseObject = OpenAPIV3.ResponseObject;
 import ReferenceObject = OpenAPIV3.ReferenceObject;
 import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
 import SchemaObject = OpenAPIV3.SchemaObject;
+import { AdminContext, shouldShowAdminContent } from "@/app/context/AdminContext";
 
 export interface SmartManualInputProps {
     updatableValue: UpdatableValue<any>
@@ -50,6 +53,7 @@ export default function SmartManualInput({
     max,
     sx
 }: SmartManualInputProps) {
+    const adminContext = useContext(AdminContext);
     const onInputChange = useDebouncedCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
             onChange(event.target.value);
@@ -153,6 +157,8 @@ export default function SmartManualInput({
         }
     }, [inputValue, hasFocus])
 
+    const hasOperations = relevantOperations.length > 0 || (menu?.items && menu.items.length > 0) === true
+
     return (
         <>
             <Box
@@ -178,7 +184,7 @@ export default function SmartManualInput({
                     onBlur={() => { setHasFocus(false); }}
                     readOnly={readOnly} />
 
-                {dropDownOpen && (
+                {hasOperations && dropDownOpen && (
                     <Box sx={{ position: 'absolute', width: '100%', zIndex: 2 }}>
                         <MenuList sx={{ borderRadius: '8px' }}>
                             {relevantOperations.map((op) => (
@@ -188,7 +194,7 @@ export default function SmartManualInput({
                                     <OperationLabel operation={op.operation} mode={"human"} />
                                 </MenuItem>
                             ))}
-                            {menu?.items.map((item) => (
+                            {shouldShowAdminContent(adminContext) && menu?.items.map((item) => (
                                 <MenuItem
                                     key={item.text}
                                     onClick={() => { item.onClick(); setDropDownOpen(false); }}>
