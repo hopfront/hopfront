@@ -28,6 +28,7 @@ import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
 import {
     OperationFromObjectModal
 } from "@/app/components/foreign-keys/OperationFromObjectModal/OperationFromObjectModal";
+import { AdminContext, shouldShowAdminContent } from "@/app/context/AdminContext";
 
 interface HeadCell {
     id: keyof TableData;
@@ -121,6 +122,7 @@ export const EnhancedTable = ({
 }: EnhancedTableProps) => {
 
     const arrayContext = useContext(ArrayContext);
+    const adminContext = useContext(AdminContext);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(isPreviewTable ? 5 : 10);
     const minRowsToDisplayFooter = 5;
@@ -262,7 +264,7 @@ export const EnhancedTable = ({
                                     </th>
                                 );
                             })}
-                            {(isActionsDisplayed() && rows?.length > 0) &&
+                            {(isActionsDisplayed() && rows?.length > 0) && shouldShowAdminContent(adminContext) &&
                                 <th
                                     style={{ width: `${actionColumnWidth}px` }}>
                                     <Stack direction="row"

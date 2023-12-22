@@ -7,7 +7,7 @@ export async function mutateDashboard(dashboardId: string) {
 
 export class DashboardApi {
 
-    public static async createDashboard(dashboard: Dashboard): Promise<Dashboard> {
+    public static async createDashboard(dashboard: Dashboard): Promise<Response> {
         return fetch('/api/dashboards', {
             method: 'POST',
             headers: {
@@ -15,7 +15,6 @@ export class DashboardApi {
             },
             body: JSON.stringify(dashboard),
         })
-            .then(response => response.json());
     }
 
     public static async getDashboard(dashboardId: string) {

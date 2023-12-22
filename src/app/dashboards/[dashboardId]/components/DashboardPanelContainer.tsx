@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Card from "@mui/joy/Card";
 import {
     Box, CardContent,
@@ -6,6 +6,7 @@ import {
 } from "@mui/joy";
 import { Delete, Edit, MoreVert } from "@mui/icons-material";
 import EditableLabel from "@/app/components/typography/EditableLabel";
+import { AdminContext, shouldShowAdminContent } from "@/app/context/AdminContext";
 
 export interface DashboardPanelContainerProps {
     title: string
@@ -17,6 +18,7 @@ export interface DashboardPanelContainerProps {
 }
 
 export const DashboardPanelContainer = ({ title, loading = false, onEditClick, onDeleteClick, onPanelTitleChanged, children }: DashboardPanelContainerProps) => {
+    const adminContext = useContext(AdminContext);
     const [showMoreButton, setShowMoreButton] = useState(false);
 
     return (
@@ -37,37 +39,39 @@ export const DashboardPanelContainer = ({ title, loading = false, onEditClick, o
                     </Typography>
                 </EditableLabel>
 
-                <Stack direction="row">
-                    {loading && <Typography><CircularProgress size="sm" /></Typography>}
-                    <Dropdown>
-                        <MenuButton
-                            slots={{ root: IconButton }}
-                            slotProps={{ root: { variant: 'plain', color: 'neutral' } }}
-                        >
-                            {showMoreButton && <MoreVert />}
-                        </MenuButton>
-                        <Menu placement='bottom-start'>
-                            <MenuItem onClick={() => {
-                                setShowMoreButton(false)
-                                onEditClick();
-                            }}>
-                                <ListItemDecorator>
-                                    <Edit />
-                                </ListItemDecorator>
-                                Edit
-                            </MenuItem>
-                            <MenuItem color="danger" onClick={() => {
-                                setShowMoreButton(false)
-                                onDeleteClick();
-                            }}>
-                                <ListItemDecorator>
-                                    <Delete />
-                                </ListItemDecorator>
-                                Delete
-                            </MenuItem>
-                        </Menu>
-                    </Dropdown>
-                </Stack>
+                {shouldShowAdminContent(adminContext) &&
+                    <Stack direction="row">
+                        {loading && <Typography><CircularProgress size="sm" /></Typography>}
+                        <Dropdown>
+                            <MenuButton
+                                slots={{ root: IconButton }}
+                                slotProps={{ root: { variant: 'plain', color: 'neutral' } }}
+                            >
+                                {showMoreButton && <MoreVert />}
+                            </MenuButton>
+
+                            <Menu placement='bottom-start'>
+                                <MenuItem onClick={() => {
+                                    setShowMoreButton(false)
+                                    onEditClick();
+                                }}>
+                                    <ListItemDecorator>
+                                        <Edit />
+                                    </ListItemDecorator>
+                                    Edit
+                                </MenuItem>
+                                <MenuItem color="danger" onClick={() => {
+                                    setShowMoreButton(false)
+                                    onDeleteClick();
+                                }}>
+                                    <ListItemDecorator>
+                                        <Delete />
+                                    </ListItemDecorator>
+                                    Delete
+                                </MenuItem>
+                            </Menu>
+                        </Dropdown>
+                    </Stack>}
             </Box>
             <CardContent>
                 {children}

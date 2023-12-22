@@ -1,13 +1,13 @@
 'use client';
 
-import {useEffect, useState} from "react";
-import {Dashboard} from "@/app/lib/model/dashboard/Dashboard";
-import {DashboardPage} from "@/app/dashboards/[dashboardId]/components/DashboardPage";
-import {useParams} from "next/navigation";
-import {useAnalytics} from "@/app/hooks/analytics/useAnalytics";
-import {DashboardApi} from "@/app/lib/api/DashboardApi";
-import {ErrorAlert} from "@/app/components/operation/response/ErrorAlert";
-import {EventType, useSnackbar} from "@/app/hooks/useSnackbar";
+import { ErrorAlert } from "@/app/components/operation/response/ErrorAlert";
+import { DashboardPage } from "@/app/dashboards/[dashboardId]/components/DashboardPage";
+import { useAnalytics } from "@/app/hooks/analytics/useAnalytics";
+import { EventType, useSnackbar } from "@/app/hooks/useSnackbar";
+import { DashboardApi } from "@/app/lib/api/DashboardApi";
+import { Dashboard } from "@/app/lib/model/dashboard/Dashboard";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Page() {
     const params = useParams();

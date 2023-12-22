@@ -1,6 +1,6 @@
-import { InstanceRepository } from "@/app/api/lib/repository/InstanceRepository";
+import { InstanceRepository } from "@/app/api/lib/repository/InstanceRepository"
 import { AuthenticationService } from "@/app/api/lib/service/AuthenticationService";
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server"
 
 export async function POST(req: Request): Promise<Response> {
     const body = await req.json() as InstanceAdminPasswordRequest

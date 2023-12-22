@@ -8,6 +8,7 @@ import { Button, FormControl, FormLabel, IconButton, Input, Stack, Typography } 
 import { ChangeEvent, useState } from "react";
 import { ProblemAlert } from "../../alert/ProblemAlert";
 import { ResponsiveModal } from "../../modal/ResponsiveModal";
+import { mutateAdminInfo } from "@/app/hooks/useAdminInfo";
 
 interface AdminAuthenticationButtonProps {
     isAuthenticated: boolean
@@ -28,6 +29,7 @@ export const AdminAuthenticationButton = ({ isAuthenticated }: AdminAuthenticati
         InstanceApi.authenticateAdmin({ password: adminPassword } as AdminAuthRequest)
             .then(async (res) => {
                 if (res.ok) {
+                    mutateAdminInfo();
                     setShowAdminAuthentication(false);
                 } else if (res.status === 403) {
                     setAuthenticationError({ title: 'Wrong credentials', status: 403 } as Problem)

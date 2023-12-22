@@ -19,11 +19,13 @@ import Box from "@mui/joy/Box";
 import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { buildNewVariableName } from "../settings/components/DashboardSettingsVariablesSection";
 import { DashboardPanelGrid } from "./DashboardPanelGrid";
 import PanelConfigurationModal from "./PanelConfigurationModal";
 import PanelPlaceholder from "./PanelPlaceholder";
+import { AdminContext, shouldShowAdminContent } from "@/app/context/AdminContext";
+import { WarningAlert } from "@/app/components/alert/WarningAlert";
 
 export interface DashboardPageProps {
     dashboard?: Dashboard;
@@ -48,6 +50,8 @@ const buildVariables = (dashboard: Dashboard | undefined) => {
 
 export const DashboardPage = ({ dashboard, loading, onSave }: DashboardPageProps) => {
     const router = useRouter();
+    const adminContext = useContext(AdminContext);
+    const showAdminContent = shouldShowAdminContent(adminContext);
     const { registerEvent } = useAnalytics();
     const [variables, setVariables] = useState<VariableWithValue[]>([]);
     const [panelConfigurationModalOpen, setPanelConfigurationModalOpen] = useState<PanelConfigurationData>({
@@ -187,7 +191,7 @@ export const DashboardPage = ({ dashboard, loading, onSave }: DashboardPageProps
                         loading={!dashboard}>{dashboard?.title || NEW_DASHBOARD_TITLE}</Skeleton></Typography>
                 </EditableLabel>
                 <Box display='flex'>
-                    <Dropdown>
+                    {showAdminContent && <Dropdown>
                         <MenuButton
                             variant="soft"
                             color="primary"
@@ -204,7 +208,7 @@ export const DashboardPage = ({ dashboard, loading, onSave }: DashboardPageProps
                                 Variable
                             </MenuItem>
                         </Menu>
-                    </Dropdown>
+                    </Dropdown>}
                     <IconButton
                         disabled={!dashboard}
                         title="Refresh dashboard"
@@ -214,7 +218,7 @@ export const DashboardPage = ({ dashboard, loading, onSave }: DashboardPageProps
                         aria-label="Refresh dashboard">
                         <Refresh />
                     </IconButton>
-                    <IconButton
+                    {showAdminContent && <IconButton
                         disabled={!dashboard}
                         title="Settings"
                         variant='plain'
@@ -222,7 +226,7 @@ export const DashboardPage = ({ dashboard, loading, onSave }: DashboardPageProps
                         onClick={onSettingsClick}
                         aria-label="Go to settings">
                         <Settings />
-                    </IconButton>
+                    </IconButton>}
                 </Box>
             </Box>
 
@@ -248,14 +252,21 @@ export const DashboardPage = ({ dashboard, loading, onSave }: DashboardPageProps
                 onPanelTitleChanged={onPanelTitleChanged} />
 
             {((dashboard?.panels || []).length === 0 && dashboard) &&
-                <PanelPlaceholder onClick={() => {
-                    registerEvent({
-                        category: 'dashboard',
-                        action: 'dashboard-panel-placeholder-clicked',
-                        name: dashboard?.id
-                    });
-                    setPanelConfigurationModalOpen({ isOpen: true, panelId: undefined });
-                }} />}
+                <>
+                    {showAdminContent ?
+                        <PanelPlaceholder onClick={() => {
+                            registerEvent({
+                                category: 'dashboard',
+                                action: 'dashboard-panel-placeholder-clicked',
+                                name: dashboard?.id
+                            });
+                            setPanelConfigurationModalOpen({ isOpen: true, panelId: undefined });
+                        }} /> :
+                        <WarningAlert title={'You are not an administrator.'}>
+                            <Typography>Log in as an administrator or contact your administrator to configure this dashboard.</Typography>
+                        </WarningAlert>}
+                </>
+            }
 
             {(dashboard && panelConfigurationModalOpen.panelId) && <PanelConfigurationModal
                 dashboard={dashboard}

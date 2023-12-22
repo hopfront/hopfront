@@ -1,5 +1,8 @@
+'use client'
+
+import { AdminContext, shouldShowAdminContent } from "@/app/context/AdminContext";
 import { Box, Input, TypographySystem, useColorScheme } from "@mui/joy";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 interface TypographyStyle {
     fontSize: string,
@@ -32,7 +35,7 @@ interface EditableLabelProps {
 
 export default function EditableLabel({ children, onSave }: EditableLabelProps) {
     const onlyChild = React.Children.only(children);
-
+    const adminContext = useContext(AdminContext);
     const [showInputMode, setShowInputMode] = useState(false);
     const [initialValue, setInitialValue] = useState('');
     const [label, setLabel] = useState('');
@@ -44,6 +47,18 @@ export default function EditableLabel({ children, onSave }: EditableLabelProps) 
             onSave(label);
         }
         setShowInputMode(false);
+    }
+
+    const onLabelClicked = () => {
+        if (shouldShowAdminContent(adminContext)) {
+            setShowInputMode(true);
+        }
+    }
+
+    const cursorStyle = () => {
+        if (shouldShowAdminContent(adminContext)) {
+            return { cursor: `url(${cursorPath}), auto` }
+        } else return {}
     }
 
     useEffect(() => {
@@ -91,11 +106,7 @@ export default function EditableLabel({ children, onSave }: EditableLabelProps) 
                     value={label}
                 />}
             {!showInputMode &&
-                <Box onClick={() => { setShowInputMode(true); }} sx={{
-                    '&:hover': {
-                        cursor: `url(${cursorPath}), auto`
-                    }
-                }}>
+                <Box onClick={onLabelClicked} sx={{ '&:hover': cursorStyle }}>
                     {children}
                 </Box>
             }
