@@ -1,14 +1,15 @@
 'use client'
 
+import { mutateAdminInfo } from "@/app/hooks/useAdminInfo";
 import { InstanceApi } from "@/app/lib/api/InstanceApi";
-import { AdminAuthRequest } from "@/app/lib/dto/AdminAuthRequest";
 import { Problem } from "@/app/lib/dto/Problem";
+import { AdminAuthRequest } from "@/app/lib/dto/admin/auth/AdminAuthRequest";
 import { AdminPanelSettings } from "@mui/icons-material";
 import { Button, FormControl, FormLabel, IconButton, Input, Stack, Typography } from "@mui/joy";
 import { ChangeEvent, useState } from "react";
 import { ProblemAlert } from "../../alert/ProblemAlert";
 import { ResponsiveModal } from "../../modal/ResponsiveModal";
-import { mutateAdminInfo } from "@/app/hooks/useAdminInfo";
+import { extractErrorMessage } from "@/app/lib/api/utils";
 
 interface AdminAuthenticationButtonProps {
     isAuthenticated: boolean
@@ -31,10 +32,12 @@ export const AdminAuthenticationButton = ({ isAuthenticated }: AdminAuthenticati
                 if (res.ok) {
                     mutateAdminInfo();
                     setShowAdminAuthentication(false);
-                } else if (res.status === 403) {
-                    setAuthenticationError({ title: 'Wrong credentials', status: 403 } as Problem)
                 } else {
-                    setAuthenticationError({ title: 'An unknown error occurred', status: res.status } as Problem)
+                    setAuthenticationError({
+                        title: 'Login has failed',
+                        status: res.status,
+                        detail: await extractErrorMessage(res)
+                    })
                 }
             })
             .catch((e) => {

@@ -1,8 +1,14 @@
-import { AdminAuthResponse } from '@/app/lib/dto/AdminAuthResponse';
+import { AdminAuthTokens } from '@/app/lib/model/AdminAuthTokens';
 import { sign, verify } from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
 import { TokenType } from '../utils/utils';
 
+const generateTokens = (): AdminAuthTokens => {
+    const accessToken = sign({}, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '15m' })
+    const refreshToken = sign({}, process.env.REFRESH_TOKEN_SECRET as string, { expiresIn: '24h' })
+
+    return { accessToken, refreshToken }
+}
 export class AuthenticationService {
     public static isTokenValid = (token: string, type: TokenType): boolean => {
         if (!token) {
@@ -22,7 +28,7 @@ export class AuthenticationService {
     // Set HttpOnly cookies for accessToken and refreshToken. 
     // HttpOnly cookies are created, accessible and revokable only by backend.
     public static addCookieTokensToResponse(response: NextResponse): NextResponse {
-        const tokens = this.generateTokens();
+        const tokens = generateTokens();
 
         response.cookies.set('accessToken', tokens.accessToken,
             {
@@ -43,12 +49,5 @@ export class AuthenticationService {
             });
 
         return response;
-    }
-
-    public static generateTokens = (): AdminAuthResponse => {
-        const accessToken = sign({}, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '15m' })
-        const refreshToken = sign({}, process.env.REFRESH_TOKEN_SECRET as string, { expiresIn: '24h' })
-
-        return { accessToken, refreshToken }
     }
 }

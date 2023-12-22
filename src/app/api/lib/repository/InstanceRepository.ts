@@ -1,5 +1,5 @@
 import { deleteFile, fileExists, readFile, writeFile } from "@/app/api/lib/repository/utils";
-import { InstanceAdminStatus } from "@/app/lib/dto/InstanceAdminStatus";
+import { InstanceAdminStatus } from "@/app/lib/dto/admin/InstanceAdminStatus";
 import { InstanceProperties, InstanceSetup } from "@/app/lib/model/InstanceProperties";
 import { randomUUID } from "crypto";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";

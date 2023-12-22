@@ -10,11 +10,14 @@ import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
 import { useState } from "react";
 import { DisableAdminRoleModal } from "./DisableAdminRoleModal";
+import { UpdateAdminPasswordModal } from "./UpdateAdminPasswordModal";
+import { extractErrorMessage } from "@/app/lib/api/utils";
 
 export const AdminRoleEnabledState = () => {
     const [disableAdminRoleModalOpen, setDisableAdminRoleModalOpen] = useState(false);
     const [submitAdminStatusError, setSubmitAdminStatusError] = useState<Problem | undefined>();
     const [isSubmitAdminStatusLoading, setIsSubmitAdminStatusLoading] = useState(false);
+    const [updatePasswordModalOpen, setUpdatePasswordModalOpen] = useState(false);
 
     const onDisableAdminRole = () => {
         InstanceApi.disableAdminRole()
@@ -25,18 +28,10 @@ export const AdminRoleEnabledState = () => {
                     return;
                 }
 
-                let errorMessage = 'An unknown error occurred';
-                try {
-                    const errorData = await response.json();
-                    errorMessage = errorData.message || errorData.detail || JSON.stringify(errorData)
-                } catch (e) {
-                    console.log('Error parsing admin status error', e);
-                }
-
                 setSubmitAdminStatusError({
                     title: 'We failed to disable your admin role',
                     status: response.status,
-                    detail: errorMessage
+                    detail: await extractErrorMessage(response)
                 })
             }).finally(() => {
                 setIsSubmitAdminStatusLoading(false);
@@ -61,8 +56,11 @@ export const AdminRoleEnabledState = () => {
                         }}>
                         Disable administrator role
                     </Button>
-                    <Button variant="outlined" sx={{ mt: 1 }}>
-                        Reset password
+                    <Button
+                        onClick={() => { setUpdatePasswordModalOpen(true) }}
+                        variant="outlined"
+                        sx={{ mt: 1 }}>
+                        Update password
                     </Button>
                 </Stack>
             </Box>
@@ -73,5 +71,8 @@ export const AdminRoleEnabledState = () => {
                 onDisableClicked={onDisableAdminRole}
                 onDismissError={() => { setSubmitAdminStatusError(undefined) }}
                 onClose={() => { setDisableAdminRoleModalOpen(false); }} />
+            <UpdateAdminPasswordModal
+                open={updatePasswordModalOpen}
+                onClose={() => { setUpdatePasswordModalOpen(false) }} />
         </Box>);
 }

@@ -2,7 +2,7 @@
 
 import { createContext, useEffect, useState } from "react";
 import useAdminInfo from "../hooks/useAdminInfo";
-import { InstanceAdminStatus } from "../lib/dto/InstanceAdminStatus";
+import { InstanceAdminStatus } from "../lib/dto/admin/InstanceAdminStatus";
 
 interface AdminContext {
     adminStatus?: InstanceAdminStatus

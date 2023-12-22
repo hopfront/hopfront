@@ -1,4 +1,4 @@
-export interface AdminAuthResponse {
+export interface AdminAuthTokens {
     accessToken: string
     refreshToken: string
 }

@@ -1,6 +1,6 @@
 import useSWR, { mutate } from "swr";
 import { fetcher } from "../lib/api/utils";
-import { InstanceAdminInfoResponse } from "../lib/dto/InstanceAdminInfoResponse";
+import { InstanceAdminInfoResponse } from "../lib/dto/admin/InstanceAdminInfoResponse";
 
 export const mutateAdminInfo = () => {
     return mutate(`/api/instance/admin/info`);

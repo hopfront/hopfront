@@ -1,3 +1,0 @@
-interface InstanceAdminPasswordRequest {
-    password: string
-}

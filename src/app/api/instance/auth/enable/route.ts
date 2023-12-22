@@ -7,12 +7,19 @@ export async function PUT(req: Request): Promise<Response> {
 
     if (envPassword && envPassword.length > 0) {
         return new Response(
-            JSON.stringify({ message: 'Cannot change admin password when HOPFRONT_ADMIN_PASSWORD environment variable is set' }),
-            { status: 404 }
+            JSON.stringify({ message: 'Cannot change admin password when HOPFRONT_ADMIN_PASSWORD environment variable is set.' }),
+            { status: 409 }
         );
     }
 
-    const body = await req.json() as InstanceAdminPasswordRequest;
+    if (InstanceRepository.getInstanceAdminStatus().isEnabled) {
+        return new Response(
+            JSON.stringify({ message: 'Admin role is already enabled.' }),
+            { status: 409 }
+        );
+    }
+
+    const body = await req.json() as EnableAdminRoleRequest;
     InstanceRepository.saveInstanceAdminAuth({
         from: 'local',
         password: body.password,

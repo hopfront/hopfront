@@ -1,9 +1,9 @@
 
-import { InstanceAdminInfoResponse } from "@/app/lib/dto/InstanceAdminInfoResponse";
+import { AuthenticationService } from "@/app/api/lib/service/AuthenticationService";
+import { InstanceAdminInfoResponse } from "@/app/lib/dto/admin/InstanceAdminInfoResponse";
+import { cookies } from 'next/headers';
 import { NextResponse } from "next/server";
 import { InstanceRepository } from "../../../lib/repository/InstanceRepository";
-import { cookies } from 'next/headers'
-import { AuthenticationService } from "@/app/api/lib/service/AuthenticationService";
 
 export async function GET(): Promise<NextResponse<InstanceAdminInfoResponse>> {
     const adminStatus = InstanceRepository.getInstanceAdminStatus();

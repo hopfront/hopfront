@@ -5,6 +5,7 @@ import { ProblemAlert } from "@/app/components/alert/ProblemAlert";
 import { WarningAlert } from "@/app/components/alert/WarningAlert";
 import { ResponsiveModal } from "@/app/components/modal/ResponsiveModal";
 import { InstanceApi } from "@/app/lib/api/InstanceApi";
+import { extractErrorMessage } from "@/app/lib/api/utils";
 import { Problem } from "@/app/lib/dto/Problem";
 import { AdminPanelSettings, East } from "@mui/icons-material";
 import { FormControl, FormLabel, Input, Stack } from "@mui/joy";
@@ -32,25 +33,17 @@ export const AdminRoleDisabledState = () => {
             return;
         }
 
-        InstanceApi.updateAdminPassword({ password: adminPassword })
+        InstanceApi.enableAdminRole({ password: adminPassword })
             .then(async (response) => {
                 if (response.ok) {
                     setEnableAdminRoleModalOpen(false);
                     return;
                 }
 
-                let errorMessage = 'An unknown error occurred';
-                try {
-                    const errorData = await response.json();
-                    errorMessage = errorData.message || errorData.detail || JSON.stringify(errorData)
-                } catch (e) {
-                    console.log('Error parsing admin status error', e);
-                }
-
                 setSubmitAdminStatusError({
                     title: 'We failed to activate admin role',
                     status: response.status,
-                    detail: errorMessage
+                    detail: await extractErrorMessage(response)
                 })
             }).finally(() => {
                 setIsSubmitAdminStatusLoading(false);
