@@ -1,46 +1,49 @@
 'use client';
 
-import {useEffect, useState} from "react";
+import { useContext, useEffect, useState } from "react";
 import LinearProgress from "@mui/joy/LinearProgress";
-import {useParams, useRouter} from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Box from "@mui/joy/Box";
-import {Breadcrumbs, Link} from "@mui/joy";
-import {KeyboardArrowRight} from "@mui/icons-material";
+import { Breadcrumbs, Link } from "@mui/joy";
+import { KeyboardArrowRight } from "@mui/icons-material";
 import Typography from "@mui/joy/Typography";
-import {DashboardVariable} from "@/app/lib/model/dashboard/DashboardVariable";
-import {useAnalytics} from "@/app/hooks/analytics/useAnalytics";
-import {useDashboard} from "@/app/hooks/useDashboard";
-import {DashboardApi} from "@/app/lib/api/DashboardApi";
-import {ErrorAlert} from "@/app/components/operation/response/ErrorAlert";
-import {Dashboard} from "@/app/lib/model/dashboard/Dashboard";
+import { DashboardVariable } from "@/app/lib/model/dashboard/DashboardVariable";
+import { useAnalytics } from "@/app/hooks/analytics/useAnalytics";
+import { useDashboard } from "@/app/hooks/useDashboard";
+import { DashboardApi } from "@/app/lib/api/DashboardApi";
+import { ErrorAlert } from "@/app/components/operation/response/ErrorAlert";
+import { Dashboard } from "@/app/lib/model/dashboard/Dashboard";
 import {
     DashboardPanelInputSourceConfigDataVariable
 } from "@/app/lib/model/dashboard/DashboardPanelInputSourceConfigDataVariable";
-import {DashboardPanelInput} from "@/app/lib/model/dashboard/DashboardPanelInput";
+import { DashboardPanelInput } from "@/app/lib/model/dashboard/DashboardPanelInput";
 import {
     DashboardPanelInputSourceConfigDataConstant
 } from "@/app/lib/model/dashboard/DashboardPanelInputSourceConfigDataConstant";
-import {DashboardVariableConfig} from "@/app/dashboards/[dashboardId]/components/variable/DashboardVariableConfig";
-import {EventType, useSnackbar} from "@/app/hooks/useSnackbar";
+import { DashboardVariableConfig } from "@/app/dashboards/[dashboardId]/components/variable/DashboardVariableConfig";
+import { EventType, useSnackbar } from "@/app/hooks/useSnackbar";
+import { AdminContext, shouldShowAdminContent } from "@/app/context/AdminContext";
+import { CenteredThreeDotsLoader } from "@/app/components/misc/CenteredThreeDotsLoader";
 
 export default function Page() {
     const router = useRouter();
     const params = useParams();
-    const {usePageView} = useAnalytics();
+    const adminContext = useContext(AdminContext);
+    const { usePageView } = useAnalytics();
 
     const dashboardId = params['dashboardId'] as string;
     const variableName = params['variableName'];
 
-    const {showSnackbar, Snackbar} = useSnackbar();
+    const { showSnackbar, Snackbar } = useSnackbar();
     const [saving, setSaving] = useState(false);
-    const {dashboard, error: dashboardError, isLoading, mutate} = useDashboard(dashboardId);
-    const [variable, setVariable] = useState<DashboardVariable>(dashboard?.variables.find(v => v.name === variableName) || {name: variableName} as DashboardVariable);
+    const { dashboard, error: dashboardError, isLoading, mutate } = useDashboard(dashboardId);
+    const [variable, setVariable] = useState<DashboardVariable>(dashboard?.variables.find(v => v.name === variableName) || { name: variableName } as DashboardVariable);
 
     usePageView("dashboard-variable-page");
 
     useEffect(() => {
         const variable = dashboard?.variables.find(v => v.name === variableName);
-        setVariable(variable ? variable : {name: variableName} as DashboardVariable)
+        setVariable(variable ? variable : { name: variableName } as DashboardVariable)
     }, [dashboard])
 
     const onSaveVariable = (variable: DashboardVariable) => {
@@ -124,13 +127,29 @@ export default function Page() {
             .finally(() => setSaving(false));
     }
 
+    if (isLoading || adminContext.isLoading) {
+        return <CenteredThreeDotsLoader />
+    }
+
+    if (!shouldShowAdminContent(adminContext)) {
+        router.replace('/403');
+        return <CenteredThreeDotsLoader />
+    }
+
+    if (dashboardError) {
+        return (
+            <ErrorAlert
+                error={dashboardError}
+                onClose={() => router.push('/dashboards')}
+            />
+        )
+    }
+
     return (
         <>
-            {isLoading && <Box><LinearProgress/></Box>}
-            {dashboardError && <ErrorAlert error={dashboardError}/>}
             {dashboard &&
                 <>
-                    <Breadcrumbs separator={<KeyboardArrowRight/>} sx={{p: 0, pb: 1}}>
+                    <Breadcrumbs separator={<KeyboardArrowRight />} sx={{ p: 0, pb: 1 }}>
                         <Link href='/dashboards' color='neutral'>
                             Dashboards
                         </Link>
@@ -149,7 +168,7 @@ export default function Page() {
                             defaultVariable={variable}
                             onSave={onSaveVariable}
                             disabled={saving}
-                            onDelete={onDeleteVariable}/>
+                            onDelete={onDeleteVariable} />
                     </Box>
                 </>}
 

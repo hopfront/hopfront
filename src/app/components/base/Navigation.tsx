@@ -60,9 +60,7 @@ export default function Navigation({ children }: NavigationProps) {
         <>
             <Box
                 minHeight="100dvh"
-                minWidth='100dvh'
                 display='flex'
-                flexDirection='column'
                 alignItems="center"
                 justifyContent='center'
             >

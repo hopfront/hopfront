@@ -12,7 +12,10 @@ export default function Page() {
             <Stack direction={'column'}>
                 <Image src={ForbiddenAccessSvg} alt="Forbidden access illustration" width={450} />
                 <Typography level="h1" sx={{ textAlign: 'center', mt: 2 }}>
-                    403 - Access Forbidden
+                    Access Forbidden
+                </Typography>
+                <Typography level="title-md" sx={{ textAlign: 'center' }}>
+                    You do not have enough rights to access this page.
                 </Typography>
             </Stack>
         </Box>

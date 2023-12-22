@@ -9,18 +9,10 @@ import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
 import { useRouter } from "next/navigation";
-import AdminStatusSettings from "./components/AdminStatusSettings";
 import { useContext } from "react";
+import { CenteredThreeDotsLoader } from "../components/misc/CenteredThreeDotsLoader";
 import { AdminContext, shouldShowAdminContent } from "../context/AdminContext";
-import ThreeDotsLoader from "../components/misc/ThreeDotsLoader";
-
-const loader = () => {
-    return (
-        <Box display='flex' alignContent='center' justifyContent='center' sx={{ width: '100vw', height: '100vh' }}>
-            <ThreeDotsLoader />
-        </Box>
-    )
-}
+import AdminStatusSettings from "./components/AdminStatusSettings";
 
 export default function Page() {
     const router = useRouter();
@@ -31,12 +23,12 @@ export default function Page() {
     usePageView("settings-page");
 
     if (isLoading || adminContext.isLoading) {
-        return (loader())
+        return (<CenteredThreeDotsLoader />)
     }
 
     if (!shouldShowAdminContent(adminContext)) {
         router.replace('/403');
-        return (loader); // Just while redirection is triggered.
+        return (<CenteredThreeDotsLoader />);
     }
 
     if (error) {

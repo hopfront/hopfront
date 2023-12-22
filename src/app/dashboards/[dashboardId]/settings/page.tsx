@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { Breadcrumbs, Button, Divider, FormControl, Link, Skeleton } from "@mui/joy";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Dashboard, NEW_DASHBOARD_TITLE } from "@/app/lib/model/dashboard/Dashboard";
 import Box from "@mui/joy/Box";
 import { KeyboardArrowRight } from "@mui/icons-material";
@@ -17,10 +17,14 @@ import { DashboardApi } from "@/app/lib/api/DashboardApi";
 import { useDashboard } from "@/app/hooks/useDashboard";
 import { ConfirmModal, ConfirmModalProps } from "@/app/components/modal/ConfirmModal";
 import { EventType, useSnackbar } from "@/app/hooks/useSnackbar";
+import { AdminContext, shouldShowAdminContent } from "@/app/context/AdminContext";
+import { ErrorAlert } from "@/app/components/operation/response/ErrorAlert";
+import { CenteredThreeDotsLoader } from "@/app/components/misc/CenteredThreeDotsLoader";
 
 export default function Page() {
     const router = useRouter();
     const params = useParams();
+    const adminContext = useContext(AdminContext);
     const { usePageView } = useAnalytics();
 
     const dashboardId = params['dashboardId'] as string;
@@ -90,6 +94,24 @@ export default function Page() {
                 showSnackbar(EventType.Error, `Failed to update dashboard title: ${error.toLocaleString()}`);
             })
             .finally(() => setTitleLoading(false));
+    }
+
+    if (adminContext.isLoading) {
+        return <CenteredThreeDotsLoader />
+    }
+
+    if (!shouldShowAdminContent(adminContext)) {
+        router.replace('/403');
+        return <CenteredThreeDotsLoader />
+    }
+
+    if (dashboardError) {
+        return (
+            <ErrorAlert
+                error={dashboardError}
+                onClose={() => router.push('/dashboards')}
+            />
+        )
     }
 
     return (
