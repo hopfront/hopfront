@@ -8,9 +8,9 @@ export default function Page() {
             display='flex'
             alignItems='center'
             justifyContent='center'
-            sx={{ width: "100vw", height: "100vh" }}>
+            sx={{ width: "100%", height: "100%" }}>
             <Stack direction={'column'}>
-                <Image src={ForbiddenAccessSvg} alt="Forbidden access illustration" />
+                <Image src={ForbiddenAccessSvg} alt="Forbidden access illustration" width={450} />
                 <Typography level="h1" sx={{ textAlign: 'center', mt: 2 }}>
                     403 - Access Forbidden
                 </Typography>
