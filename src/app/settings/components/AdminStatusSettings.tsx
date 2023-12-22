@@ -5,8 +5,8 @@ import { AdminContext } from "@/app/context/AdminContext";
 import { LinearProgress, Typography } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import { useContext } from "react";
-import { DisableAdminRole } from "./DisableAdminRole";
-import { EnableAdminRole } from "./EnableAdminRole";
+import { AdminRoleDisabledState } from "./AdminRoleDisabledState";
+import { AdminRoleEnabledState } from "./AdminRoleEnabledState";
 
 export default function AdminStatusSettings() {
     const adminContext = useContext(AdminContext);
@@ -32,9 +32,9 @@ export default function AdminStatusSettings() {
     return (
         <Box>
             {!isAdminRoleEnabled && isAdminStatusEditable &&
-                <EnableAdminRole />}
+                <AdminRoleDisabledState />}
             {isAdminRoleEnabled && isAdminStatusEditable &&
-                <DisableAdminRole />
+                <AdminRoleEnabledState />
             }
         </Box>
     );

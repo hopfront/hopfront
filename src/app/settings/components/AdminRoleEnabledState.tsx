@@ -1,9 +1,7 @@
 'use client';
 
 import { InfoAlert } from "@/app/components/alert/InfoAlert";
-import { ProblemAlert } from "@/app/components/alert/ProblemAlert";
-import { WarningAlert } from "@/app/components/alert/WarningAlert";
-import { ResponsiveModal } from "@/app/components/modal/ResponsiveModal";
+import { mutateAdminInfo } from "@/app/hooks/useAdminInfo";
 import { InstanceApi } from "@/app/lib/api/InstanceApi";
 import { Problem } from "@/app/lib/dto/Problem";
 import { Stack } from "@mui/joy";
@@ -11,8 +9,9 @@ import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
 import { useState } from "react";
+import { DisableAdminRoleModal } from "./DisableAdminRoleModal";
 
-export const DisableAdminRole = () => {
+export const AdminRoleEnabledState = () => {
     const [disableAdminRoleModalOpen, setDisableAdminRoleModalOpen] = useState(false);
     const [submitAdminStatusError, setSubmitAdminStatusError] = useState<Problem | undefined>();
     const [isSubmitAdminStatusLoading, setIsSubmitAdminStatusLoading] = useState(false);
@@ -21,6 +20,7 @@ export const DisableAdminRole = () => {
         InstanceApi.disableAdminRole()
             .then(async (response) => {
                 if (response.ok) {
+                    mutateAdminInfo();
                     setDisableAdminRoleModalOpen(false);
                     return;
                 }
@@ -66,39 +66,12 @@ export const DisableAdminRole = () => {
                     </Button>
                 </Stack>
             </Box>
-            <ResponsiveModal open={disableAdminRoleModalOpen} onClose={() => setDisableAdminRoleModalOpen(false)}>
-                <Box>
-                    <Typography level='h3'>Disable administrator role</Typography>
-                    <WarningAlert title={''}>
-                        <Typography level='body-sm' sx={{ mt: 1 }}>
-                            As soon as you disable the administrator role, every user will be able to add, modify or delete API specifications, dashboards and operations.
-                        </Typography>
-                    </WarningAlert>
-                    <Stack direction='row' gap={1} sx={{ mt: 3 }}>
-                        <Button
-                            color='danger'
-                            onClick={() => {
-                                setDisableAdminRoleModalOpen(false);
-                                onDisableAdminRole();
-                            }}
-                            loading={isSubmitAdminStatusLoading}>
-                            Disable administrator role
-                        </Button>
-                        <Button
-                            variant='outlined'
-                            onClick={() => {
-                                setDisableAdminRoleModalOpen(false);
-                            }}>
-                            Cancel
-                        </Button>
-                    </Stack>
-                    {submitAdminStatusError &&
-                        <ProblemAlert
-                            problem={submitAdminStatusError}
-                            onClose={() => setSubmitAdminStatusError(undefined)}
-                        />
-                    }
-                </Box>
-            </ResponsiveModal>
+            <DisableAdminRoleModal
+                open={disableAdminRoleModalOpen}
+                loading={isSubmitAdminStatusLoading}
+                error={submitAdminStatusError}
+                onDisableClicked={onDisableAdminRole}
+                onDismissError={() => { setSubmitAdminStatusError(undefined) }}
+                onClose={() => { setDisableAdminRoleModalOpen(false); }} />
         </Box>);
 }

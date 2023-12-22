@@ -5,7 +5,6 @@ import { ProblemAlert } from "@/app/components/alert/ProblemAlert";
 import { WarningAlert } from "@/app/components/alert/WarningAlert";
 import { ResponsiveModal } from "@/app/components/modal/ResponsiveModal";
 import { InstanceApi } from "@/app/lib/api/InstanceApi";
-import { InstanceAdminStatus } from "@/app/lib/dto/InstanceAdminStatus";
 import { Problem } from "@/app/lib/dto/Problem";
 import { AdminPanelSettings, East } from "@mui/icons-material";
 import { FormControl, FormLabel, Input, Stack } from "@mui/joy";
@@ -14,7 +13,7 @@ import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
 import { useState } from "react";
 
-export const EnableAdminRole = () => {
+export const AdminRoleDisabledState = () => {
     const [enableAdminRoleModalOpen, setEnableAdminRoleModalOpen] = useState(false);
     const [adminPassword, setAdminPassword] = useState<string>('');
     const [isSubmitAdminStatusLoading, setIsSubmitAdminStatusLoading] = useState(false);
