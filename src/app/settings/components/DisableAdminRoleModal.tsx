@@ -2,21 +2,47 @@
 import { ProblemAlert } from "@/app/components/alert/ProblemAlert";
 import { WarningAlert } from "@/app/components/alert/WarningAlert";
 import { ResponsiveModal } from "@/app/components/modal/ResponsiveModal";
-import { Stack } from "@mui/joy";
+import { mutateAdminInfo } from "@/app/hooks/useAdminInfo";
+import { InstanceApi } from "@/app/lib/api/InstanceApi";
+import { extractErrorMessage } from "@/app/lib/api/utils";
+import { Problem } from "@/app/lib/dto/Problem";
+import { FormControl, FormLabel, Input, Stack } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
+import { useState } from "react";
 
 interface DisableAdminRoleModalProps {
     open: boolean
-    loading: boolean
-    error: any
     onClose: () => void
-    onDisableClicked: () => void
-    onDismissError: () => void
 }
 
-export const DisableAdminRoleModal = ({ open, loading, error, onClose, onDisableClicked, onDismissError }: DisableAdminRoleModalProps) => {
+export const DisableAdminRoleModal = ({ open, onClose }: DisableAdminRoleModalProps) => {
+    const [isDisableButtonEnabled, setIsDisableButtonEnabled] = useState<boolean>(false);
+    const [isDisableAdminRoleLoading, setIsDisableAdminRoleLoading] = useState(false);
+    const [submitAdminStatusError, setSubmitAdminStatusError] = useState<Problem | undefined>();
+    const [password, setPassword] = useState<string>('');
+
+    const onDisableAdminRole = () => {
+        setIsDisableAdminRoleLoading(true);
+        InstanceApi.disableAdminRole(password)
+            .then(async (response) => {
+                if (response.ok) {
+                    mutateAdminInfo();
+                    onClose();
+                    return;
+                }
+
+                setSubmitAdminStatusError({
+                    title: 'We failed to disable your admin role',
+                    status: response.status,
+                    detail: await extractErrorMessage(response)
+                })
+            }).finally(() => {
+                setIsDisableAdminRoleLoading(false);
+            })
+    }
+
     return (
         <>
             <ResponsiveModal open={open} onClose={onClose}>
@@ -27,11 +53,23 @@ export const DisableAdminRoleModal = ({ open, loading, error, onClose, onDisable
                             As soon as you disable the administrator role, every user will be able to add, modify or delete API specifications, dashboards and operations.
                         </Typography>
                     </WarningAlert>
+                    <FormControl sx={{ mt: 2 }}>
+                        <FormLabel>
+                            Confirm your password
+                        </FormLabel>
+                        <Input
+                            type="password"
+                            value={password}
+                            placeholder="password"
+                            onChange={(event) => { setIsDisableButtonEnabled(event.target.value.length > 0); setPassword(event.target.value); }}
+                        />
+                    </FormControl>
                     <Stack direction='row' gap={1} sx={{ mt: 3 }}>
                         <Button
                             color='danger'
-                            onClick={onDisableClicked}
-                            loading={loading}>
+                            onClick={onDisableAdminRole}
+                            disabled={!isDisableButtonEnabled}
+                            loading={isDisableAdminRoleLoading}>
                             Disable administrator role
                         </Button>
                         <Button
@@ -40,10 +78,10 @@ export const DisableAdminRoleModal = ({ open, loading, error, onClose, onDisable
                             Cancel
                         </Button>
                     </Stack>
-                    {error &&
+                    {submitAdminStatusError &&
                         <ProblemAlert
-                            problem={error}
-                            onClose={onDismissError}
+                            problem={submitAdminStatusError}
+                            onClose={() => { setSubmitAdminStatusError(undefined) }}
                         />
                     }
                 </Box>

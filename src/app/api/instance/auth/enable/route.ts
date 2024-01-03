@@ -20,10 +20,7 @@ export async function PUT(req: Request): Promise<Response> {
     }
 
     const body = await req.json() as EnableAdminRoleRequest;
-    InstanceRepository.saveInstanceAdminAuth({
-        from: 'local',
-        password: body.password,
-    });
+    InstanceRepository.saveInstanceAdminAuth('local', body.password);
 
     const response = new NextResponse(null, { status: 204 });
 

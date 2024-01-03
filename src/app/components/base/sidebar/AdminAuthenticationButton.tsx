@@ -14,10 +14,11 @@ import { InfoAlert } from "../../alert/InfoAlert";
 import { useRouter } from "next/navigation";
 
 interface AdminAuthenticationButtonProps {
-    isAuthenticated: boolean
+    isAuthenticated: boolean,
+    onLogoutSucceed: () => void
 }
 
-export const AdminAuthenticationButton = ({ isAuthenticated }: AdminAuthenticationButtonProps) => {
+export const AdminAuthenticationButton = ({ isAuthenticated, onLogoutSucceed: onLogoutSucceeded }: AdminAuthenticationButtonProps) => {
     const router = useRouter();
     const [adminPassword, setAdminPassword] = useState<string>('');
     const [isAuthenticationLoading, setIsAuthenticationLoading] = useState<boolean>(false);
@@ -57,13 +58,13 @@ export const AdminAuthenticationButton = ({ isAuthenticated }: AdminAuthenticati
         InstanceApi.logoutAdmin()
             .then((res) => {
                 if (res.ok) {
-                    router.replace('/browse');
-                    mutateAdminInfo();
+                    onLogoutSucceeded();
                     setShowAdminAuthentication(false);
                 }
             })
             .finally(() => {
                 setIsLogoutLoading(false);
+                setAdminPassword('');
             })
     }
 

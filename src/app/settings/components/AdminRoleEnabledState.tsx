@@ -15,28 +15,7 @@ import { extractErrorMessage } from "@/app/lib/api/utils";
 
 export const AdminRoleEnabledState = () => {
     const [disableAdminRoleModalOpen, setDisableAdminRoleModalOpen] = useState(false);
-    const [submitAdminStatusError, setSubmitAdminStatusError] = useState<Problem | undefined>();
-    const [isSubmitAdminStatusLoading, setIsSubmitAdminStatusLoading] = useState(false);
     const [updatePasswordModalOpen, setUpdatePasswordModalOpen] = useState(false);
-
-    const onDisableAdminRole = () => {
-        InstanceApi.disableAdminRole()
-            .then(async (response) => {
-                if (response.ok) {
-                    mutateAdminInfo();
-                    setDisableAdminRoleModalOpen(false);
-                    return;
-                }
-
-                setSubmitAdminStatusError({
-                    title: 'We failed to disable your admin role',
-                    status: response.status,
-                    detail: await extractErrorMessage(response)
-                })
-            }).finally(() => {
-                setIsSubmitAdminStatusLoading(false);
-            })
-    }
 
     return (
         <Box sx={{ mt: 1 }}>
@@ -66,10 +45,6 @@ export const AdminRoleEnabledState = () => {
             </Box>
             <DisableAdminRoleModal
                 open={disableAdminRoleModalOpen}
-                loading={isSubmitAdminStatusLoading}
-                error={submitAdminStatusError}
-                onDisableClicked={onDisableAdminRole}
-                onDismissError={() => { setSubmitAdminStatusError(undefined) }}
                 onClose={() => { setDisableAdminRoleModalOpen(false); }} />
             <UpdateAdminPasswordModal
                 open={updatePasswordModalOpen}

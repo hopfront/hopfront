@@ -1,6 +1,6 @@
-interface InstanceAdminAuth {
+export interface InstanceAdminAuth {
     from: InstanceAdminAuthOrigin
-    password: string
+    hash: string
 }
 
-type InstanceAdminAuthOrigin = 'env' | 'local'
+export type InstanceAdminAuthOrigin = 'env' | 'local'

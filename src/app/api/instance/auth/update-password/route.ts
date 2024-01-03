@@ -19,7 +19,7 @@ export async function POST(req: Request): Promise<Response> {
     const body = await req.json() as UpdateAdminPasswordRequest
 
     if (InstanceRepository.isAdminPasswordValid(body.oldPassword)) {
-        InstanceRepository.saveInstanceAdminAuth({ from: 'local', password: body.newPassword });
+        InstanceRepository.saveInstanceAdminAuth('local', body.newPassword);
 
         const response = new NextResponse(null, { status: 200 });
 

@@ -15,6 +15,7 @@ import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import { useState } from "react";
 import { AdminAuthenticationButton } from "./AdminAuthenticationButton";
+import { mutateAdminInfo } from "@/app/hooks/useAdminInfo";
 
 interface ListItemSelectableButtonProps {
     label: string
@@ -161,6 +162,7 @@ export default function Sidebar() {
                 {adminContext.adminStatus?.isEnabled === true &&
                     <AdminAuthenticationButton
                         isAuthenticated={adminContext.isAuthenticated === true}
+                        onLogoutSucceed={() => { router.push('/browse'); mutateAdminInfo(); }}
                     />}
                 <ColorSchemeToggle />
             </Stack>

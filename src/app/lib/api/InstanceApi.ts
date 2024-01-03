@@ -21,12 +21,15 @@ export class InstanceApi {
         })
     }
 
-    public static async disableAdminRole() {
+    public static async disableAdminRole(password: string) {
         return fetch('api/instance/auth/disable', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({
+                password: password
+            } as DisableAdminRoleRequest)
         })
     }
 

@@ -1,10 +1,11 @@
 import { deleteFile, fileExists, readFile, writeFile } from "@/app/api/lib/repository/utils";
 import { InstanceAdminStatus } from "@/app/lib/dto/admin/InstanceAdminStatus";
+import { InstanceAdminAuth, InstanceAdminAuthOrigin } from "@/app/lib/model/InstanceAdminAuth";
 import { InstanceProperties, InstanceSetup } from "@/app/lib/model/InstanceProperties";
+import { compareSync, hashSync } from "bcrypt-ts";
 import { randomUUID } from "crypto";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { AuthenticationService } from "../service/AuthenticationService";
-;
 
 const _INSTANCE_DIRECTORY = 'instance';
 const _INSTANCE_PROPERTIES_FILE = 'properties.json'
@@ -14,7 +15,7 @@ const saveInstanceProperties = (newInstanceConfig: InstanceProperties) => {
     writeFile(_INSTANCE_DIRECTORY, _INSTANCE_PROPERTIES_FILE, JSON.stringify(newInstanceConfig));
 }
 
-const saveInstanceAdminAuth = (newAdminAuth: InstanceAdminAuth) => {
+const saveAdminAuth = (newAdminAuth: InstanceAdminAuth) => {
     writeFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_FILE, JSON.stringify(newAdminAuth));
 }
 
@@ -78,15 +79,15 @@ export class InstanceRepository {
                     isEditable: false
                 }
             } else if (adminAuth && adminAuth.from === 'local' && envPassword && envPassword.length > 0) {
-                saveInstanceAdminAuth({ // switching from local to env password overrides local configuration
-                    from: 'env',
-                    password: envPassword
-                })
+                this.saveInstanceAdminAuth( // switching from local to env password overrides local configuration
+                    'env',
+                    envPassword
+                )
                 return {
                     isEnabled: true,
                     isEditable: false
                 }
-            } else if (adminAuth && adminAuth.from === 'local' && adminAuth.password && adminAuth.password.length > 0) {
+            } else if (adminAuth && adminAuth.from === 'local' && adminAuth.hash && adminAuth.hash.length > 0) {
                 return {
                     isEnabled: true,
                     isEditable: true
@@ -98,7 +99,7 @@ export class InstanceRepository {
                 }
             }
         } else if (envPassword && envPassword.length > 0) { // first configuration done by environment variable
-            saveInstanceAdminAuth({ from: 'env', password: envPassword })
+            this.saveInstanceAdminAuth('env', envPassword)
             return {
                 isEnabled: false,
                 isEditable: true
@@ -111,8 +112,13 @@ export class InstanceRepository {
         }
     }
 
-    static saveInstanceAdminAuth(newAdminAuth: InstanceAdminAuth) {
-        saveInstanceAdminAuth(newAdminAuth);
+    static saveInstanceAdminAuth(from: InstanceAdminAuthOrigin, password: string) {
+        const hash = hashSync(password);
+
+        saveAdminAuth({
+            from: from,
+            hash: hash
+        } as InstanceAdminAuth);
     }
 
     static getAdminPasswordEnvironmentVariable(): string | undefined {
@@ -120,10 +126,10 @@ export class InstanceRepository {
     }
 
     static isAdminPasswordValid(password: string): boolean {
-        const saved = getInstanceAdminAuth()?.password
-        if (saved) {
-            // TODO hash + salt
-            return password === saved
+        const hash = getInstanceAdminAuth()?.hash
+
+        if (hash) {
+            return compareSync(password, hash);
         } else {
             return false;
         }
