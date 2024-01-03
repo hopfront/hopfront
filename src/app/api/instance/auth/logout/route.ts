@@ -3,17 +3,12 @@ import { AuthenticationService } from "@/app/api/lib/service/AuthenticationServi
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function DELETE(): Promise<Response> {
+export async function POST() {
     if (!InstanceRepository.isUserAuthorized(cookies())) {
-        return new NextResponse(null, { status: 403 })
+        return NextResponse.json({ 'message': 'Access forbidden' }, { status: 403 })
     }
 
-    InstanceRepository.saveInstanceAdminAuth({
-        from: 'local',
-        password: ''
-    })
-
-    const response = new NextResponse(null, { status: 204 });
+    const response = new NextResponse(null, { status: 204 })
 
     return AuthenticationService.removeCookieTokenFromResponse(response);
 }

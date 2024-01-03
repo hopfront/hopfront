@@ -27,5 +27,5 @@ export async function PUT(req: Request): Promise<Response> {
 
     const response = new NextResponse(null, { status: 204 });
 
-    return AuthenticationService.addCookieTokensToResponse(response);
+    return AuthenticationService.addCookieTokenToResponse(response);
 }

@@ -12,6 +12,15 @@ export class InstanceApi {
         })
     }
 
+    public static async logoutAdmin() {
+        return fetch('api/instance/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    }
+
     public static async disableAdminRole() {
         return fetch('api/instance/auth/disable', {
             method: 'DELETE',

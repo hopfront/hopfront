@@ -7,7 +7,7 @@ export async function POST(req: Request): Promise<Response> {
     if (!InstanceRepository.isUserAuthorized(cookies())) {
         return new NextResponse(null, { status: 403 })
     }
-    
+
     const envPassword = InstanceRepository.getAdminPasswordEnvironmentVariable();
     if (envPassword && envPassword.length > 0) {
         return new Response(
@@ -15,7 +15,7 @@ export async function POST(req: Request): Promise<Response> {
             { status: 409 }
         );
     }
-    
+
     const body = await req.json() as UpdateAdminPasswordRequest
 
     if (InstanceRepository.isAdminPasswordValid(body.oldPassword)) {
@@ -23,7 +23,7 @@ export async function POST(req: Request): Promise<Response> {
 
         const response = new NextResponse(null, { status: 200 });
 
-        return AuthenticationService.addCookieTokensToResponse(response);
+        return AuthenticationService.addCookieTokenToResponse(response);
     } else {
         return NextResponse.json({ message: 'Wrong credentials' }, { status: 401 });
     }

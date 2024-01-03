@@ -10,16 +10,20 @@ import { ChangeEvent, useState } from "react";
 import { ProblemAlert } from "../../alert/ProblemAlert";
 import { ResponsiveModal } from "../../modal/ResponsiveModal";
 import { extractErrorMessage } from "@/app/lib/api/utils";
+import { InfoAlert } from "../../alert/InfoAlert";
+import { useRouter } from "next/navigation";
 
 interface AdminAuthenticationButtonProps {
     isAuthenticated: boolean
 }
 
 export const AdminAuthenticationButton = ({ isAuthenticated }: AdminAuthenticationButtonProps) => {
+    const router = useRouter();
     const [adminPassword, setAdminPassword] = useState<string>('');
     const [isAuthenticationLoading, setIsAuthenticationLoading] = useState<boolean>(false);
     const [showAdminAuthentication, setShowAdminAuthentication] = useState<boolean>(false);
     const [authenticationError, setAuthenticationError] = useState<Problem | undefined>();
+    const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false);
 
     const onSubmitAdminAuthentication = (event: ChangeEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -48,6 +52,64 @@ export const AdminAuthenticationButton = ({ isAuthenticated }: AdminAuthenticati
             })
     }
 
+    const logout = () => {
+        setIsLogoutLoading(true);
+        InstanceApi.logoutAdmin()
+            .then((res) => {
+                if (res.ok) {
+                    router.replace('/browse');
+                    mutateAdminInfo();
+                    setShowAdminAuthentication(false);
+                }
+            })
+            .finally(() => {
+                setIsLogoutLoading(false);
+            })
+    }
+
+    const body = () => {
+        if (!isAuthenticated) {
+            return (<form
+                onSubmit={onSubmitAdminAuthentication}
+                style={{ marginTop: '18px' }}>
+                <FormControl>
+                    <FormLabel>
+                        Password<Typography level="body-xs" color="danger">*</Typography>
+                    </FormLabel>
+                    <Stack direction={'row'} gap={1}>
+                        <Input
+                            sx={{ flexGrow: 1 }}
+                            value={adminPassword}
+                            onChange={(e) => setAdminPassword(e.target.value)}
+                            type="password"
+                            required
+                            placeholder="Password"
+                        />
+                        <Button
+                            type="submit"
+                            loading={isAuthenticationLoading}
+                        >
+                            Submit
+                        </Button>
+                    </Stack>
+                    {authenticationError &&
+                        <ProblemAlert problem={authenticationError} />}
+                </FormControl>
+            </form>)
+        } else {
+            return <>
+                <InfoAlert sx={{ mt: 1 }}>You are currently logged in as an administrator</InfoAlert>
+                <Button
+                    onClick={logout}
+                    loading={isLogoutLoading}
+                    color="danger"
+                    sx={{ mt: 1 }}>
+                    Log out
+                </Button>
+            </>
+        }
+    }
+
     return (
         <>
             <IconButton
@@ -59,33 +121,7 @@ export const AdminAuthenticationButton = ({ isAuthenticated }: AdminAuthenticati
             </IconButton>
             <ResponsiveModal onClose={() => setShowAdminAuthentication(false)} open={showAdminAuthentication}>
                 <Typography level="title-lg">Admin authentication</Typography>
-                <form
-                    onSubmit={onSubmitAdminAuthentication}
-                    style={{ marginTop: '18px' }}>
-                    <FormControl>
-                        <FormLabel>
-                            Password<Typography level="body-xs" color="danger">*</Typography>
-                        </FormLabel>
-                        <Stack direction={'row'} gap={1}>
-                            <Input
-                                sx={{ flexGrow: 1 }}
-                                value={adminPassword}
-                                onChange={(e) => setAdminPassword(e.target.value)}
-                                type="password"
-                                required
-                                placeholder="Password"
-                            />
-                            <Button
-                                type="submit"
-                                loading={isAuthenticationLoading}
-                            >
-                                Submit
-                            </Button>
-                        </Stack>
-                        {authenticationError &&
-                            <ProblemAlert problem={authenticationError} />}
-                    </FormControl>
-                </form>
+                {body()}
             </ResponsiveModal>
         </>
     )
