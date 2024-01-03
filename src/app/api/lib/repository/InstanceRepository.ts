@@ -133,7 +133,7 @@ export class InstanceRepository {
         const token = cookies.get('accessToken')?.value;
         const adminStatus = this.getInstanceAdminStatus();
 
-        if (adminStatus.isEnabled && (!token || !AuthenticationService.isTokenValid(token, 'access_token'))) {
+        if (adminStatus.isEnabled && (!token || !AuthenticationService.isTokenValid(token))) {
             return false;
         }
 

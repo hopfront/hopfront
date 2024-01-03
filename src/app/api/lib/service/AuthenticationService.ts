@@ -1,22 +1,21 @@
-import { AdminAuthTokens } from '@/app/lib/model/AdminAuthTokens';
+import { AdminAuthToken } from '@/app/lib/model/AdminAuthToken';
 import { sign, verify } from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
 import { TokenType } from '../utils/utils';
 
-const generateTokens = (): AdminAuthTokens => {
+const generateAccessToken = (): AdminAuthToken => {
     const accessToken = sign({}, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '15m' })
-    const refreshToken = sign({}, process.env.REFRESH_TOKEN_SECRET as string, { expiresIn: '24h' })
 
-    return { accessToken, refreshToken }
+    return { accessToken }
 }
 export class AuthenticationService {
-    public static isTokenValid = (token: string, type: TokenType): boolean => {
+    public static isTokenValid = (token: string): boolean => {
         if (!token) {
             return false;
         }
 
         try {
-            const secretKey = (type === 'access_token' ? process.env.ACCESS_TOKEN_SECRET : process.env.REFRESH_TOKEN_SECRET) as string;
+            const secretKey = process.env.ACCESS_TOKEN_SECRET as string;
             verify(token, secretKey); // both checks integrity and expiration
             return true;
         } catch (e) {
@@ -25,28 +24,20 @@ export class AuthenticationService {
         }
     }
 
-    // Set HttpOnly cookies for accessToken and refreshToken. 
+    // Set HttpOnly cookies for accessToken. 
     // HttpOnly cookies are created, accessible and revokable only by backend.
     public static addCookieTokensToResponse(response: NextResponse): NextResponse {
-        const tokens = generateTokens();
+        const tokens = generateAccessToken();
 
         response.cookies.set('accessToken', tokens.accessToken,
             {
                 httpOnly: true,
                 secure: true,
                 path: '/',
-                maxAge: 60 * 15, // 15m
+                maxAge: 60 * 60 * 7, // 7h
                 sameSite: 'strict'
             }
         );
-        response.cookies.set('refreshToken', tokens.refreshToken,
-            {
-                httpOnly: true,
-                secure: true,
-                path: '/',
-                maxAge: 60 * 60 * 24, // 24h
-                sameSite: 'strict'
-            });
 
         return response;
     }

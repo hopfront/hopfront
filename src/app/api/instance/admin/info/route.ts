@@ -10,7 +10,7 @@ export async function GET(): Promise<NextResponse<InstanceAdminInfoResponse>> {
     const cookieStore = cookies();
 
     const accessToken = cookieStore.get('accessToken')?.value
-    const isAuthenticated = accessToken && AuthenticationService.isTokenValid(accessToken, 'access_token');
+    const isAuthenticated = accessToken && AuthenticationService.isTokenValid(accessToken);
 
     return NextResponse.json({
         adminStatus: adminStatus,

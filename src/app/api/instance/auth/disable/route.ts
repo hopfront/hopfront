@@ -23,15 +23,6 @@ export async function DELETE(): Promise<Response> {
             sameSite: 'strict'
         }
     )
-    response.cookies.set('refreshToken', '',
-        {
-            httpOnly: true,
-            secure: true,
-            path: '/',
-            maxAge: 0, // remove token validity
-            sameSite: 'strict'
-        }
-    )
 
     return response;
 }
