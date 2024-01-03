@@ -5,7 +5,7 @@ import { InstanceApi } from "@/app/lib/api/InstanceApi";
 import { Problem } from "@/app/lib/dto/Problem";
 import { AdminAuthRequest } from "@/app/lib/dto/admin/auth/AdminAuthRequest";
 import { AdminPanelSettings } from "@mui/icons-material";
-import { Button, FormControl, FormLabel, IconButton, Input, Stack, Typography } from "@mui/joy";
+import { Button, FormControl, FormLabel, IconButton, Input, Link, Stack, Typography } from "@mui/joy";
 import { ChangeEvent, useState } from "react";
 import { ProblemAlert } from "../../alert/ProblemAlert";
 import { ResponsiveModal } from "../../modal/ResponsiveModal";
@@ -93,6 +93,12 @@ export const AdminAuthenticationButton = ({ isAuthenticated, onLogoutSucceed: on
                             Submit
                         </Button>
                     </Stack>
+                    <InfoAlert sx={{ mt: 1 }}>
+                        <Typography>
+                            If you have lost your password you can follow this steps from our <Link component='a' referrerPolicy='no-referrer' target='_blank' href="https://github.com/hopfront/hopfront/wiki/Instance-configuration#admin-role" underline='always'>
+                                Wiki</Link>.
+                        </Typography>
+                    </InfoAlert>
                     {authenticationError &&
                         <ProblemAlert problem={authenticationError} />}
                 </FormControl>

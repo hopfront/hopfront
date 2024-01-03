@@ -60,12 +60,6 @@ export const UpdateAdminPasswordModal = ({ open, onClose }: UpdateAdminPasswordM
     return (
         <ResponsiveModal open={open} onClose={onClose}>
             <Typography level="h3">Update password</Typography>
-            <InfoAlert sx={{ mt: 1 }}>
-                <Typography>
-                    If you have lost your password you can follow this steps from our <Link component='a' referrerPolicy='no-referrer' target='_blank' href="https://github.com/hopfront/hopfront" underline='always'>
-                        README</Link>.
-                </Typography>
-            </InfoAlert>
             <form style={{ marginTop: '16px' }} onSubmit={updatePassword}>
                 <FormControl>
                     <FormLabel>
