@@ -68,11 +68,11 @@ export default function Page() {
                         })}
                     </Box>
 
-                    {false && <><Box sx={{ mt: 4 }}>
+                    <Box sx={{ mt: 4 }}>
                         <Typography level='h3' gutterBottom>Instance settings</Typography>
-                        <Typography level='title-lg'>Administrator permissions</Typography>
+                        <Typography level='title-lg'>Administrator role</Typography>
                     </Box>
-                        <AdminStatusSettings /></>}
+                    <AdminStatusSettings />
                 </Box>}
         </Box>
     );

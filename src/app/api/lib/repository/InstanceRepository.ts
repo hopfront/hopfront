@@ -10,6 +10,7 @@ import { AuthenticationService } from "../service/AuthenticationService";
 const _INSTANCE_DIRECTORY = 'instance';
 const _INSTANCE_PROPERTIES_FILE = 'properties.json'
 const _INSTANCE_ADMIN_AUTH_FILE = 'admin_auth.json'
+const _INSTANCE_ADMIN_AUTH_ACCESS_TOKEN_FILE = 'admin_auth_access_token.json'
 
 const saveInstanceProperties = (newInstanceConfig: InstanceProperties) => {
     writeFile(_INSTANCE_DIRECTORY, _INSTANCE_PROPERTIES_FILE, JSON.stringify(newInstanceConfig));
@@ -144,5 +145,16 @@ export class InstanceRepository {
         }
 
         return true;
+    }
+
+    static getAccessTokenSecret(): string {
+        if (fileExists(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_ACCESS_TOKEN_FILE)) {
+            return (JSON.parse(readFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_ACCESS_TOKEN_FILE)) as AdminAccessTokenSecret).value
+        } else {
+            const secret = AuthenticationService.generateRandomPrivateKey();
+
+            writeFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_ACCESS_TOKEN_FILE, JSON.stringify({ value: secret } as AdminAccessTokenSecret))
+            return secret
+        }
     }
 }

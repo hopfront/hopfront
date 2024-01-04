@@ -23,7 +23,7 @@ export const AdminRoleEnabledState = () => {
                 <InfoAlert title={''}>
                     <Typography>
                         You are currently logged in as an administrator. <br />
-                        You can add or modify API specifications, dashboards and operations.
+                        You have the ability to add or modify API specifications, dashboards, and operations.
                     </Typography>
                 </InfoAlert>
                 <Stack direction={'row'} gap={1}>
@@ -49,5 +49,5 @@ export const AdminRoleEnabledState = () => {
             <UpdateAdminPasswordModal
                 open={updatePasswordModalOpen}
                 onClose={() => { setUpdatePasswordModalOpen(false) }} />
-        </Box>);
+        </Box >);
 }

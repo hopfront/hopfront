@@ -50,7 +50,7 @@ export const DisableAdminRoleModal = ({ open, onClose }: DisableAdminRoleModalPr
                     <Typography level='h3'>Disable administrator role</Typography>
                     <WarningAlert title={''}>
                         <Typography level='body-sm' sx={{ mt: 1 }}>
-                            As soon as you disable the administrator role, every user will be able to add, modify or delete API specifications, dashboards and operations.
+                        As soon as the administrator role is disabled, all users will be able to add, modify, or delete API specifications, dashboards, and operations.
                         </Typography>
                     </WarningAlert>
                     <FormControl sx={{ mt: 2 }}>

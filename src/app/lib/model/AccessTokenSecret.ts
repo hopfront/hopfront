@@ -1,0 +1,3 @@
+interface AdminAccessTokenSecret {
+    value: string
+}

@@ -1,9 +1,11 @@
 import { AdminAuthToken } from '@/app/lib/model/AdminAuthToken';
 import { sign, verify } from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
+import { InstanceRepository } from '../repository/InstanceRepository';
+import * as crypto from 'crypto'
 
 const generateAccessToken = (): AdminAuthToken => {
-    const accessToken = sign({}, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '15m' })
+    const accessToken = sign({}, InstanceRepository.getAccessTokenSecret(), { expiresIn: '7h' })
 
     return { accessToken }
 }
@@ -14,7 +16,7 @@ export class AuthenticationService {
         }
 
         try {
-            const secretKey = process.env.ACCESS_TOKEN_SECRET as string;
+            const secretKey = InstanceRepository.getAccessTokenSecret();
             verify(token, secretKey); // both checks integrity and expiration
             return true;
         } catch (e) {
@@ -53,5 +55,16 @@ export class AuthenticationService {
         )
 
         return response;
+    }
+
+    public static generateRandomPrivateKey(): string {
+        const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+        let secret = ''
+        const randomBytes = crypto.randomBytes(128);
+        randomBytes.forEach((byte) => {
+            const index = byte % charset.length;
+            secret += charset[index]
+        })
+        return secret;
     }
 }
