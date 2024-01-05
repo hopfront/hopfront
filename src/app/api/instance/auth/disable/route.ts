@@ -13,7 +13,7 @@ export async function DELETE(req: Request): Promise<Response> {
         return NextResponse.json({ 'message': 'Access forbidden' }, { status: 403 })
     }
 
-    InstanceRepository.saveInstanceAdminAuth('local', '')
+    InstanceRepository.deleteInstanceAdminAuth();
 
     const response = new NextResponse(null, { status: 204 });
 

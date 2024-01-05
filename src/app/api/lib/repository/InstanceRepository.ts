@@ -28,10 +28,6 @@ const getInstanceAdminAuth = (): InstanceAdminAuth | undefined => {
     }
 }
 
-const deleteInstanceAdminAuth = () => {
-    deleteFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_FILE);
-}
-
 export class InstanceRepository {
 
     static addInstancePropertySetup(setup: InstanceSetup) {
@@ -69,7 +65,7 @@ export class InstanceRepository {
             const adminAuth = JSON.parse(readFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_FILE)) as InstanceAdminAuth;
 
             if (adminAuth && adminAuth.from === 'env' && (!envPassword || envPassword.length === 0)) {
-                deleteInstanceAdminAuth(); // env password removed, we clear admin auth configuration
+                this.deleteInstanceAdminAuth(); // env password removed, we clear admin auth configuration
                 return {
                     isEnabled: true,
                     isEditable: true
@@ -120,6 +116,10 @@ export class InstanceRepository {
             from: from,
             hash: hash
         } as InstanceAdminAuth);
+    }
+
+    static deleteInstanceAdminAuth = () => {
+        deleteFile(_INSTANCE_DIRECTORY, _INSTANCE_ADMIN_AUTH_FILE);
     }
 
     static getAdminPasswordEnvironmentVariable(): string | undefined {
