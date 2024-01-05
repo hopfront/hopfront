@@ -10,7 +10,7 @@ import { FormControl, FormLabel, Input, Stack } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 interface DisableAdminRoleModalProps {
     open: boolean
@@ -23,7 +23,8 @@ export const DisableAdminRoleModal = ({ open, onClose }: DisableAdminRoleModalPr
     const [submitAdminStatusError, setSubmitAdminStatusError] = useState<Problem | undefined>();
     const [password, setPassword] = useState<string>('');
 
-    const onDisableAdminRole = () => {
+    const onDisableAdminRole = (event: ChangeEvent<HTMLFormElement>) => {
+        event.preventDefault();
         setIsDisableAdminRoleLoading(true);
         InstanceApi.disableAdminRole(password)
             .then(async (response) => {
@@ -50,34 +51,39 @@ export const DisableAdminRoleModal = ({ open, onClose }: DisableAdminRoleModalPr
                     <Typography level='h3'>Disable administrator role</Typography>
                     <WarningAlert title={''}>
                         <Typography level='body-sm' sx={{ mt: 1 }}>
-                        As soon as the administrator role is disabled, all users will be able to add, modify, or delete API specifications, dashboards, and operations.
+                            As soon as the administrator role is disabled, all users will be able to add, modify, or delete API specifications, dashboards, and operations.
                         </Typography>
                     </WarningAlert>
-                    <FormControl sx={{ mt: 2 }}>
-                        <FormLabel>
-                            Confirm your password
-                        </FormLabel>
-                        <Input
-                            type="password"
-                            value={password}
-                            placeholder="password"
-                            onChange={(event) => { setIsDisableButtonEnabled(event.target.value.length > 0); setPassword(event.target.value); }}
-                        />
-                    </FormControl>
-                    <Stack direction='row' gap={1} sx={{ mt: 3 }}>
-                        <Button
-                            color='danger'
-                            onClick={onDisableAdminRole}
-                            disabled={!isDisableButtonEnabled}
-                            loading={isDisableAdminRoleLoading}>
-                            Disable administrator role
-                        </Button>
-                        <Button
-                            variant='outlined'
-                            onClick={onClose}>
-                            Cancel
-                        </Button>
-                    </Stack>
+                    <form
+                        onSubmit={onDisableAdminRole}
+                        style={{ marginTop: '16px' }}>
+                        <FormControl>
+                            <FormLabel>
+                                Confirm your password
+                            </FormLabel>
+                            <Input
+                                type="password"
+                                value={password}
+                                placeholder="password"
+                                onChange={(event) => { setIsDisableButtonEnabled(event.target.value.length > 0); setPassword(event.target.value); }}
+                            />
+                        </FormControl>
+                        <Stack direction='row' gap={1} sx={{ mt: 3 }}>
+                            <Button
+                                type="submit"
+                                color='danger'
+                                disabled={!isDisableButtonEnabled}
+                                loading={isDisableAdminRoleLoading}>
+                                Disable administrator role
+                            </Button>
+                            <Button
+                                variant='outlined'
+                                onClick={onClose}>
+                                Cancel
+                            </Button>
+                        </Stack>
+                    </form>
+
                     {submitAdminStatusError &&
                         <ProblemAlert
                             problem={submitAdminStatusError}

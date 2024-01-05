@@ -1,9 +1,6 @@
 'use client';
 
 import { InfoAlert } from "@/app/components/alert/InfoAlert";
-import { mutateAdminInfo } from "@/app/hooks/useAdminInfo";
-import { InstanceApi } from "@/app/lib/api/InstanceApi";
-import { Problem } from "@/app/lib/dto/Problem";
 import { Stack } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
@@ -11,7 +8,6 @@ import Typography from "@mui/joy/Typography";
 import { useState } from "react";
 import { DisableAdminRoleModal } from "./DisableAdminRoleModal";
 import { UpdateAdminPasswordModal } from "./UpdateAdminPasswordModal";
-import { extractErrorMessage } from "@/app/lib/api/utils";
 
 export const AdminRoleEnabledState = () => {
     const [disableAdminRoleModalOpen, setDisableAdminRoleModalOpen] = useState(false);
