@@ -102,8 +102,8 @@ export class InstanceRepository {
         } else if (envPassword && envPassword.length > 0) { // first configuration done by environment variable
             this.saveInstanceAdminAuth('env', envPassword)
             return {
-                isEnabled: false,
-                isEditable: true
+                isEnabled: true,
+                isEditable: false
             };
         } else { // never configured yet
             return {
