@@ -13,7 +13,7 @@ import {
     accordionSummaryClasses
 } from "@mui/joy";
 import {OpenAPIV3} from "openapi-types";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {useApiContext} from "../hooks/useApiContext";
 import {ApiSpec} from "../lib/dto/ApiSpec";
 import {ServerLocalStorage} from "../lib/localstorage/ServerLocalStorage";
@@ -28,6 +28,7 @@ import WelcomeOnboardingStep from "./WelcomeOnboardingStep";
 import {OnBoardingStep, OnBoardingStepCode} from "./model/OnboardingModel";
 import {buildFavoritePetSampleDashboard, buildPetOverviewDashboard} from "@/app/onboarding/utils";
 import {useInstanceProperties} from "@/app/hooks/useInstanceProperties";
+import { AdminContext } from "../context/AdminContext";
 
 const registerOnboardingStep = async (step: OnBoardingStep, date: Date) => {
     return fetch('/api/instance/properties/setups', {
@@ -52,6 +53,7 @@ type OnBoardingProps = {
 export default function Onboarding({steps: initialSteps, apiSpecs, onOnboardingCompleted}: OnBoardingProps) {
     const {mutate: mutateProperties} = useInstanceProperties();
     const {usePageView, registerEvent} = useAnalytics();
+    const adminContext = useContext(AdminContext);
     usePageView('onboarding');
 
     const [steps, setSteps] = useState<OnBoardingStep[]>(initialSteps);
@@ -273,6 +275,8 @@ export default function Onboarding({steps: initialSteps, apiSpecs, onOnboardingC
         }
     }
 
+    const shouldShowWelcomeStep = activeStep.code === 'welcome' || (adminContext.adminStatus?.isEnabled === true && !adminContext.isAuthenticated)
+
     return (
         <Box
             display='flex'
@@ -285,10 +289,10 @@ export default function Onboarding({steps: initialSteps, apiSpecs, onOnboardingC
             <Divider/>
 
             <WelcomeOnboardingStep
-                visibility={activeStep.code === 'welcome'}
+                visibility={shouldShowWelcomeStep}
                 onNextClicked={onNextClicked}/>
 
-            {activeStep.code !== 'welcome' &&
+            {!shouldShowWelcomeStep &&
                 <Box
                     sx={{
                         width: '100%',

@@ -15,10 +15,11 @@ import { ResponsiveModal } from "../../modal/ResponsiveModal";
 interface AdminAuthenticationProps {
     open: boolean
     onClose: () => void
+    onLoginSucceeded?: () => void
     onLogoutSucceeded?: () => void
 }
 
-export const AdminAuthentication = ({ open, onClose, onLogoutSucceeded }: AdminAuthenticationProps) => {
+export const AdminAuthentication = ({ open, onClose, onLoginSucceeded, onLogoutSucceeded }: AdminAuthenticationProps) => {
     const adminContext = useContext(AdminContext);
     const [adminPassword, setAdminPassword] = useState<string>('');
     const [isAuthenticationLoading, setIsAuthenticationLoading] = useState<boolean>(false);
@@ -34,6 +35,7 @@ export const AdminAuthentication = ({ open, onClose, onLogoutSucceeded }: AdminA
         InstanceApi.authenticateAdmin({ password: adminPassword } as AdminAuthRequest)
             .then(async (res) => {
                 if (res.ok) {
+                    onLoginSucceeded?.();
                     mutateAdminInfo();
                     onClose();
                 } else {

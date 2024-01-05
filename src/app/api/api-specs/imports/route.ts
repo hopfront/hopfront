@@ -71,7 +71,7 @@ const checkSpecVersion = (apiSpec: OpenAPIV3.Document) => {
 
 export async function POST(req: Request) {
     if (!InstanceRepository.isUserAuthorized(cookies())) {
-        return new NextResponse(null, { status: 403 })
+        return NextResponse.json({'message': 'You do not have the rights to import an OpenAPI specification.'}, { status: 403 })
     }
     
     const body: ApiSpecImportRequestBody = await req.json()

@@ -1,5 +1,10 @@
+'use client'
+
 import { Box, Button, Typography } from "@mui/joy";
 import Image from "next/image";
+import { useContext, useState } from "react";
+import { AdminAuthentication } from "../components/base/sidebar/AdminAuthentication";
+import { AdminContext } from "../context/AdminContext";
 import StartBuildingSvg from '../onboarding/assets/start_building.svg';
 
 export interface WelcomeOnboardingStepProps {
@@ -13,6 +18,17 @@ export default function WelcomeOnboardingStep(
         onNextClicked
     }: WelcomeOnboardingStepProps
 ) {
+    const adminContext = useContext(AdminContext);
+    const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
+
+    const checkAdminStatus = () => {
+        if (adminContext.adminStatus?.isEnabled === true && !adminContext.isAuthenticated) {
+            setShowAdminLoginModal(true);
+        } else {
+            onNextClicked();
+        }
+    }
+
     return (
         <>
             {isVisible && <Box sx={{
@@ -36,7 +52,12 @@ export default function WelcomeOnboardingStep(
                 <Typography level='h3' sx={{ mt: 4 }}>Welcome to HopFront</Typography>
                 <Typography level='body-lg' fontWeight={600} sx={{ mt: 1 }}>Your instance is ready to be
                     configured</Typography>
-                <Button sx={{ mt: 4 }} size="lg" onClick={onNextClicked}>Let&apos;s get started!</Button>
+                <Button sx={{ mt: 4 }} size="lg" onClick={checkAdminStatus}>Let&apos;s get started!</Button>
+                <AdminAuthentication
+                    open={showAdminLoginModal}
+                    onClose={() => setShowAdminLoginModal(false)}
+                    onLoginSucceeded={() => onNextClicked()}
+                />
             </Box>}
         </>
     )

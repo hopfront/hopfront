@@ -57,7 +57,7 @@ export default function Navigation({ children }: NavigationProps) {
     }
 
     return (
-        <>
+        <AdminContextProvider>
             <Box
                 minHeight="100dvh"
                 display='flex'
@@ -69,36 +69,34 @@ export default function Navigation({ children }: NavigationProps) {
 
             <Box>
                 {showContent &&
-                    <AdminContextProvider>
-                        <Box sx={{
-                            display: 'flex',
-                            position: 'absolute',
-                            top: 0,
-                            right: 0,
-                            left: 0,
-                            bottom: 0,
-                            width: '100vw',
-                            height: '100vh'
-                        }}>
-                            <Header />
-                            <Sidebar />
-                            <Box
-                                component="main"
-                                className="MainContent"
-                                sx={{
-                                    flex: 1,
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    minWidth: 0,
-                                    height: '100dvh',
-                                    gap: 1,
-                                    overflow: 'auto',
-                                }}
-                            >
-                                {children}
-                            </Box>
+                    <Box sx={{
+                        display: 'flex',
+                        position: 'absolute',
+                        top: 0,
+                        right: 0,
+                        left: 0,
+                        bottom: 0,
+                        width: '100vw',
+                        height: '100vh'
+                    }}>
+                        <Header />
+                        <Sidebar />
+                        <Box
+                            component="main"
+                            className="MainContent"
+                            sx={{
+                                flex: 1,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                minWidth: 0,
+                                height: '100dvh',
+                                gap: 1,
+                                overflow: 'auto',
+                            }}
+                        >
+                            {children}
                         </Box>
-                    </AdminContextProvider>}
+                    </Box>}
                 {!isPropertiesLoading && !isApiSpecsLoading && !propertiesError && setupsToShow.length > 0 &&
                     <Box
                         position='absolute'
@@ -123,6 +121,6 @@ export default function Navigation({ children }: NavigationProps) {
                             onOnboardingCompleted={onOnboardingCompleted} />
                     </Box>}
             </Box>
-        </>
+        </AdminContextProvider>
     )
 }
