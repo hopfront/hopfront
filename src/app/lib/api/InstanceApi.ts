@@ -13,7 +13,7 @@ export class InstanceApi {
     }
 
     public static async logoutAdmin() {
-        return fetch('api/instance/auth/logout', {
+        return fetch('/api/instance/auth/logout', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -22,7 +22,7 @@ export class InstanceApi {
     }
 
     public static async disableAdminRole(password: string) {
-        return fetch('api/instance/auth/disable', {
+        return fetch('/api/instance/auth/disable', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
