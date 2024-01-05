@@ -11,7 +11,6 @@ import { ProblemAlert } from "../../alert/ProblemAlert";
 import { ResponsiveModal } from "../../modal/ResponsiveModal";
 import { extractErrorMessage } from "@/app/lib/api/utils";
 import { InfoAlert } from "../../alert/InfoAlert";
-import { useRouter } from "next/navigation";
 
 interface AdminAuthenticationButtonProps {
     isAuthenticated: boolean,
@@ -19,7 +18,6 @@ interface AdminAuthenticationButtonProps {
 }
 
 export const AdminAuthenticationButton = ({ isAuthenticated, onLogoutSucceed: onLogoutSucceeded }: AdminAuthenticationButtonProps) => {
-    const router = useRouter();
     const [adminPassword, setAdminPassword] = useState<string>('');
     const [isAuthenticationLoading, setIsAuthenticationLoading] = useState<boolean>(false);
     const [showAdminAuthentication, setShowAdminAuthentication] = useState<boolean>(false);
@@ -68,7 +66,7 @@ export const AdminAuthenticationButton = ({ isAuthenticated, onLogoutSucceed: on
             })
     }
 
-    const body = () => {
+    const modalBody = () => {
         if (!isAuthenticated) {
             return (<form
                 onSubmit={onSubmitAdminAuthentication}
@@ -122,13 +120,14 @@ export const AdminAuthenticationButton = ({ isAuthenticated, onLogoutSucceed: on
             <IconButton
                 title="Admin role"
                 variant="outlined"
-                color={isAuthenticated ? 'primary' : 'neutral'}
+                sx={{borderWidth: "2px"}}
+                color={isAuthenticated ? 'success' : 'neutral'}
                 onClick={() => setShowAdminAuthentication(true)}>
                 <AdminPanelSettings />
             </IconButton>
             <ResponsiveModal onClose={() => setShowAdminAuthentication(false)} open={showAdminAuthentication}>
                 <Typography level="title-lg">Admin authentication</Typography>
-                {body()}
+                {modalBody()}
             </ResponsiveModal>
         </>
     )
