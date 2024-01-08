@@ -38,7 +38,7 @@ export const ApiAuthConfigWidget = ({apiContext, sx}: ApiAuthenticationProps) =>
             .then(() => showSnackbar(EventType.Success, 'Authentication configuration saved successfully'))
             .catch(reason => showSnackbar(EventType.Error, `Failed to update authentication configuration: ${reason.toLocaleString()}`))
             .finally(() => setSaving(false));
-    }, 500);
+    }, 1000);
     const initialAuth = useMemo(() => {
         return getSavedAuthenticationOrDefault(apiContext.config.authenticationConfig);
     }, [apiContext.config.authenticationConfig]);
