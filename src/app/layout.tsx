@@ -1,12 +1,13 @@
 'use client';
 
-import './global.css' // importing is enough to apply global style to the app
-import ThemeProvider from "@/app/components/base/CssProvider"
-import React from "react";
-import {MatomoProvider, createInstance} from '@jonkoops/matomo-tracker-react';
+import ThemeProvider from "@/app/components/base/CssProvider";
 import Navigation from "@/app/components/base/Navigation";
-import {ErrorBoundaryFallback} from "@/app/components/misc/ErrorBoundaryFallback";
-import {ErrorBoundary} from "react-error-boundary";
+import { ErrorBoundaryFallback } from "@/app/components/misc/ErrorBoundaryFallback";
+import { MatomoProvider, createInstance } from '@jonkoops/matomo-tracker-react';
+import React from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { AdminContextProvider } from './context/AdminContext';
+import './global.css'; // importing is enough to apply global style to the app
 
 const matomoUrlBase = process.env.NEXT_PUBLIC_MATOMO_URL_BASE || 'http://localhost';
 const matomoSiteId = parseInt(process.env.NEXT_PUBLIC_MATOMO_SITE_ID || '1');
@@ -23,25 +24,27 @@ const MATOMO_INSTANCE = createInstance({
     },
 })
 
-export default function RootLayout({children}: {
+export default function RootLayout({ children }: {
     children: React.ReactNode
 }) {
     return (
         <html lang="en">
-        <head>
-            <title>HopFront</title>
-        </head>
-        <body>
-        <ThemeProvider>
-            <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
-                <MatomoProvider value={MATOMO_INSTANCE}>
-                    <Navigation>
-                        {children}
-                    </Navigation>
-                </MatomoProvider>
-            </ErrorBoundary>
-        </ThemeProvider>
-        </body>
+            <head>
+                <title>HopFront</title>
+            </head>
+            <body>
+                <ThemeProvider>
+                    <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
+                        <MatomoProvider value={MATOMO_INSTANCE}>
+                            <AdminContextProvider>
+                                <Navigation>
+                                    {children}
+                                </Navigation>
+                            </AdminContextProvider>
+                        </MatomoProvider>
+                    </ErrorBoundary>
+                </ThemeProvider>
+            </body>
         </html>
     )
 }

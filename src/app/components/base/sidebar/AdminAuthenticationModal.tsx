@@ -6,6 +6,7 @@ import { InstanceApi } from "@/app/lib/api/InstanceApi";
 import { extractErrorMessage } from "@/app/lib/api/utils";
 import { Problem } from "@/app/lib/dto/Problem";
 import { AdminAuthRequest } from "@/app/lib/dto/admin/auth/AdminAuthRequest";
+import { InstanceLocalStorage } from "@/app/lib/localstorage/InstanceLocalStorage";
 import { Button, FormControl, FormLabel, Input, Link, Stack, Typography } from "@mui/joy";
 import { ChangeEvent, useContext, useState } from "react";
 import { InfoAlert } from "../../alert/InfoAlert";
@@ -19,7 +20,7 @@ interface AdminAuthenticationProps {
     onLogoutSucceeded?: () => void
 }
 
-export const AdminAuthentication = ({ open, onClose, onLoginSucceeded, onLogoutSucceeded }: AdminAuthenticationProps) => {
+export const AdminAuthenticationModal = ({ open, onClose, onLoginSucceeded, onLogoutSucceeded }: AdminAuthenticationProps) => {
     const adminContext = useContext(AdminContext);
     const [adminPassword, setAdminPassword] = useState<string>('');
     const [isAuthenticationLoading, setIsAuthenticationLoading] = useState<boolean>(false);
@@ -36,8 +37,8 @@ export const AdminAuthentication = ({ open, onClose, onLoginSucceeded, onLogoutS
             .then(async (res) => {
                 if (res.ok) {
                     onLoginSucceeded?.();
+                    InstanceLocalStorage.setShouldShowAlertOnTokenExpired(true);
                     mutateAdminInfo();
-                    onClose();
                 } else {
                     setAuthenticationError({
                         title: 'Login has failed',
@@ -60,7 +61,7 @@ export const AdminAuthentication = ({ open, onClose, onLoginSucceeded, onLogoutS
             .then((res) => {
                 if (res.ok) {
                     onLogoutSucceeded?.();
-                    onClose();
+                    InstanceLocalStorage.setShouldShowAlertOnTokenExpired(false);
                 }
             })
             .finally(() => {

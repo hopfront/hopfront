@@ -3,7 +3,7 @@
 import { Box, Button, Typography } from "@mui/joy";
 import Image from "next/image";
 import { useContext, useState } from "react";
-import { AdminAuthentication } from "../components/base/sidebar/AdminAuthentication";
+import { AdminAuthenticationModal } from "../components/base/sidebar/AdminAuthenticationModal";
 import { AdminContext } from "../context/AdminContext";
 import StartBuildingSvg from '../onboarding/assets/start_building.svg';
 
@@ -53,10 +53,10 @@ export default function WelcomeOnboardingStep(
                 <Typography level='body-lg' fontWeight={600} sx={{ mt: 1 }}>Your instance is ready to be
                     configured</Typography>
                 <Button sx={{ mt: 4 }} size="lg" onClick={checkAdminStatus}>Let&apos;s get started!</Button>
-                <AdminAuthentication
+                <AdminAuthenticationModal
                     open={showAdminLoginModal}
                     onClose={() => setShowAdminLoginModal(false)}
-                    onLoginSucceeded={() => onNextClicked()}
+                    onLoginSucceeded={() => { setShowAdminLoginModal(false); onNextClicked() }}
                 />
             </Box>}
         </>

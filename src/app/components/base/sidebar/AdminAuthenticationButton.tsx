@@ -3,7 +3,7 @@
 import { AdminPanelSettings } from "@mui/icons-material";
 import { IconButton } from "@mui/joy";
 import { useState } from "react";
-import { AdminAuthentication } from "./AdminAuthentication";
+import { AdminAuthenticationModal } from "./AdminAuthenticationModal";
 
 interface AdminAuthenticationButtonProps {
     isAuthenticated: boolean,
@@ -23,10 +23,11 @@ export const AdminAuthenticationButton = ({ isAuthenticated, onLogoutSucceed: on
                 onClick={() => setShowAdminAuthentication(true)}>
                 <AdminPanelSettings />
             </IconButton>
-            <AdminAuthentication
+            <AdminAuthenticationModal
                 open={showAdminAuthentication}
                 onClose={() => setShowAdminAuthentication(false)}
-                onLogoutSucceeded={onLogoutSucceeded} />
+                onLoginSucceeded={() => setShowAdminAuthentication(false)}
+                onLogoutSucceeded={() => { setShowAdminAuthentication(false); onLogoutSucceeded() }} />
         </>
     )
 }

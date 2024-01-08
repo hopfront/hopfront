@@ -6,6 +6,7 @@ import { mutateAdminInfo } from "@/app/hooks/useAdminInfo";
 import { InstanceApi } from "@/app/lib/api/InstanceApi";
 import { extractErrorMessage } from "@/app/lib/api/utils";
 import { Problem } from "@/app/lib/dto/Problem";
+import { InstanceLocalStorage } from "@/app/lib/localstorage/InstanceLocalStorage";
 import { FormControl, FormLabel, Input, Stack } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
@@ -30,6 +31,7 @@ export const DisableAdminRoleModal = ({ open, onClose }: DisableAdminRoleModalPr
             .then(async (response) => {
                 if (response.ok) {
                     mutateAdminInfo();
+                    InstanceLocalStorage.setShouldShowAlertOnTokenExpired(false);
                     onClose();
                     return;
                 }

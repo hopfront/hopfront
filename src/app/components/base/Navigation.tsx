@@ -1,14 +1,16 @@
-import { AdminContextProvider } from "@/app/context/AdminContext"
+import { AdminContext } from "@/app/context/AdminContext"
 import { useApiSpecs } from "@/app/hooks/useApiSpecs"
 import { useInstanceProperties } from "@/app/hooks/useInstanceProperties"
+import { InstanceLocalStorage } from "@/app/lib/localstorage/InstanceLocalStorage"
 import Onboarding from "@/app/onboarding/Onboarding"
 import { ONBOARDING_STEPS, OnBoardingStep } from "@/app/onboarding/model/OnboardingModel"
 import { Box } from "@mui/joy"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import ThreeDotsLoader from "../misc/ThreeDotsLoader"
 import Header from "./Header"
 import Sidebar from "./sidebar/Sidebar"
+import { TokenExpiredAlert } from "./TokenExpiredAlert"
 
 export interface NavigationProps {
     children: React.ReactNode
@@ -20,6 +22,7 @@ export default function Navigation({ children }: NavigationProps) {
     const { data: apiSpecsData, error: apiSpecsError, isLoading: isApiSpecsLoading } = useApiSpecs();
     const [setupsToShow, setSetupsToShow] = useState<OnBoardingStep[]>([]);
     const [showContent, setShowContent] = useState<boolean>(false);
+    const adminContext = useContext(AdminContext);
 
     useEffect(() => {
         if (properties) {
@@ -57,7 +60,7 @@ export default function Navigation({ children }: NavigationProps) {
     }
 
     return (
-        <AdminContextProvider>
+        <>
             <Box
                 minHeight="100dvh"
                 display='flex'
@@ -81,20 +84,27 @@ export default function Navigation({ children }: NavigationProps) {
                     }}>
                         <Header />
                         <Sidebar />
-                        <Box
+                        <Box sx={{ display: 'flex', flex: 1, position: 'relative' }}
                             component="main"
                             className="MainContent"
-                            sx={{
-                                flex: 1,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                minWidth: 0,
-                                height: '100dvh',
-                                gap: 1,
-                                overflow: 'auto',
-                            }}
                         >
-                            {children}
+                            <Box
+                                sx={{
+                                    flex: 1,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    minWidth: 0,
+                                    height: '100dvh',
+                                    gap: 1,
+                                    overflow: 'auto',
+                                }}
+                            >
+                                {children}
+                            </Box>
+                            {InstanceLocalStorage.getShouldShowAlertOnTokenExpired() &&
+                                adminContext.adminStatus?.isEnabled === true &&
+                                adminContext.isAuthenticated !== true &&
+                                <TokenExpiredAlert />}
                         </Box>
                     </Box>}
                 {!isPropertiesLoading && !isApiSpecsLoading && !propertiesError && setupsToShow.length > 0 &&
@@ -121,6 +131,6 @@ export default function Navigation({ children }: NavigationProps) {
                             onOnboardingCompleted={onOnboardingCompleted} />
                     </Box>}
             </Box>
-        </AdminContextProvider>
+        </>
     )
 }
