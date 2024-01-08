@@ -1,6 +1,4 @@
-import { InfoAlert } from "@/app/components/alert/InfoAlert";
 import { ProblemAlert } from "@/app/components/alert/ProblemAlert";
-import { WarningAlert } from "@/app/components/alert/WarningAlert";
 import { ResponsiveModal } from "@/app/components/modal/ResponsiveModal";
 import { InstanceApi } from "@/app/lib/api/InstanceApi";
 import { extractErrorMessage } from "@/app/lib/api/utils";
@@ -97,12 +95,6 @@ export const EnableAdminRoleModal = ({ open, onClose }: EnableAdminRoleModalProp
                             placeholder="Confirm password"
                         />
                     </FormControl>
-                    <WarningAlert title={''}>
-                        <Typography>
-                            Keep your password safe as you will not be able to reset it later.
-                        </Typography>
-                    </WarningAlert>
-
 
                     <Box
                         display={'flex'}
