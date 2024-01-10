@@ -84,6 +84,7 @@ export const AdminAuthenticationModal = ({ open, onClose, onLoginSucceeded, onLo
                             sx={{ flexGrow: 1 }}
                             value={adminPassword}
                             onChange={(e) => setAdminPassword(e.target.value)}
+                            autoFocus
                             type="password"
                             required
                             placeholder="Password"
