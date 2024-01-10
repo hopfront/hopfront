@@ -1,5 +1,4 @@
 import { ProblemAlert } from "@/app/components/alert/ProblemAlert";
-import { ErrorAlert } from "@/app/components/operation/response/ErrorAlert";
 import { buildSuccessBodyOrProblem } from "@/app/components/operation/response/utils";
 import { EnhancedTable } from "@/app/components/table/EnhancedTable";
 import { ApiContext } from "@/app/lib/model/ApiContext";
@@ -11,6 +10,7 @@ import { OpenAPIV3 } from "openapi-types";
 import { useEffect, useState } from "react";
 import { ResponseAlert } from "../../alert/ResponseAlert";
 import EmptyTable from "../../table/EmptyTable";
+import { NoSchemaOperationResponse } from "./NoSchemaOperationResponse";
 import { OperationResponseBodyObject } from "./OperationResponseBodyObject";
 import ResponseObject = OpenAPIV3.ResponseObject;
 import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
@@ -73,7 +73,7 @@ export const OperationResponse = ({
     const mediaType = getMediaType(openAPIResponseObject, contentType);
 
     if (!mediaType) {
-        return <ErrorAlert error={new Error("Couldn't find schema for response object")} />
+        return <NoSchemaOperationResponse body={body}/>
     }
 
     if (Array.isArray(body)) {
