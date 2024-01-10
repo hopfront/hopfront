@@ -157,7 +157,9 @@ export default function SmartManualInput({
         }
     }, [inputValue, hasFocus])
 
-    const hasOperations = relevantOperations.length > 0 || (menu?.items && menu.items.length > 0) === true
+    // We do not show item menu if admin mode is enabled and admin is not logged in.
+    const hasMenuItem = (menu?.items && menu.items.length > 0) === true && (adminContext.adminStatus?.isEnabled !== true || adminContext.isAuthenticated)
+    const isSmartDropDownEnabled = relevantOperations.length > 0 || hasMenuItem;
 
     return (
         <>
@@ -184,7 +186,7 @@ export default function SmartManualInput({
                     onBlur={() => { setHasFocus(false); }}
                     readOnly={readOnly} />
 
-                {hasOperations && dropDownOpen && (
+                {isSmartDropDownEnabled && dropDownOpen && (
                     <Box sx={{ position: 'absolute', width: '100%', zIndex: 2 }}>
                         <MenuList sx={{ borderRadius: '8px' }}>
                             {relevantOperations.map((op) => (
