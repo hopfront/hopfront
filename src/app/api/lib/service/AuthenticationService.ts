@@ -35,7 +35,7 @@ export class AuthenticationService {
                 httpOnly: true,
                 secure: true,
                 path: '/',
-                maxAge: 60 * 60 * 7, // 7h
+                maxAge: 60 * 60 * 12, // 12h
                 sameSite: 'strict'
             }
         );
