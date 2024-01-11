@@ -9,8 +9,8 @@ import Typography from "@mui/joy/Typography";
 import { OpenAPIV3 } from "openapi-types";
 import { useEffect, useState } from "react";
 import { ResponseAlert } from "../../alert/ResponseAlert";
+import { WarningAlert } from "../../alert/WarningAlert";
 import EmptyTable from "../../table/EmptyTable";
-import { NoSchemaOperationResponse } from "./NoSchemaOperationResponse";
 import { OperationResponseBodyObject } from "./OperationResponseBodyObject";
 import ResponseObject = OpenAPIV3.ResponseObject;
 import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
@@ -72,95 +72,104 @@ export const OperationResponse = ({
     const openAPIResponseObject: ResponseObject | undefined = openAPIResponse as ResponseObject;
     const mediaType = getMediaType(openAPIResponseObject, contentType);
 
-    if (!mediaType) {
-        return <NoSchemaOperationResponse body={body}/>
-    }
+    const bodyResponse = () => {
+        if (Array.isArray(body)) {
+            const schema =
+                mediaType?.schema && resolveSchemaFromSchemaOrReference(mediaType.schema, apiContext.apiSpec.document) as ArraySchemaObject;
 
-    if (Array.isArray(body)) {
-        const schema =
-            mediaType.schema && resolveSchemaFromSchemaOrReference(mediaType.schema, apiContext.apiSpec.document) as ArraySchemaObject;
-
-        if (body.length > 0 && typeof body[0] === 'object') {
-            return <EnhancedTable
-                rows={body}
-                schema={schema}
-                loading={loading}
-                onRefreshNeeded={onRefreshNeeded}
-                apiContext={apiContext}
-                responseSchemaSelectedObserver={responseSchemaSelectedObserver} />;
-        } else {
-            return <EmptyTable />;
-        }
-    } else if (typeof body === 'object') {
-        if (!mediaType.schema) {
-            return <OperationResponseBodyObject
-                body={body}
-                mediaType={mediaType}
-                loading={loading}
-                responseSchemaSelectedObserver={responseSchemaSelectedObserver}
-                apiContext={apiContext} />;
-        } else {
-            const schema = resolveSchemaFromSchemaOrReference(mediaType.schema, apiContext.apiSpec.document);
-
-            const schemaPropertyNames = schema.properties ? Object.keys(schema.properties) : [];
-
-            if (schema.properties && schemaPropertyNames.length === 1) {
-                const arrayPropertyName = schemaPropertyNames[0];
-
-                const onlyPropertySchema =
-                    resolveSchemaFromSchemaOrReference(schema.properties[arrayPropertyName], apiContext.apiSpec.document);
-
-                if (onlyPropertySchema.type === "array") {
-                    if (body[arrayPropertyName]?.length === 0) {
-                        return <EmptyTable />;
-                    }
-                    return <EnhancedTable
-                        rows={body[arrayPropertyName]}
-                        schema={onlyPropertySchema}
-                        loading={loading}
-                        onRefreshNeeded={onRefreshNeeded}
-                        apiContext={apiContext}
-                        responseSchemaSelectedObserver={responseSchemaSelectedObserver} />;
-
-                }
-            } else if (schema.properties && schemaPropertyNames.length === 2) {
-                const pagePropertyPageNameIndex = schemaPropertyNames.map(value => value.toLowerCase()).indexOf("page");
-
-                if (pagePropertyPageNameIndex) {
-                    const otherPropertyName = schemaPropertyNames
-                        .find((value, index) => index !== pagePropertyPageNameIndex);
-
-                    if (otherPropertyName) {
-                        const otherPropertySchema =
-                            resolveSchemaFromSchemaOrReference(schema.properties[otherPropertyName], apiContext.apiSpec.document);
-
-                        if (otherPropertySchema.type === "array") {
-                            return <EnhancedTable
-                                rows={body[otherPropertyName]}
-                                schema={otherPropertySchema}
-                                loading={loading}
-                                onRefreshNeeded={onRefreshNeeded}
-                                apiContext={apiContext}
-                                responseSchemaSelectedObserver={responseSchemaSelectedObserver} />;
-                        }
-                    }
-
-                }
+            if (body.length > 0 && typeof body[0] === 'object') {
+                return <EnhancedTable
+                    rows={body}
+                    schema={schema}
+                    loading={loading}
+                    onRefreshNeeded={onRefreshNeeded}
+                    apiContext={apiContext}
+                    responseSchemaSelectedObserver={responseSchemaSelectedObserver} />;
+            } else {
+                return <EmptyTable />;
             }
+        } else if (typeof body === 'object') {
+            if (!mediaType?.schema) {
+                return <OperationResponseBodyObject
+                    body={body}
+                    mediaType={mediaType}
+                    loading={loading}
+                    responseSchemaSelectedObserver={responseSchemaSelectedObserver}
+                    apiContext={apiContext} />;
+            } else {
+                const schema = resolveSchemaFromSchemaOrReference(mediaType.schema, apiContext.apiSpec.document);
 
-            return <OperationResponseBodyObject
-                body={body}
-                mediaType={mediaType}
-                loading={loading}
-                responseSchemaSelectedObserver={responseSchemaSelectedObserver}
-                apiContext={apiContext} />;
+                const schemaPropertyNames = schema.properties ? Object.keys(schema.properties) : [];
+
+                if (schema.properties && schemaPropertyNames.length === 1) {
+                    const arrayPropertyName = schemaPropertyNames[0];
+
+                    const onlyPropertySchema =
+                        resolveSchemaFromSchemaOrReference(schema.properties[arrayPropertyName], apiContext.apiSpec.document);
+
+                    if (onlyPropertySchema.type === "array") {
+                        if (body[arrayPropertyName]?.length === 0) {
+                            return <EmptyTable />;
+                        }
+                        return <EnhancedTable
+                            rows={body[arrayPropertyName]}
+                            schema={onlyPropertySchema}
+                            loading={loading}
+                            onRefreshNeeded={onRefreshNeeded}
+                            apiContext={apiContext}
+                            responseSchemaSelectedObserver={responseSchemaSelectedObserver} />;
+
+                    }
+                } else if (schema.properties && schemaPropertyNames.length === 2) {
+                    const pagePropertyPageNameIndex = schemaPropertyNames.map(value => value.toLowerCase()).indexOf("page");
+
+                    if (pagePropertyPageNameIndex) {
+                        const otherPropertyName = schemaPropertyNames
+                            .find((value, index) => index !== pagePropertyPageNameIndex);
+
+                        if (otherPropertyName) {
+                            const otherPropertySchema =
+                                resolveSchemaFromSchemaOrReference(schema.properties[otherPropertyName], apiContext.apiSpec.document);
+
+                            if (otherPropertySchema.type === "array") {
+                                return <EnhancedTable
+                                    rows={body[otherPropertyName]}
+                                    schema={otherPropertySchema}
+                                    loading={loading}
+                                    onRefreshNeeded={onRefreshNeeded}
+                                    apiContext={apiContext}
+                                    responseSchemaSelectedObserver={responseSchemaSelectedObserver} />;
+                            }
+                        }
+
+                    }
+                }
+
+                return <OperationResponseBodyObject
+                    body={body}
+                    mediaType={mediaType}
+                    loading={loading}
+                    responseSchemaSelectedObserver={responseSchemaSelectedObserver}
+                    apiContext={apiContext} />;
+            }
+        } else {
+            return (
+                <div>
+                    <Typography>unknown type: {typeof body}</Typography>
+                    <Typography>{body}</Typography>
+                </div>
+            );
         }
-    } else {
-        return (
-            <div>
-                <Typography>unknown type: {typeof body}</Typography>
-                <Typography>{body}</Typography>
-            </div>
-        );
     }
+
+    return (
+        <>
+            {!mediaType && (
+                <WarningAlert title={'No schema was found for this response.'}>
+                    <Typography level="body-sm">We are displaying data without schema as a fallback.</Typography>
+                </WarningAlert>
+            )}
+            {bodyResponse()}
+        </>
+    )
 }

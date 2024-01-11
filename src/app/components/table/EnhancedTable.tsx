@@ -191,7 +191,7 @@ export const EnhancedTable = ({
             <Sheet
                 sx={{
                     pl: 0.5,
-                    overflow: 'auto', 
+                    overflow: 'auto',
                     borderRadius: 'sm',
                     '--TableCell-height': '40px',
                     // the number is the amount of the header rows.
@@ -264,7 +264,7 @@ export const EnhancedTable = ({
                                     </th>
                                 );
                             })}
-                            {(isActionsDisplayed() && rows?.length > 0) && shouldShowAdminContent(adminContext) &&
+                            {(isActionsDisplayed() && rows?.length > 0) && shouldShowAdminContent(adminContext) && schema &&
                                 <th
                                     style={{ width: `${actionColumnWidth}px` }}>
                                     <Stack direction="row"

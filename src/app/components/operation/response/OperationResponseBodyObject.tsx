@@ -10,7 +10,7 @@ import {Box} from "@mui/joy";
 
 export interface OperationResponseBodyObjectProps {
     body: any
-    mediaType: MediaTypeObject
+    mediaType?: MediaTypeObject
     loading?: boolean
     responseSchemaSelectedObserver?: ResponseSchemaSelectedObserver
     apiContext: ApiContext
@@ -29,7 +29,7 @@ export const OperationResponseBodyObject = ({
             return []; // we don't want to let the user "navigate away" from the pickable object
         }
 
-        if (!mediaType.schema) {
+        if (!mediaType?.schema) {
             return [];
         }
 
@@ -43,7 +43,7 @@ export const OperationResponseBodyObject = ({
         return findRunnableOperationsFromSchema(schemaReference.$ref, apiContext).map(op => op.operation);
     }
 
-    const responseBodySchemaRef = mediaType.schema && getReferenceObjectOrUndefined(mediaType.schema);
+    const responseBodySchemaRef = mediaType?.schema && getReferenceObjectOrUndefined(mediaType.schema);
 
     return (
         <Box>
@@ -55,7 +55,7 @@ export const OperationResponseBodyObject = ({
                 responseSchemaSelectedObserver={responseSchemaSelectedObserver}
             />
 
-            <Box>
+            {mediaType && <Box>
                 {runnableOperations().map(op =>
                     <Box
                         key={'button' + op.getOperationId()}
@@ -67,7 +67,7 @@ export const OperationResponseBodyObject = ({
                             disabled={loading}
                             apiContext={apiContext}/>
                     </Box>)}
-            </Box>
+            </Box>}
         </Box>
     );
 }
