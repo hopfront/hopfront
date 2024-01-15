@@ -166,7 +166,7 @@ export const OperationResponse = ({
         <>
             {!mediaType && (
                 <WarningAlert title={'No schema was found for this response.'}>
-                    <Typography level="body-sm">We are displaying data without schema as a fallback.</Typography>
+                    <Typography level="body-sm">Data is displayed without schema as a fallback.</Typography>
                 </WarningAlert>
             )}
             {bodyResponse()}
