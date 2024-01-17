@@ -80,7 +80,7 @@ export async function POST(req: Request) {
 
     try {
         console.log(`Importing OpenAPI...`);
-        
+
         if (body.apiSpecBaseUrl) {
             return saveApiSpecFromUrl(body.apiSpecBaseUrl, skipSpecImportWarnings);
         } else if (body.apiSpecPlainText) {

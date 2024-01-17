@@ -31,15 +31,17 @@ export class ApiSpecService {
     }
 
     public static getSpecValidationProblemOrUndefined = async (apiSpec: OpenAPIV3.Document): Promise<Problem | undefined> => {
+        const deepCopy = JSON.parse(JSON.stringify(apiSpec)); // OpenAPIParser.validate(deepCopy) is modifying the object during validation.
+
         const errorCodes = [];
-        const defaultApiBaseUrl = resolveDefaultApiBaseUrl(apiSpec as OpenAPIV3.Document);
+        const defaultApiBaseUrl = resolveDefaultApiBaseUrl(apiSpec);
 
         if (!defaultApiBaseUrl || !defaultApiBaseUrl.startsWith("http")) {
             errorCodes.push(ApiErrorCode.NoDefaultServersError);
         }
 
         try {
-            await OpenAPIParser.validate(apiSpec);
+            await OpenAPIParser.validate(deepCopy);
         } catch (error: any) {
             console.log('Error validating OpenAPI spec', error);
             errorCodes.push(ApiErrorCode.SpecValidationError);
