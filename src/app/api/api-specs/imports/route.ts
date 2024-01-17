@@ -3,24 +3,14 @@ import OpenAPIParser from "@readme/openapi-parser";
 
 import { OpenAPIExtensionService } from "@/app/api/lib/service/OpenAPIExtensionService";
 import { problemResponse } from "@/app/api/lib/utils/utils";
-import { ApiErrorCode } from "@/app/common/ApiErrorCode";
 import { ApiSpec } from "@/app/lib/dto/ApiSpec";
 import { ApiSpecImportRequestBody } from "@/app/lib/dto/ApiSpecImportRequestBody";
-import { Problem } from "@/app/lib/dto/Problem";
-import { getApiServers, randomInternalId, resolveApiBaseUrl } from "@/app/lib/openapi/utils";
+import { randomInternalId } from "@/app/lib/openapi/utils";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { OpenAPIV3 } from "openapi-types";
 import { InstanceRepository } from "../../lib/repository/InstanceRepository";
-import { cookies } from "next/headers";
-
-const resolveDefaultApiBaseUrl = (openApiV3: OpenAPIV3.Document<{}>) => {
-    const apiServers = getApiServers(openApiV3);
-    if (apiServers.length > 0) {
-        return resolveApiBaseUrl(apiServers[0]);
-    } else {
-        return undefined;
-    }
-}
+import { ApiSpecService } from "../../lib/service/ApiSpecService";
 
 const buildApiSpecId = (existingApiSpecs: ApiSpec[]) => {
     const randomApiSpecId = () => {
@@ -36,102 +26,65 @@ const buildApiSpecId = (existingApiSpecs: ApiSpec[]) => {
     return apiSPecIdHypothesis;
 }
 
-const getSpecValidationProblemOrUndefined = async (apiSpec: OpenAPIV3.Document): Promise<Problem | undefined> => {
-    const errorCodes = [];
-    const defaultApiBaseUrl = resolveDefaultApiBaseUrl(apiSpec as OpenAPIV3.Document);
+const saveApiSpecFromUrl = async (
+    url: string,
+    skipSpecImportWarnings: boolean
+) => {
+    const api = await OpenAPIParser.parse(url) as OpenAPIV3.Document;
 
-    if (!defaultApiBaseUrl || !defaultApiBaseUrl.startsWith("http")) {
-        errorCodes.push(ApiErrorCode.NoDefaultServersError);
+    ApiSpecService.checkSpecVersion(api);
+    const specValidationProblem = await ApiSpecService.getSpecValidationProblemOrUndefined(api);
+
+    if (!specValidationProblem || skipSpecImportWarnings) {
+        const existingApiSpecs = OpenAPIRepository.getInstance().getApiSpecs();
+        const apiSpecId = buildApiSpecId(existingApiSpecs);
+        OpenAPIRepository.getInstance().saveApiSpec(apiSpecId, JSON.stringify(api));
+        OpenAPIExtensionService.createDocumentExtension({
+            id: apiSpecId,
+            document: api
+        });
+        return NextResponse.json({ 'apiSpecId': apiSpecId }, { status: 201, statusText: 'Created' });
+    } else {
+        return problemResponse(specValidationProblem);
     }
-
-    try {
-        await OpenAPIParser.validate(apiSpec);
-    } catch (error: any) {
-        console.log('Error validating OpenAPI spec', error);
-        errorCodes.push(ApiErrorCode.SpecValidationError);
-    }
-
-    return errorCodes.length > 0 ? {
-        status: 400,
-        title: 'OpenAPI spec validation failed',
-        detail: '',
-        codes: errorCodes
-    } : undefined;
 }
 
-const checkSpecVersion = (apiSpec: OpenAPIV3.Document) => {
-    const specVersion = apiSpec.openapi;
+const saveApiSpecFromPlainText = async (apiSpecPlainText: string, skipSpecImportWarnings: boolean) => {
+    const normalizedPlainText = ApiSpecService.normalizeApiSpecPlainText(apiSpecPlainText);
+    const parsedOpenApi = JSON.parse(normalizedPlainText);
 
-    if (!specVersion?.startsWith("3")) {
-        throw {
-            message : `HopFront supports only OpenAPI specifications with a version equal to or greater than v3.0.0.`
-        };
+    ApiSpecService.checkSpecVersion(parsedOpenApi);
+    const specValidationProblem = await ApiSpecService.getSpecValidationProblemOrUndefined(parsedOpenApi);
+
+    if (!specValidationProblem || skipSpecImportWarnings) {
+        const existingApiSpecs = OpenAPIRepository.getInstance().getApiSpecs();
+        const apiSpecId = buildApiSpecId(existingApiSpecs);
+        OpenAPIRepository.getInstance().saveApiSpec(apiSpecId, normalizedPlainText);
+        OpenAPIExtensionService.createDocumentExtension({
+            id: apiSpecId,
+            document: parsedOpenApi
+        });
+        return NextResponse.json({ 'apiSpecId': apiSpecId }, { status: 201, statusText: 'Created' });
+    } else {
+        return problemResponse(specValidationProblem);
     }
 }
 
 export async function POST(req: Request) {
     if (!InstanceRepository.isUserAuthorized(cookies())) {
-        return NextResponse.json({'message': 'You do not have the rights to import an OpenAPI specification.'}, { status: 403 })
+        return NextResponse.json({ 'message': 'You do not have the rights to import an OpenAPI specification.' }, { status: 403 })
     }
-    
+
     const body: ApiSpecImportRequestBody = await req.json()
-
-    console.log(`Importing OpenAPI...`);
-
     const skipSpecImportWarnings = body.skipSpecImportWarnings || false;
 
-    const existingApiSpecs = OpenAPIRepository.getInstance().getApiSpecs();
-
     try {
+        console.log(`Importing OpenAPI...`);
+        
         if (body.apiSpecBaseUrl) {
-            const api = await OpenAPIParser.parse(body.apiSpecBaseUrl);
-            const apiSpecId = buildApiSpecId(existingApiSpecs);
-            const defaultApiBaseUrl = resolveApiBaseUrl(getApiServers(api as OpenAPIV3.Document)[0]);
-
-            checkSpecVersion(api as OpenAPIV3.Document);
-
-            if ((defaultApiBaseUrl && defaultApiBaseUrl.startsWith("http")) || skipSpecImportWarnings) {
-                OpenAPIRepository.getInstance().saveApiSpec(apiSpecId, JSON.stringify(api));
-                OpenAPIExtensionService.createDocumentExtension({
-                    id: apiSpecId,
-                    document: api as OpenAPIV3.Document
-                });
-            } else {
-                return problemResponse({
-                    status: 400,
-                    title: 'OpenAPI specification is missing a valid default server.',
-                    detail: '',
-                    codes: [ApiErrorCode.NoDefaultServersError]
-                });
-            }
-
-            return NextResponse.json({ 'apiSpecId': apiSpecId }, { status: 201, statusText: 'Created' });
+            return saveApiSpecFromUrl(body.apiSpecBaseUrl, skipSpecImportWarnings);
         } else if (body.apiSpecPlainText) {
-            const normalizedPlainText = body.apiSpecPlainText
-                .replace(/"type"\s*:\s*"Object"/gi, '"type": "object"')
-                .replace(/"type"\s*:\s*"JSON"/gi, '"type": "object"');
-            const parsedOpenApi = JSON.parse(normalizedPlainText);
-
-            checkSpecVersion(parsedOpenApi as OpenAPIV3.Document);
-
-            let specValidationProblem: Problem | undefined;
-
-            if (!body.skipSpecImportWarnings) {
-                specValidationProblem = await getSpecValidationProblemOrUndefined(parsedOpenApi as OpenAPIV3.Document);
-            }
-
-            if (!specValidationProblem || skipSpecImportWarnings) {
-                const apiSpecId = buildApiSpecId(existingApiSpecs);
-                OpenAPIRepository.getInstance().saveApiSpec(apiSpecId, normalizedPlainText);
-                const documentSpec = OpenAPIRepository.getInstance().getDocumentSpec(apiSpecId)!;
-                OpenAPIExtensionService.createDocumentExtension({
-                    id: apiSpecId,
-                    document: JSON.parse(documentSpec) as OpenAPIV3.Document
-                });
-                return NextResponse.json({ 'apiSpecId': apiSpecId }, { status: 201, statusText: 'Created' });
-            } else {
-                return problemResponse(specValidationProblem);
-            }
+            return saveApiSpecFromPlainText(body.apiSpecPlainText, skipSpecImportWarnings)
         } else {
             return problemResponse({
                 status: 400,
@@ -140,7 +93,6 @@ export async function POST(req: Request) {
             });
         }
     } catch (error: any) {
-
         return problemResponse({
             status: 400,
             title: 'Failed to validate OpenAPI spec',

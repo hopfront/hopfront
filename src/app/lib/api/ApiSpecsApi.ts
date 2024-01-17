@@ -1,5 +1,6 @@
 import { ApiSpecImportRequestBody } from "@/app/lib/dto/ApiSpecImportRequestBody";
 import { mutate } from "swr";
+import { ApiSpecUpdateRequestBody } from "../dto/ApiSpecUpdateRequestBody";
 
 const mutateApiSpecList = () => {
     return mutate(`/api/api-specs`);
@@ -41,6 +42,54 @@ export class ApiSpecsApi {
                 apiSpecPlainText: text,
                 skipSpecImportWarnings: skipSpecImportWarnings,
             } as ApiSpecImportRequestBody),
+        }).then(async response => {
+            if (response.status >= 200 && response.status < 300) {
+                await mutateApiSpecList();
+                return response.json().then(data => {
+                    return data['apiSpecId'];
+                });
+            } else {
+                return response.json().then(problem => {
+                    return Promise.reject(problem);
+                });
+            }
+        });
+    }
+
+    public static async updateApiSpecByUrl(apiSpecId: string, url: string, skipSpecImportWarnings: boolean): Promise<string> {
+        return fetch(`/api/api-specs/${apiSpecId}/updates`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                apiSpecBaseUrl: url,
+                skipSpecImportWarnings: skipSpecImportWarnings
+            } as ApiSpecUpdateRequestBody)
+        }).then(async response => {
+            if (response.status >= 200 && response.status < 300) {
+                await mutateApiSpecList();
+                return response.json().then(data => {
+                    return data['apiSpecId'];
+                });
+            } else {
+                return response.json().then(problem => {
+                    return Promise.reject(problem);
+                });
+            }
+        });
+    }
+
+    public static async updateApiSpecByPlainText(apiSpecId: string, text: string, skipSpecImportWarnings: boolean): Promise<string> {
+        return fetch(`/api/api-specs/${apiSpecId}/updates`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                apiSpecPlainText: text,
+                skipSpecImportWarnings: skipSpecImportWarnings,
+            } as ApiSpecUpdateRequestBody),
         }).then(async response => {
             if (response.status >= 200 && response.status < 300) {
                 await mutateApiSpecList();

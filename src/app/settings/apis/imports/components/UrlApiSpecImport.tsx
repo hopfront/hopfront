@@ -7,7 +7,8 @@ import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import { ChangeEvent, useState } from "react";
 import { ImportMode } from "./ImportApiSpec";
-import SkipNoDefaultServersModal from "./SkipSpecImportWarningsModal";
+import SkipSpecImportWarningsModal from "./SkipSpecImportWarningsModal";
+import { UpdateSpecWarningModal } from "./UpdateSpecWarningModal";
 
 type UrlApiSpecImportProps = {
     onUrlImportSucceeded: (mode: ImportMode, apiSpecId: string) => void
@@ -15,6 +16,8 @@ type UrlApiSpecImportProps = {
     warningModalProblem: Problem | undefined
     onWarningModalClose: () => void
     onLoading: (loading: boolean) => void
+    isUpdateMode?: boolean
+    apiSpecId?: string
 }
 
 export default function UrlApiSpecImport({
@@ -23,18 +26,48 @@ export default function UrlApiSpecImport({
     warningModalProblem,
     onWarningModalClose,
     onLoading,
+    isUpdateMode = false,
+    apiSpecId
 }: UrlApiSpecImportProps) {
     const [url, setUrl] = useState<string | undefined>('');
     const [isLoading, setLoading] = useState(false);
+    const [updateWarningModal, setUpdateWarningModal] = useState(false);
 
     function onFormSubmit(event: ChangeEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        if (!url) {
-            return;
-        }
+        if (!url) return;
 
-        importApi(url, false);
+        if (isUpdateMode) {
+            setUpdateWarningModal(true);
+        } else {
+            importApi(url, false);
+        }
+    }
+
+    const updateApi = (apiSpecId: string, url: string, skipSpecImportWarnings: boolean) => {
+        setLoading(true);
+
+        ApiSpecsApi
+            .updateApiSpecByUrl(apiSpecId, url, skipSpecImportWarnings)
+            .then((apiSpecId) => onUrlImportSucceeded('url', apiSpecId))
+            .catch((problem: Problem) => onUrlImportFailed(problem))
+            .finally(() => {
+                setLoading(false);
+                onLoading(false);
+            });
+    }
+
+    const importApiSkippingWarnings = () => {
+        if (!url) return;
+
+        onWarningModalClose();
+
+        if (isUpdateMode && apiSpecId) {
+            updateApi(apiSpecId, url, true);
+        } else {
+            importApi(url, true);
+        }
     }
 
     const importApi = (url: string, skipWarningsOnImport: boolean) => {
@@ -49,15 +82,6 @@ export default function UrlApiSpecImport({
                 setLoading(false);
                 onLoading(false);
             });
-    }
-
-    const importApiWithoutDefaultServers = () => {
-        onWarningModalClose();
-        if (!url) {
-            return;
-        }
-
-        importApi(url, true);
     }
 
     return (
@@ -84,12 +108,22 @@ export default function UrlApiSpecImport({
                     Import
                 </Button>
 
-                <SkipNoDefaultServersModal
+                <SkipSpecImportWarningsModal
                     showModal={warningModalProblem != undefined}
                     onCancel={() => onWarningModalClose()}
-                    onContinue={() => importApiWithoutDefaultServers()}
+                    onContinue={() => importApiSkippingWarnings()}
                     problem={warningModalProblem} />
             </form>
+
+            <UpdateSpecWarningModal
+                open={updateWarningModal}
+                onClose={() => { setUpdateWarningModal(false) }}
+                onProceed={() => {
+                    if (apiSpecId && url) {
+                        setUpdateWarningModal(false);
+                        updateApi(apiSpecId, url, false);
+                    }
+                }} />
         </>
     )
 };

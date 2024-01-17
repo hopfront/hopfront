@@ -9,7 +9,8 @@ import FormHelperText from "@mui/joy/FormHelperText";
 import FormLabel from "@mui/joy/FormLabel";
 import { useState } from "react";
 import { ImportMode } from "./ImportApiSpec";
-import SkipNoDefaultServersModal from "./SkipSpecImportWarningsModal";
+import SkipSpecImportWarningsModal from "./SkipSpecImportWarningsModal";
+import { UpdateSpecWarningModal } from "./UpdateSpecWarningModal";
 
 type TextApiSpecImportProps = {
     onTextImportSucceeded: (mode: ImportMode, apiSpecId: string) => void,
@@ -17,19 +18,31 @@ type TextApiSpecImportProps = {
     warningModalProblem: Problem | undefined,
     onWarningModalClose: () => void
     onLoading: (loading: boolean) => void
+    isUpdateMode?: boolean
+    apiSpecId?: string
 }
 
-export default function TextApiSpecImport({ onTextImportSucceeded, onTextApiImportFailed, warningModalProblem, onLoading, onWarningModalClose }: TextApiSpecImportProps) {
+export default function TextApiSpecImport({
+    onTextImportSucceeded,
+    onTextApiImportFailed,
+    warningModalProblem,
+    onLoading,
+    onWarningModalClose,
+    isUpdateMode = false,
+    apiSpecId
+}: TextApiSpecImportProps) {
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState<string | undefined>();
-    const [problem, setProblem] = useState<Problem | undefined>(undefined);
+    const [updateWarningModal, setUpdateWarningModal] = useState(false);
 
     function onFormSubmit() {
-        if (!text) {
-            return;
-        }
+        if (!text) return;
 
-        importApi(text, false);
+        if (isUpdateMode) {
+            setUpdateWarningModal(true);
+        } else {
+            importApi(text, false);
+        }
     }
 
     const importApi = (text: string, skipSpecImportWarnings: boolean) => {
@@ -45,13 +58,30 @@ export default function TextApiSpecImport({ onTextImportSucceeded, onTextApiImpo
             });
     }
 
-    const importApiWithoutDefaultServers = () => {
-        onWarningModalClose();
-        if (!text) {
-            return;
-        }
+    const updateApi = (apiSpecId: string, text: string, skipSpecImportWarnings: boolean) => {
+        if (!text) return;
 
-        importApi(text, true);
+        setLoading(true);
+
+        ApiSpecsApi.updateApiSpecByPlainText(apiSpecId, text, skipSpecImportWarnings)
+            .then(apiSpecId => onTextImportSucceeded('file', apiSpecId))
+            .catch((problem: Problem) => onTextApiImportFailed(problem))
+            .finally(() => {
+                setLoading(false);
+                onLoading(false);
+            });;
+    }
+
+    const importApiSkippingWarnings = () => {
+        if (!text) return;
+
+        onWarningModalClose();
+
+        if (isUpdateMode && apiSpecId) {
+            updateApi(apiSpecId, text, true);
+        } else {
+            importApi(text, true);
+        }
     }
 
     return (
@@ -87,11 +117,21 @@ export default function TextApiSpecImport({ onTextImportSucceeded, onTextApiImpo
                 Import
             </Button>
 
-            <SkipNoDefaultServersModal
+            <SkipSpecImportWarningsModal
                 showModal={warningModalProblem != undefined}
                 onCancel={() => onWarningModalClose()}
-                onContinue={() => importApiWithoutDefaultServers()}
+                onContinue={() => importApiSkippingWarnings()}
                 problem={warningModalProblem} />
+
+            <UpdateSpecWarningModal
+                onProceed={() => {
+                    if (text && apiSpecId) {
+                        setUpdateWarningModal(false);
+                        updateApi(apiSpecId, text, false);
+                    }
+                }}
+                open={updateWarningModal}
+                onClose={() => { setUpdateWarningModal(false) }} />
         </>
     )
 };

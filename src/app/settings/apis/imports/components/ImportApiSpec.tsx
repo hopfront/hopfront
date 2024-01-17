@@ -14,10 +14,12 @@ export type ImportMode = 'url' | 'file';
 
 type ImportApiSpecProps = {
     onImportSucceeded: (mode: ImportMode, apiSpecId: string) => void,
+    isUpdateMode?: boolean
+    apiSpecId?: string
     sx?: any
 }
 
-export default function ImportApiSpec({ onImportSucceeded, sx }: ImportApiSpecProps) {
+export default function ImportApiSpec({ onImportSucceeded, isUpdateMode = false, apiSpecId, sx }: ImportApiSpecProps) {
     const [importMode, setImportMode] = useState<ImportMode>('url');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Problem | undefined>(undefined);
@@ -74,15 +76,19 @@ export default function ImportApiSpec({ onImportSucceeded, sx }: ImportApiSpecPr
                     onUrlImportFailed={onImportFailed}
                     warningModalProblem={warningModalProblem}
                     onWarningModalClose={onModalClose}
-                    onLoading={loading => setLoading(loading)} />}
-
+                    onLoading={loading => setLoading(loading)}
+                    isUpdateMode={isUpdateMode}
+                    apiSpecId={apiSpecId} />
+            }
             {importMode === 'file' &&
                 <TextApiSpecImport
                     onTextImportSucceeded={onImportSucceeded}
-                    onTextApiImportFailed={(problem) => { onImportFailed(problem); console.log("import failed callback with problem : ", problem) }}
+                    onTextApiImportFailed={(problem) => { onImportFailed(problem); }}
                     warningModalProblem={warningModalProblem}
                     onWarningModalClose={onModalClose}
-                    onLoading={loading => setLoading(loading)} />}
+                    onLoading={loading => setLoading(loading)}
+                    isUpdateMode={isUpdateMode}
+                    apiSpecId={apiSpecId} />}
 
             {error && <ErrorAlert error={error} onClose={() => setError(undefined)} />}
         </Box>

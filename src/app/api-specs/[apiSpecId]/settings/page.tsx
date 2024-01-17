@@ -14,7 +14,7 @@ import {
     OperationsExtensionsConfigurerPage
 } from "@/app/settings/operations/OperationExtensionsConfigurerPage";
 import { SchemaExtensionsConfigurerPage } from "@/app/settings/schemas/SchemaExtensionsConfigurerPage";
-import { Cloud, Dangerous, DataObject, KeyboardArrowRight, Lock, PlayCircle, Security } from "@mui/icons-material";
+import { Cloud, Dangerous, DataObject, KeyboardArrowRight, Lock, PlayCircle, Security, Upgrade, Upload } from "@mui/icons-material";
 import {
     Accordion, AccordionDetails,
     AccordionGroup, AccordionSummary, Avatar,
@@ -22,6 +22,7 @@ import {
     Breadcrumbs,
     Button, Link,
     Skeleton,
+    Stack,
     accordionSummaryClasses
 } from "@mui/joy";
 import ListItemContent from "@mui/joy/ListItemContent";
@@ -77,8 +78,17 @@ export default function Page() {
                 <Typography><Skeleton loading={!apiContext}>{title}</Skeleton></Typography>
             </Breadcrumbs>
 
-            <Typography level='h1' gutterBottom sx={{ mt: 1 }}><Skeleton
-                loading={!apiContext}>{title}</Skeleton></Typography>
+            <Stack direction={'row'} gap={2} sx={{ alignItems: 'center' }}>
+                <Typography level='h1' gutterBottom sx={{ mt: 1 }}>
+                    <Skeleton loading={!apiContext}>{title}</Skeleton>
+                </Typography>
+                {apiContext &&
+                    <Button 
+                    variant="outlined"
+                    onClick={() => {router.push(`/api-specs/${apiSpecId}/update`)}}>
+                        Update
+                    </Button>}
+            </Stack>
 
             <AccordionGroup sx={{
                 [`& .${accordionSummaryClasses.button}`]: {

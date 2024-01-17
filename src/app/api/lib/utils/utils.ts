@@ -8,4 +8,3 @@ export const problemResponse = (problem: Problem): NextResponse<Problem> => {
         status: problem.status
     })
 }
-
