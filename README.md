@@ -1,4 +1,9 @@
-# HopFront
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/hopfront/hopfront/assets/2743541/f8722185-ebb1-434f-b9ba-52cfc1ba0941">
+  <img src="https://github.com/hopfront/hopfront/assets/2743541/48dc1776-3069-4aa5-96b2-79ae14cb2523" height="100">
+</picture>
+
+---
 
 [HopFront](https://hopfront.com/) is the best way to interact with APIs.
 
