@@ -68,7 +68,7 @@ export const OperationResponse = ({
         return <div>no content type</div>;
     }
 
-    const openAPIResponse = openAPIResponses[response.status];
+    const openAPIResponse = openAPIResponses[response.status] || openAPIResponses['default'];
     const openAPIResponseObject: ResponseObject | undefined = openAPIResponse as ResponseObject;
     const mediaType = getMediaType(openAPIResponseObject, contentType);
 
