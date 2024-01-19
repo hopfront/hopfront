@@ -2,7 +2,7 @@
 
 import { SuccessAlert } from "@/app/components/alert/SuccessAlert"
 import { ResponsiveModal } from "@/app/components/modal/ResponsiveModal"
-import { Button, Stack, Typography } from "@mui/joy"
+import { Button, Stack } from "@mui/joy"
 import { useRouter } from "next/navigation"
 
 interface UpdateSucceededModalProps {

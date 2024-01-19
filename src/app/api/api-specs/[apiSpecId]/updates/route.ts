@@ -45,7 +45,13 @@ const updateApiSpecByText = async (
         return problemResponse(specValidationProblem);
     }
 
-    return NextResponse.json({ 'apiSpecId': apiSpecId }, { status: 200, statusText: 'Updated' });
+    const response = new Response(JSON.stringify({ 'apiSpecId': apiSpecId }), {
+        headers: { 'Cache-Control': 'no-store' },
+        status: 200,
+        statusText: 'Updated'
+    })
+
+    return response;
 }
 
 export async function POST(req: Request) {
@@ -58,7 +64,7 @@ export async function POST(req: Request) {
 
     try {
         console.log("Updating OpenApi...")
-        
+
         if (body.apiSpecBaseUrl) {
             return updateApiSpecByUrl(body.apiSpecBaseUrl, apiSpecId, skipSpecImportWarnings);
         } else if (body.apiSpecPlainText) {
