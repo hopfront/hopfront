@@ -6,12 +6,12 @@ const ONLY_DISPLAY_TECHNICAL_NAMES_KEY = 'com.hopfront.only-display-technical-na
 
 export class BrowseLocalStorage {
 
-    public static setFilter(filter: ApiSpec | undefined) {
-        trySetToLocalStorage(BROWSE_FILTER_KEY, JSON.stringify(filter));
+    public static setFilter(apiSpecId: string | undefined) {
+        trySetToLocalStorage(BROWSE_FILTER_KEY, JSON.stringify(apiSpecId));
     }
 
-    public static getFilter(): ApiSpec | undefined {
-        return tryGetFromLocalStorage<ApiSpec>(BROWSE_FILTER_KEY);
+    public static getFilter(): string | undefined {
+        return tryGetFromLocalStorage<string>(BROWSE_FILTER_KEY);
     }
 
     public static getIsOnlyDisplayTechnicalNames(): boolean {

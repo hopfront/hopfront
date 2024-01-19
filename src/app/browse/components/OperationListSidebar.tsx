@@ -51,7 +51,7 @@ export const OperationListSidebar = ({ selectedOperation, onOperationSelected }:
     const { registerEvent } = useAnalytics();
     const [operations, setOperations] = useState<StandaloneOperation[]>([]);
     const [search, setSearch] = useState('');
-    const [apiSpecFilter, setApiSpecFilter] = useState<ApiSpec | undefined>(getSavedFilter());
+    const [apiSpecFilter, setApiSpecFilter] = useState<string | undefined>();
     const { data: apiSpecs, error, isLoading } = useApiSpecs();
     const [onlyDisplayTechnicalName, setOnlyDisplayTechnicalName] = useState(
         BrowseLocalStorage.getIsOnlyDisplayTechnicalNames()
@@ -64,13 +64,13 @@ export const OperationListSidebar = ({ selectedOperation, onOperationSelected }:
 
     const onApiFilterSelected = (apiSpec: ApiSpec | undefined) => {
         registerEvent({ category: 'browse', action: 'browse-filter-api' });
-        BrowseLocalStorage.setFilter(apiSpec);
-        setApiSpecFilter(apiSpec);
+        BrowseLocalStorage.setFilter(apiSpec?.id);
+        setApiSpecFilter(apiSpec?.id);
     };
 
     useEffect(() => {
         const operations = (apiSpecs?.apiSpecs || [])
-            .filter(apiSpec => !apiSpecFilter || apiSpec.id === apiSpecFilter.id)
+            .filter(apiSpec => !apiSpecFilter || apiSpec.id === apiSpecFilter)
             .flatMap((spec: ApiSpec) => {
                 const pathsObject = spec.document.paths as PathsObject;
                 return parseOperations(pathsObject, spec);
@@ -79,6 +79,17 @@ export const OperationListSidebar = ({ selectedOperation, onOperationSelected }:
 
         setOperations(operations);
     }, [apiSpecs, apiSpecFilter, search]);
+
+    // Clear filter if it belongs to a deleted API.
+    useEffect(() => {
+        if (apiSpecs?.apiSpecs) {
+            const filter = BrowseLocalStorage.getFilter();
+            const spec = apiSpecs.apiSpecs.find((spec) => spec.id === filter)
+            if (!spec) {
+                BrowseLocalStorage.setFilter(undefined);
+            }
+        }
+    }, [apiSpecs])
 
     if (apiSpecs && apiSpecs.apiSpecs.length === 0) {
         return <EmptyApiSpecsView />;
@@ -113,7 +124,7 @@ export const OperationListSidebar = ({ selectedOperation, onOperationSelected }:
                 {showApiSpecFilter && <ApiSpecSelect
                     onApiSpecSelected={onApiFilterSelected}
                     isSelectionForced={false}
-                    defaultApiSpecId={getSavedFilter()?.id}
+                    defaultApiSpecId={getSavedFilter()}
                     sx={{ width: '40%' }}
                 />}
                 <Dropdown>
