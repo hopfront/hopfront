@@ -26,7 +26,6 @@ export interface SchemaFormControlInputProps {
     required?: boolean
     disabled?: boolean
     readOnly?: boolean
-    debounceMillis?: number
     menu?: InputMenu
     foreignKeys: ForeignKey[]
     apiContext: ApiContext
@@ -39,7 +38,6 @@ export const SchemaFormControlInput = ({
                                            required,
                                            disabled,
                                            readOnly,
-                                           debounceMillis = 0,
                                            menu,
                                            foreignKeys,
                                            apiContext
@@ -55,7 +53,6 @@ export const SchemaFormControlInput = ({
                 schema={schema}
                 required={required}
                 readOnly={readOnly}
-                debounceMillis={debounceMillis}
                 menu={menu}
                 foreignKeys={foreignKeys}
                 apiContext={apiContext}/>

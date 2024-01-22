@@ -16,7 +16,6 @@ export interface OperationParameterFormControlInputProps {
     parameterExtensions?: ParameterExtension[]
     onValueChanged: (value: ParameterWithValue) => void
     disabled?: boolean
-    debounceMillis?: number
     apiContext: ApiContext
 }
 
@@ -28,7 +27,6 @@ export const OperationParameterFormControlInput = ({
     parameterExtensions = [],
     onValueChanged,
     disabled,
-    debounceMillis,
     apiContext
 }: OperationParameterFormControlInputProps) => {
 
@@ -53,7 +51,6 @@ export const OperationParameterFormControlInput = ({
             schema={parameter.parameter.schema}
             required={parameter.parameter.required || false}
             disabled={disabled}
-            debounceMillis={debounceMillis}
             menu={menu}
             foreignKeys={parameterExtension?.foreignKeys ?? []}
             apiContext={apiContext} />;

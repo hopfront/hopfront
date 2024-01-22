@@ -27,7 +27,6 @@ export interface SmartManualInputProps {
     required?: boolean
     disabled?: boolean
     readOnly?: boolean
-    debounceMillis?: number
     menu?: InputMenu
     foreignKeys: ForeignKey[]
     min?: number
@@ -41,7 +40,6 @@ export default function SmartManualInput({
     placeholder,
     required,
     disabled,
-    debounceMillis = 0,
     readOnly,
     menu,
     foreignKeys,

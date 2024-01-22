@@ -1,20 +1,18 @@
+import { InputMenu } from "@/app/components/input/InputMenu";
+import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
 import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
 import Option from "@mui/joy/Option";
 import Select from "@mui/joy/Select";
 import { OpenAPIV3 } from "openapi-types";
 import { HTMLInputTypeAttribute, SyntheticEvent } from "react";
-import NonArraySchemaObject = OpenAPIV3.NonArraySchemaObject;
 import { Monospace } from "../typography/Monospace";
-import { InputMenu } from "@/app/components/input/InputMenu";
-import { ManualInput, ManualInputValueType } from "@/app/components/input/ManualInput";
 import SmartManualInput from "./SmartManualInput";
-import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
+import NonArraySchemaObject = OpenAPIV3.NonArraySchemaObject;
 
 export interface StringInputProps {
     name?: string,
     updatableValue: UpdatableValue<string>
     schemaObject: NonArraySchemaObject
-    debounceMillis?: number
     required?: boolean
     readOnly?: boolean
     menu?: InputMenu
@@ -24,7 +22,6 @@ export interface StringInputProps {
 export const StringInput = ({
     updatableValue,
     schemaObject,
-    debounceMillis = 0,
     required,
     readOnly,
     menu,
@@ -79,7 +76,6 @@ export const StringInput = ({
                         type={inputType()}
                         required={required}
                         placeholder={schemaObject.example}
-                        debounceMillis={debounceMillis}
                         readOnly={readOnly || schemaObject.readOnly}
                         menu={menu}
                         foreignKeys={foreignKeys} />

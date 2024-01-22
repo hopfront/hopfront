@@ -12,7 +12,6 @@ import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
 
 export interface SchemaInputProps {
     updatableValue: UpdatableValue<any>
-    debounceMillis?: number
     schema?: SchemaOrReference
     required?: boolean
     readOnly?: boolean
@@ -24,7 +23,6 @@ export interface SchemaInputProps {
 export const SchemaInput = ({
     updatableValue,
     schema,
-    debounceMillis = 0,
     required,
     readOnly,
     menu,
@@ -37,7 +35,7 @@ export const SchemaInput = ({
             schemaObject={{ type: 'string' }}
             required={false}
             foreignKeys={foreignKeys}
-            debounceMillis={debounceMillis} />;
+            />;
     }
 
     const schemaObject = resolveSchemaFromSchemaOrReference(schema, apiContext.apiSpec.document);
@@ -64,7 +62,6 @@ export const SchemaInput = ({
                 foreignKeys={foreignKeys}
                 updatableValue={updatableValue}
                 schemaObject={schemaObject}
-                debounceMillis={debounceMillis}
                 required={required}
                 readOnly={readOnly}
                 menu={menu} />;
@@ -72,7 +69,6 @@ export const SchemaInput = ({
             return <StringInput
                 updatableValue={updatableValue}
                 schemaObject={schemaObject}
-                debounceMillis={debounceMillis}
                 required={required}
                 readOnly={readOnly}
                 foreignKeys={foreignKeys}

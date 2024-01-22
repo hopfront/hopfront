@@ -25,6 +25,7 @@ import { ErrorAlert } from "@/app/components/operation/response/ErrorAlert";
 import { ApiContext } from "@/app/lib/model/ApiContext";
 import { AuthService } from "@/app/lib/service/AuthService";
 import { DashboardPanelContent } from "@/app/dashboards/[dashboardId]/components/DashboardPanelContent";
+import { useDebouncedCallback } from "use-debounce";
 
 export interface OperationAsyncResponse {
     response: Response | undefined
@@ -120,19 +121,7 @@ export const DashboardPanelGridItem = ({
         onRefresh: () => setRefreshCount(refreshCount + 1)
     });
 
-    useEffect(() => {
-        if (!operation || !apiContext) {
-            return;
-        }
-
-        const parameterWithoutRequiredValue = inputs.parameters.find(p => {
-            return !p.value && p.parameter.required;
-        });
-
-        if (parameterWithoutRequiredValue) {
-            return;
-        }
-
+    const debounceOperationExecution = useDebouncedCallback((operation: StandaloneOperation, apiContext: ApiContext) => {
         setOperationResponse({
             ...operationResponse,
             error: undefined,
@@ -154,6 +143,22 @@ export const DashboardPanelGridItem = ({
                     loading: false,
                 });
             });
+    }, 500)
+
+    useEffect(() => {
+        if (!operation || !apiContext) {
+            return;
+        }
+
+        const parameterWithoutRequiredValue = inputs.parameters.find(p => {
+            return !p.value && p.parameter.required;
+        });
+
+        if (parameterWithoutRequiredValue) {
+            return;
+        }
+
+        debounceOperationExecution(operation, apiContext);
     }, [apiContext, inputs, operation, refreshCount]);
 
     if (apiContext && authStatus.isAuthenticationRequired && !authStatus.isAuthenticated) {

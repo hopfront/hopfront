@@ -102,7 +102,6 @@ export const OperationGetWidget = ({
                 operation={operation}
                 operationInputs={operationInputs}
                 loading={loading}
-                debounceMillis={500}
                 onChange={onOperationInputsChange}
                 apiContext={apiContext} />
             {response &&

@@ -14,7 +14,6 @@ export interface ManualInputProps {
     required?: boolean
     disabled?: boolean
     readOnly?: boolean
-    debounceMillis?: number
     endDecorator?: React.ReactNode
     min?: number
     max?: number
@@ -28,20 +27,12 @@ export const ManualInput = ({
     onChange,
     required,
     disabled,
-    debounceMillis = 0,
     readOnly,
     endDecorator,
     min,
     max,
     sx,
 }: ManualInputProps) => {
-
-    const onInputChange = useDebouncedCallback(
-        (event: React.ChangeEvent<HTMLInputElement>) => {
-            onChange(event.target.value);
-        },
-        debounceMillis
-    );
 
     return (
         <Input
@@ -54,7 +45,7 @@ export const ManualInput = ({
             required={required}
             endDecorator={endDecorator}
             disabled={disabled || readOnly}
-            onChange={onInputChange}
+            onChange={(event) => onChange(event?.target.value)}
             slotProps={{
                 input: {
                     min: min,

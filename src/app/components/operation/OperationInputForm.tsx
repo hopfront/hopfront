@@ -16,7 +16,6 @@ export interface OperationInputFormProps {
     operationInputs: OperationInputs
     submitLabel?: string
     loading: boolean
-    debounceMillis?: number
     onChange: (input: OperationInputs) => void
     onSubmit?: () => void
     apiContext: ApiContext
@@ -27,7 +26,6 @@ export const OperationInputForm = ({
     operationInputs,
     submitLabel = "Submit",
     loading,
-    debounceMillis = 0,
     onChange,
     onSubmit,
     apiContext
@@ -108,7 +106,6 @@ export const OperationInputForm = ({
                 extensions={operationExtension?.parameters || []}
                 onValueChanged={onParametersChanged}
                 disabled={loading}
-                debounceMillis={debounceMillis}
                 apiContext={apiContext} />
 
             {arraySchemaObject &&

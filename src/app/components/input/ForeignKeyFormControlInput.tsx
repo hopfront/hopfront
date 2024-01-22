@@ -3,7 +3,7 @@ import { SelectedObjectButton } from "@/app/components/input/SelectedObjectButto
 import { OperationLabel } from "@/app/components/typography/OperationLabel";
 import { useApiSpecs } from "@/app/hooks/useApiSpecs";
 import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
-import { ApiContext, SchemaOrReference } from "@/app/lib/model/ApiContext";
+import { SchemaOrReference } from "@/app/lib/model/ApiContext";
 import { ResponseSchemaSelectedObserver } from "@/app/lib/model/ResponseSchemaSelectedObserver";
 import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
 import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
@@ -282,7 +282,7 @@ export const ForeignKeyFormControlInput = ({
                         required={required}
                         readOnly={readOnly}
                         foreignKeys={[]}
-                        debounceMillis={500} />}
+                        />}
                 <ButtonGroup
                     ref={anchorRef}
                     variant="outlined"

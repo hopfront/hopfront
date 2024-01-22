@@ -1,26 +1,24 @@
+import { InputMenu } from "@/app/components/input/InputMenu";
+import { Monospace } from "@/app/components/typography/Monospace";
+import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
 import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
 import Option from "@mui/joy/Option";
 import Select from "@mui/joy/Select";
 import { OpenAPIV3 } from "openapi-types";
 import { SyntheticEvent } from "react";
-import NonArraySchemaObject = OpenAPIV3.NonArraySchemaObject;
-import { Monospace } from "@/app/components/typography/Monospace";
-import { ManualInput, ManualInputValueType } from "@/app/components/input/ManualInput";
-import { InputMenu } from "@/app/components/input/InputMenu";
 import SmartManualInput from "./SmartManualInput";
-import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
+import NonArraySchemaObject = OpenAPIV3.NonArraySchemaObject;
 
 export interface IntegerInputProps {
     updatableValue: UpdatableValue<number>
     schemaObject: NonArraySchemaObject
-    debounceMillis?: number
     required?: boolean
     readOnly?: boolean
     menu?: InputMenu
     foreignKeys: ForeignKey[]
 }
 
-export const IntegerInput = ({ updatableValue, schemaObject, debounceMillis, required, readOnly, menu, foreignKeys }: IntegerInputProps) => {
+export const IntegerInput = ({ updatableValue, schemaObject, required, readOnly, menu, foreignKeys }: IntegerInputProps) => {
     const enumValues = schemaObject.enum as number[];
 
     if (enumValues) {
@@ -50,7 +48,6 @@ export const IntegerInput = ({ updatableValue, schemaObject, debounceMillis, req
                 foreignKeys={foreignKeys}
                 updatableValue={updatableValue}
                 type="number"
-                debounceMillis={debounceMillis}
                 required={required}
                 readOnly={readOnly}
                 placeholder={schemaObject.example ? schemaObject.example.toString() : undefined}

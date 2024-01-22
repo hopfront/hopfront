@@ -33,7 +33,6 @@ export const FormControlDashboardVariableManual = ({variable, onValueChange, cac
             <ManualInput
                 type={variable.variable.type || 'text'}
                 defaultValue={variable.value}
-                debounceMillis={500}
                 onChange={onTextChange}/>
         </FormControl>
     );
