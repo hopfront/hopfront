@@ -10,6 +10,7 @@ import { OperationService } from "@/app/lib/service/OperationService";
 import Card from "@mui/joy/Card";
 import { useEffect, useState } from "react";
 import { OperationResponse } from "./response/OperationResponse";
+import { useDebouncedCallback } from "use-debounce";
 
 export interface OperationGetWidgetProps {
     operation: StandaloneOperation
@@ -34,15 +35,15 @@ const cacheInputs = (operation: StandaloneOperation, operationInput: OperationIn
 }
 
 export const OperationGetWidget = ({
-                                       operation,
-                                       defaultInputs,
-                                       onResponse,
-                                       onError,
-                                       responseSchemaSelectedObserver,
-                                       apiContext
-                                   }: OperationGetWidgetProps) => {
+    operation,
+    defaultInputs,
+    onResponse,
+    onError,
+    responseSchemaSelectedObserver,
+    apiContext
+}: OperationGetWidgetProps) => {
 
-    const {registerEvent} = useAnalytics();
+    const { registerEvent } = useAnalytics();
     const [operationInputs, setOperationInputs] =
         useState<OperationInputs>(getOperationDefaultInputs(operation, defaultInputs || getCachedInputs(operation)));
     const [loading, setLoading] = useState(false);
@@ -55,19 +56,7 @@ export const OperationGetWidget = ({
         setOperationInputs(operationInputs);
     }
 
-    useEffect(() => {
-        setOperationInputs(getOperationDefaultInputs(operation, defaultInputs || getCachedInputs(operation)));
-    }, [defaultInputs, operation]);
-
-    useEffect(() => {
-        const parameterWithoutRequiredValue = operationInputs.parameters.find(p => {
-            return !p.value && p.parameter.required;
-        });
-
-        if (parameterWithoutRequiredValue) {
-            return; // We don't execute the request if any parameter is missing its value.
-        }
-
+    const debounceExecution = useDebouncedCallback(() => {
         setLoading(true);
         setError(undefined);
 
@@ -89,6 +78,22 @@ export const OperationGetWidget = ({
                 setLoading(false);
                 onError && onError(reason);
             });
+    }, 500)
+
+    useEffect(() => {
+        setOperationInputs(getOperationDefaultInputs(operation, defaultInputs || getCachedInputs(operation)));
+    }, [defaultInputs, operation]);
+
+    useEffect(() => {
+        const parameterWithoutRequiredValue = operationInputs.parameters.find(p => {
+            return !p.value && p.parameter.required;
+        });
+
+        if (parameterWithoutRequiredValue) {
+            return; // We don't execute the request if any parameter is missing its value.
+        }
+
+        debounceExecution()
     }, [apiContext.apiSpec, onError, onResponse, operation, operationInputs, refreshCounter]);
 
     return (
@@ -99,9 +104,9 @@ export const OperationGetWidget = ({
                 loading={loading}
                 debounceMillis={500}
                 onChange={onOperationInputsChange}
-                apiContext={apiContext}/>
+                apiContext={apiContext} />
             {response &&
-                <Card sx={{mt: 2}}>
+                <Card sx={{ mt: 2 }}>
                     <OperationResponse
                         operation={operation}
                         response={response}
@@ -110,11 +115,11 @@ export const OperationGetWidget = ({
                         }}
                         loading={loading}
                         responseSchemaSelectedObserver={responseSchemaSelectedObserver}
-                        apiContext={apiContext}/>
+                        apiContext={apiContext} />
                 </Card>
 
             }
-            <ErrorAlert error={error} apiContext={apiContext}/>
+            <ErrorAlert error={error} apiContext={apiContext} />
         </>
     );
 }

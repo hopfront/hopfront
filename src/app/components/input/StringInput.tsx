@@ -73,19 +73,13 @@ export const StringInput = ({
 
         switch (schemaObject.format) {
             default: {
-                const onInputChange = (value: ManualInputValueType) => {
-                    updatableValue.onValueUpdate(value as string);
-                };
-
                 return (
                     <SmartManualInput
                         updatableValue={updatableValue}
                         type={inputType()}
                         required={required}
                         placeholder={schemaObject.example}
-                        onChange={onInputChange}
                         debounceMillis={debounceMillis}
-                        defaultValue={updatableValue.value}
                         readOnly={readOnly || schemaObject.readOnly}
                         menu={menu}
                         foreignKeys={foreignKeys} />

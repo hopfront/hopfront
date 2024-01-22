@@ -23,8 +23,6 @@ import { AdminContext, shouldShowAdminContent } from "@/app/context/AdminContext
 export interface SmartManualInputProps {
     updatableValue: UpdatableValue<any>
     type: HTMLInputTypeAttribute
-    onChange: (value: ManualInputValueType) => void
-    defaultValue?: ManualInputValueType
     placeholder?: string | undefined
     required?: boolean
     disabled?: boolean
@@ -40,9 +38,7 @@ export interface SmartManualInputProps {
 export default function SmartManualInput({
     updatableValue,
     type,
-    defaultValue,
     placeholder,
-    onChange,
     required,
     disabled,
     debounceMillis = 0,
@@ -54,16 +50,9 @@ export default function SmartManualInput({
     sx
 }: SmartManualInputProps) {
     const adminContext = useContext(AdminContext);
-    const onInputChange = useDebouncedCallback(
-        (event: React.ChangeEvent<HTMLInputElement>) => {
-            onChange(event.target.value);
-        },
-        debounceMillis
-    );
 
     const { data: apiSpecs } = useApiSpecs();
     const [dropDownOpen, setDropDownOpen] = useState(false);
-    const [inputValue, setInputValue] = useState(defaultValue?.toString() || '');
     const [hasFocus, setHasFocus] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -120,14 +109,6 @@ export default function SmartManualInput({
             responseSchemaSelectedObserver: {
                 schemaRef: operationWithForeignKey.foreignKey.schemaRef,
                 onValueSelected: foreignObject => {
-                    const newSelectedObject: SelectedObject = {
-                        value: foreignObject,
-                        schemaRef: operationWithForeignKey.foreignKey.schemaRef,
-                        apiSpecId: operationWithForeignKey.operation.apiSpec.id
-                    };
-
-                    // TODO cache
-
                     updatableValue.onValueUpdate(foreignObject[operationWithForeignKey.foreignKey.propertyName]);
                     setSelectedOperation(undefined);
                 },
@@ -150,12 +131,12 @@ export default function SmartManualInput({
     }, [containerRef])
 
     useEffect(() => {
-        if (hasFocus && inputValue.length === 0) {
+        if (hasFocus && (!updatableValue.value || updatableValue.value.length === 0)) {
             setDropDownOpen(true);
-        } else if (inputValue.length > 0) {
+        } else if (updatableValue.value && updatableValue.value.length > 0) {
             setDropDownOpen(false);
         }
-    }, [inputValue, hasFocus])
+    }, [updatableValue, hasFocus])
 
     // We do not show item menu if admin mode is enabled and admin is not logged in.
     const hasMenuItem = (menu?.items && menu.items.length > 0) === true && (adminContext.adminStatus?.isEnabled !== true || adminContext.isAuthenticated)
@@ -171,11 +152,12 @@ export default function SmartManualInput({
                         ...sx,
                     }}
                     type={type}
-                    defaultValue={defaultValue}
+                    //defaultValue={updatableValue.value}
+                    value={updatableValue.value}
                     placeholder={placeholder}
                     required={required}
                     disabled={disabled || readOnly}
-                    onChange={(event) => { onInputChange(event); setInputValue(event.target.value); }}
+                    onChange={(event) => updatableValue.onValueUpdate(event.target.value)}
                     slotProps={{
                         input: {
                             min: min,

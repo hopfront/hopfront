@@ -45,21 +45,15 @@ export const IntegerInput = ({ updatableValue, schemaObject, debounceMillis, req
             </Select>
         );
     } else {
-        const onInputChange = (value: ManualInputValueType) => {
-            updatableValue.onValueUpdate(value as number);
-        };
-
         return (
             <SmartManualInput
                 foreignKeys={foreignKeys}
                 updatableValue={updatableValue}
                 type="number"
-                defaultValue={updatableValue.value}
                 debounceMillis={debounceMillis}
                 required={required}
                 readOnly={readOnly}
                 placeholder={schemaObject.example ? schemaObject.example.toString() : undefined}
-                onChange={onInputChange}
                 menu={menu}
                 min={schemaObject.minimum ? (schemaObject.minimum + (schemaObject.exclusiveMinimum ? 1 : 0)) : undefined}
                 max={schemaObject.maximum ? (schemaObject.maximum - (schemaObject.exclusiveMaximum ? 1 : 0)) : undefined} />
