@@ -136,7 +136,6 @@ export default function Page() {
                     defaultValue={dashboard?.title}
                     onChange={onTitleChanged}
                     disabled={isLoading || isTitleLoading}
-                    debounceMillis={500}
                     sx={{ mb: 1, maxWidth: '350px' }} />
             </FormControl>
 

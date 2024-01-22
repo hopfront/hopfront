@@ -1,12 +1,10 @@
-import { InputMenu } from "@/app/components/input/InputMenu";
-import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
 import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
 import Option from "@mui/joy/Option";
 import Select from "@mui/joy/Select";
 import { OpenAPIV3 } from "openapi-types";
 import { HTMLInputTypeAttribute, SyntheticEvent } from "react";
 import { Monospace } from "../typography/Monospace";
-import SmartManualInput from "./SmartManualInput";
+import { ManualInput, ManualInputValueType } from "./ManualInput";
 import NonArraySchemaObject = OpenAPIV3.NonArraySchemaObject;
 
 export interface StringInputProps {
@@ -15,8 +13,8 @@ export interface StringInputProps {
     schemaObject: NonArraySchemaObject
     required?: boolean
     readOnly?: boolean
-    menu?: InputMenu
-    foreignKeys: ForeignKey[]
+    onFocus?: React.FocusEventHandler
+    onBlur?: React.FormEventHandler
 }
 
 export const StringInput = ({
@@ -24,8 +22,8 @@ export const StringInput = ({
     schemaObject,
     required,
     readOnly,
-    menu,
-    foreignKeys
+    onFocus,
+    onBlur
 }: StringInputProps) => {
     const enumValues = schemaObject.enum as string[];
 
@@ -71,15 +69,15 @@ export const StringInput = ({
         switch (schemaObject.format) {
             default: {
                 return (
-                    <SmartManualInput
+                    <ManualInput
                         updatableValue={updatableValue}
                         type={inputType()}
                         required={required}
                         placeholder={schemaObject.example}
                         readOnly={readOnly || schemaObject.readOnly}
-                        menu={menu}
-                        foreignKeys={foreignKeys} />
-                );
+                        onFocus={onFocus}
+                        onBlur={onBlur} />
+                )
             }
         }
 

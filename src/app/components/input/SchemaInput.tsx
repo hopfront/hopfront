@@ -1,14 +1,14 @@
+import { ArrayInput } from "@/app/components/input/ArrayInput";
+import { BooleanInput } from "@/app/components/input/BooleanInput";
+import { InputMenu } from "@/app/components/input/InputMenu";
+import { NotHandledFormControlInput } from "@/app/components/input/NotHandledFormControlInput";
+import { ObjectInput } from "@/app/components/input/ObjectInput";
+import { StringInput } from "@/app/components/input/StringInput";
+import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
 import { ApiContext, SchemaOrReference } from "@/app/lib/model/ApiContext";
 import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
 import { resolveSchemaFromSchemaOrReference } from "@/app/lib/openapi/utils";
-import { NotHandledFormControlInput } from "@/app/components/input/NotHandledFormControlInput";
-import { ArrayInput } from "@/app/components/input/ArrayInput";
-import { BooleanInput } from "@/app/components/input/BooleanInput";
-import { IntegerInput } from "@/app/components/input/IntegerInput";
-import { ObjectInput } from "@/app/components/input/ObjectInput";
-import { StringInput } from "@/app/components/input/StringInput";
-import { InputMenu } from "@/app/components/input/InputMenu";
-import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
+import SmartManualInput from "./SmartManualInput";
 
 export interface SchemaInputProps {
     updatableValue: UpdatableValue<any>
@@ -34,8 +34,7 @@ export const SchemaInput = ({
             updatableValue={updatableValue}
             schemaObject={{ type: 'string' }}
             required={false}
-            foreignKeys={foreignKeys}
-            />;
+        />;
     }
 
     const schemaObject = resolveSchemaFromSchemaOrReference(schema, apiContext.apiSpec.document);
@@ -58,21 +57,25 @@ export const SchemaInput = ({
                 schemaObject={schemaObject} />;
         case "integer":
         case "number":
-            return <IntegerInput
+            return <SmartManualInput
+                type="number"
                 foreignKeys={foreignKeys}
                 updatableValue={updatableValue}
                 schemaObject={schemaObject}
                 required={required}
                 readOnly={readOnly}
-                menu={menu} />;
+                menu={menu}
+            />
         case "string":
-            return <StringInput
+            return <SmartManualInput
+                type="string"
+                foreignKeys={foreignKeys}
                 updatableValue={updatableValue}
                 schemaObject={schemaObject}
                 required={required}
                 readOnly={readOnly}
-                foreignKeys={foreignKeys}
-                menu={menu} />;
+                menu={menu}
+            />
         default:
             return <NotHandledFormControlInput />;
     }

@@ -1,51 +1,45 @@
 'use client'
 
+import { AdminContext, shouldShowAdminContent } from "@/app/context/AdminContext";
 import { useApiSpecs } from "@/app/hooks/useApiSpecs";
 import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
 import { SchemaOrReference } from "@/app/lib/model/ApiContext";
 import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
 import { getStandaloneOperations } from "@/app/lib/openapi/utils";
-import { Box, Input, MenuItem, MenuList } from "@mui/joy";
+import { Box, MenuItem, MenuList } from "@mui/joy";
 import { OpenAPIV3 } from "openapi-types";
-import { HTMLInputTypeAttribute, useContext, useEffect, useRef, useState } from "react";
-import { useDebouncedCallback } from "use-debounce";
+import { useContext, useEffect, useRef, useState } from "react";
 import { ModalOperationResponseSchemaSelector } from "../foreign-keys/ModalOperationResponseSchemaSelector";
 import { OperationLabel } from "../typography/OperationLabel";
-import { OperationWithForeignKey, SelectedObject, SelectedOperation, getForeignKeyWithinSchema } from "./ForeignKeyFormControlInput";
+import { OperationWithForeignKey, SelectedOperation, getForeignKeyWithinSchema } from "./ForeignKeyFormControlInput";
 import { InputMenu } from "./InputMenu";
-import { ManualInputValueType } from "./ManualInput";
+import { IntegerInput } from "./IntegerInput";
+import { StringInput } from "./StringInput";
 import ResponseObject = OpenAPIV3.ResponseObject;
 import ReferenceObject = OpenAPIV3.ReferenceObject;
 import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
-import SchemaObject = OpenAPIV3.SchemaObject;
-import { AdminContext, shouldShowAdminContent } from "@/app/context/AdminContext";
+import NonArraySchemaObject = OpenAPIV3.NonArraySchemaObject;
+
+type SmartInputType = 'string' | 'number'
 
 export interface SmartManualInputProps {
+    type: SmartInputType
     updatableValue: UpdatableValue<any>
-    type: HTMLInputTypeAttribute
-    placeholder?: string | undefined
     required?: boolean
-    disabled?: boolean
     readOnly?: boolean
     menu?: InputMenu
+    schemaObject: NonArraySchemaObject
     foreignKeys: ForeignKey[]
-    min?: number
-    max?: number
-    sx?: {}
 }
 
 export default function SmartManualInput({
-    updatableValue,
     type,
-    placeholder,
+    updatableValue,
     required,
-    disabled,
     readOnly,
     menu,
-    foreignKeys,
-    min,
-    max,
-    sx
+    schemaObject,
+    foreignKeys
 }: SmartManualInputProps) {
     const adminContext = useContext(AdminContext);
 
@@ -140,31 +134,37 @@ export default function SmartManualInput({
     const hasMenuItem = (menu?.items && menu.items.length > 0) === true && (adminContext.adminStatus?.isEnabled !== true || adminContext.isAuthenticated)
     const isSmartDropDownEnabled = relevantOperations.length > 0 || hasMenuItem;
 
+    const getInput = () => {
+        if (type === 'number') {
+            return (<IntegerInput
+                updatableValue={updatableValue}
+                schemaObject={schemaObject}
+                required={required}
+                readOnly={readOnly}
+                onFocus={() => { setDropDownOpen(true); setHasFocus(true); }}
+                onBlur={() => { setHasFocus(false); }}
+            />)
+        } else {
+            return (
+                <StringInput
+                    updatableValue={updatableValue}
+                    schemaObject={schemaObject}
+                    required={required}
+                    readOnly={readOnly}
+                    onFocus={() => { setDropDownOpen(true); setHasFocus(true); }}
+                    onBlur={() => { setHasFocus(false); }}
+                />
+            )
+        }
+    }
+
     return (
         <>
             <Box
                 ref={containerRef}
                 sx={{ position: 'relative' }}>
-                <Input
-                    sx={{
-                        ...sx,
-                    }}
-                    type={type}
-                    //defaultValue={updatableValue.value}
-                    value={updatableValue.value}
-                    placeholder={placeholder}
-                    required={required}
-                    disabled={disabled || readOnly}
-                    onChange={(event) => updatableValue.onValueUpdate(event.target.value)}
-                    slotProps={{
-                        input: {
-                            min: min,
-                            max: max,
-                        }
-                    }}
-                    onFocus={() => { setDropDownOpen(true); setHasFocus(true); }}
-                    onBlur={() => { setHasFocus(false); }}
-                    readOnly={readOnly} />
+
+                {getInput()}
 
                 {isSmartDropDownEnabled && dropDownOpen && (
                     <Box sx={{ position: 'absolute', width: '100%', zIndex: 2 }}>
@@ -187,6 +187,7 @@ export default function SmartManualInput({
                     </Box>
                 )}
             </Box>
+
             {(selectedOperation) &&
                 <ModalOperationResponseSchemaSelector
                     open={true}

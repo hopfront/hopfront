@@ -1,12 +1,10 @@
-import { InputMenu } from "@/app/components/input/InputMenu";
 import { Monospace } from "@/app/components/typography/Monospace";
-import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
 import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
 import Option from "@mui/joy/Option";
 import Select from "@mui/joy/Select";
 import { OpenAPIV3 } from "openapi-types";
 import { SyntheticEvent } from "react";
-import SmartManualInput from "./SmartManualInput";
+import { ManualInput } from "./ManualInput";
 import NonArraySchemaObject = OpenAPIV3.NonArraySchemaObject;
 
 export interface IntegerInputProps {
@@ -14,11 +12,18 @@ export interface IntegerInputProps {
     schemaObject: NonArraySchemaObject
     required?: boolean
     readOnly?: boolean
-    menu?: InputMenu
-    foreignKeys: ForeignKey[]
+    onFocus?: React.FocusEventHandler
+    onBlur?: React.FormEventHandler
 }
 
-export const IntegerInput = ({ updatableValue, schemaObject, required, readOnly, menu, foreignKeys }: IntegerInputProps) => {
+export const IntegerInput = ({
+    updatableValue,
+    schemaObject,
+    required,
+    readOnly,
+    onFocus,
+    onBlur
+}: IntegerInputProps) => {
     const enumValues = schemaObject.enum as number[];
 
     if (enumValues) {
@@ -44,16 +49,16 @@ export const IntegerInput = ({ updatableValue, schemaObject, required, readOnly,
         );
     } else {
         return (
-            <SmartManualInput
-                foreignKeys={foreignKeys}
+            <ManualInput
                 updatableValue={updatableValue}
                 type="number"
                 required={required}
                 readOnly={readOnly}
                 placeholder={schemaObject.example ? schemaObject.example.toString() : undefined}
-                menu={menu}
                 min={schemaObject.minimum ? (schemaObject.minimum + (schemaObject.exclusiveMinimum ? 1 : 0)) : undefined}
-                max={schemaObject.maximum ? (schemaObject.maximum - (schemaObject.exclusiveMaximum ? 1 : 0)) : undefined} />
-        );
+                max={schemaObject.maximum ? (schemaObject.maximum - (schemaObject.exclusiveMaximum ? 1 : 0)) : undefined}
+                onFocus={onFocus}
+                onBlur={onBlur} />
+        )
     }
 }

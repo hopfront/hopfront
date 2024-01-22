@@ -1,15 +1,16 @@
-import { Dropdown, IconButton, ListItemDecorator, Menu, MenuButton, MenuItem, SvgIcon } from "@mui/joy";
+import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
 import Input from "@mui/joy/Input";
-import React, { HTMLInputTypeAttribute, useRef, useState } from "react";
-import { useDebouncedCallback } from "use-debounce";
-import { InputMenu } from "@/app/components/input/InputMenu";
+import React, { HTMLInputTypeAttribute } from "react";
 
 export type ManualInputValueType = string | ReadonlyArray<string> | number | undefined;
 
 export interface ManualInputProps {
     type: HTMLInputTypeAttribute
-    onChange: (value: ManualInputValueType) => void
+    onChange?: (value: ManualInputValueType) => void
+    onFocus?: React.FocusEventHandler
+    onBlur?: React.FormEventHandler
     defaultValue?: ManualInputValueType
+    updatableValue?: UpdatableValue<any>
     placeholder?: string | undefined
     required?: boolean
     disabled?: boolean
@@ -23,8 +24,11 @@ export interface ManualInputProps {
 export const ManualInput = ({
     type,
     defaultValue,
+    updatableValue,
     placeholder,
     onChange,
+    onFocus,
+    onBlur,
     required,
     disabled,
     readOnly,
@@ -41,11 +45,14 @@ export const ManualInput = ({
             }}
             type={type}
             defaultValue={defaultValue}
+            value={updatableValue?.value}
             placeholder={placeholder}
             required={required}
             endDecorator={endDecorator}
             disabled={disabled || readOnly}
-            onChange={(event) => onChange(event?.target.value)}
+            onChange={(event) => onChange?.(event?.target.value) || updatableValue?.onValueUpdate(event.target.value)}
+            onFocus={onFocus}
+            onBlur={onBlur}
             slotProps={{
                 input: {
                     min: min,
