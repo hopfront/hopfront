@@ -12,7 +12,7 @@ import { Box, Checkbox, Dropdown, IconButton, Input, Menu, MenuButton, MenuItem,
 import LinearProgress from "@mui/joy/LinearProgress";
 import { debounce } from "@mui/material";
 import { OpenAPIV3 } from "openapi-types";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import PathsObject = OpenAPIV3.PathsObject;
 
 const isOperationMatchingSearch = (op: StandaloneOperation, search: string) => {
@@ -51,7 +51,7 @@ export const OperationListSidebar = ({ selectedOperation, onOperationSelected }:
     const { registerEvent } = useAnalytics();
     const [operations, setOperations] = useState<StandaloneOperation[]>([]);
     const [search, setSearch] = useState('');
-    const [apiSpecFilter, setApiSpecFilter] = useState<string | undefined>();
+    const [apiSpecFilter, setApiSpecFilter] = useState<string | undefined>(BrowseLocalStorage.getFilter());
     const { data: apiSpecs, error, isLoading } = useApiSpecs();
     const [onlyDisplayTechnicalName, setOnlyDisplayTechnicalName] = useState(
         BrowseLocalStorage.getIsOnlyDisplayTechnicalNames()
