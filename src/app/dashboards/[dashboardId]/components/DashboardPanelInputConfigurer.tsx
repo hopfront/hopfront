@@ -25,71 +25,55 @@ export interface DashboardPanelInputConfigurerProps {
     onVariableCreated: (variable: DashboardVariable) => void
 }
 
-export const DashboardPanelInputConfigurer = ({dashboard, input, onChange, onVariableCreated}: DashboardPanelInputConfigurerProps) => {
+export const DashboardPanelInputConfigurer = ({
+                                                  dashboard,
+                                                  input,
+                                                  onChange,
+                                                  onVariableCreated
+                                              }: DashboardPanelInputConfigurerProps) => {
     const [sourceConfigType, setSourceConfigType] =
         useState<DashboardPanelInputSourceConfigType>(input.sourceConfig.type);
-
-    const onSourceConfigTypeChange = (event: SyntheticEvent | null, newSourceConfigType: DashboardPanelInputSourceConfigType | null) => {
-        if (newSourceConfigType) {
-            if (newSourceConfigType === "constant") {
-                onChange({
-                    name: input.name,
-                    sourceConfig: {
-                        type: 'constant',
-                        data: {
-                            value: ''
-                        } as DashboardPanelInputSourceConfigDataConstant
-                    }
-                });
-            } else if (newSourceConfigType === "variable") {
-                onChange({
-                    name: input.name,
-                    sourceConfig: {
-                        type: 'variable',
-                        data: {
-                            variableName: input.name
-                        } as DashboardPanelInputSourceConfigDataVariable
-                    }
-                });
-            }
-
-            setSourceConfigType(newSourceConfigType);
-        }
-    };
-
-    const onConstantSourceDataChange = (data: DashboardPanelInputSourceConfigDataConstant) => {
-        onChange({
-            name: input.name,
-            sourceConfig: {
-                type: "constant",
-                data: data
-            }
-        });
-    };
-
-    const onVariableSourceDataChange = (data: DashboardPanelInputSourceConfigDataVariable) => {
-        onChange({
-            name: input.name,
-            sourceConfig: {
-                type: "variable",
-                data: data
-            }
-        });
-    };
 
     const sourceConfigurer = () => {
         switch (sourceConfigType) {
             case "constant":
                 return <DashboardPanelInputConstantSourceConfigurer
                     data={input.sourceConfig.data as DashboardPanelInputSourceConfigDataConstant}
-                    onChange={onConstantSourceDataChange}/>;
+                    onChange={(data: DashboardPanelInputSourceConfigDataConstant) => {
+                        onChange({
+                            name: input.name,
+                            sourceConfig: {
+                                type: "constant",
+                                data: data
+                            }
+                        });
+                    }}/>;
             case "variable":
                 return <DashboardPanelInputVariableSourceConfigurer
                     dashboard={dashboard}
                     inputName={input.name}
                     data={input.sourceConfig.data as DashboardPanelInputSourceConfigDataVariable}
-                    onChange={onVariableSourceDataChange}
-                    onVariableCreated={onVariableCreated}/>
+                    onChange={(data: DashboardPanelInputSourceConfigDataVariable) => {
+                        onChange({
+                            name: input.name,
+                            sourceConfig: {
+                                type: "variable",
+                                data: data
+                            }
+                        });
+                    }}
+                    onVariableCreated={createdVariable => {
+                        onVariableCreated(createdVariable);
+                        onChange({
+                            name: input.name,
+                            sourceConfig: {
+                                type: "variable",
+                                data: {
+                                    variableName: createdVariable.name,
+                                }
+                            }
+                        })
+                    }}/>
             default:
                 return null;
         }
@@ -99,7 +83,35 @@ export const DashboardPanelInputConfigurer = ({dashboard, input, onChange, onVar
         <tr>
             <td>{input.name}</td>
             <td>
-                <Select value={sourceConfigType} onChange={onSourceConfigTypeChange}>
+                <Select
+                    value={sourceConfigType}
+                    onChange={(_: SyntheticEvent | null, newSourceConfigType: DashboardPanelInputSourceConfigType | null) => {
+                        if (newSourceConfigType) {
+                            if (newSourceConfigType === "constant") {
+                                onChange({
+                                    name: input.name,
+                                    sourceConfig: {
+                                        type: 'constant',
+                                        data: {
+                                            value: ''
+                                        } as DashboardPanelInputSourceConfigDataConstant
+                                    }
+                                });
+                            } else if (newSourceConfigType === "variable") {
+                                onChange({
+                                    name: input.name,
+                                    sourceConfig: {
+                                        type: 'variable',
+                                        data: {
+                                            variableName: input.name
+                                        } as DashboardPanelInputSourceConfigDataVariable
+                                    }
+                                });
+                            }
+
+                            setSourceConfigType(newSourceConfigType);
+                        }
+                    }}>
                     <Option value="constant">Constant</Option>
                     <Option value="variable">Dashboard Variable</Option>
                 </Select>
