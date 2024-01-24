@@ -14,12 +14,14 @@ const updateApiSpecByUrl = async (
     skipSpecImportWarnings: boolean
 ) => {
     const api = await OpenAPIParser.parse(url) as OpenAPIV3.Document;
-
     ApiSpecService.checkSpecVersion(api);
     const specValidationProblem = await ApiSpecService.getSpecValidationProblemOrUndefined(api);
 
+    const specAsText = JSON.stringify(api);
+    const normalizeApiSpecPlainText = ApiSpecService.normalizeApiSpecPlainText(specAsText);
+
     if (!specValidationProblem || skipSpecImportWarnings) {
-        OpenAPIRepository.getInstance().saveApiSpec(apiSpecId, JSON.stringify(api));
+        OpenAPIRepository.getInstance().saveApiSpec(apiSpecId, normalizeApiSpecPlainText);
     } else {
         return problemResponse(specValidationProblem);
     }

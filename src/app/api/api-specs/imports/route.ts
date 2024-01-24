@@ -35,10 +35,13 @@ const saveApiSpecFromUrl = async (
     ApiSpecService.checkSpecVersion(api);
     const specValidationProblem = await ApiSpecService.getSpecValidationProblemOrUndefined(api);
 
+    const specAsText = JSON.stringify(api);
+    const normalizedSpecText = ApiSpecService.normalizeApiSpecPlainText(specAsText);
+
     if (!specValidationProblem || skipSpecImportWarnings) {
         const existingApiSpecs = OpenAPIRepository.getInstance().getApiSpecs();
         const apiSpecId = buildApiSpecId(existingApiSpecs);
-        OpenAPIRepository.getInstance().saveApiSpec(apiSpecId, JSON.stringify(api));
+        OpenAPIRepository.getInstance().saveApiSpec(apiSpecId, normalizedSpecText);
         OpenAPIExtensionService.createDocumentExtension({
             id: apiSpecId,
             document: api
