@@ -65,12 +65,15 @@ export const resolveApiBaseUrl = (server: ServerObject): string | undefined => {
 }
 
 export const getMediaType = (openAPIResponseObject: OpenAPIV3.ResponseObject | undefined, contentType: string): MediaTypeObject | undefined => {
+    const supportedContentTypes = ['application/json', 'application/xml', 'text/plain'];
+    const supportedContentType = supportedContentTypes.find((type) => contentType.includes(type)) ?? contentType;
+
     if (!openAPIResponseObject?.content) {
         return undefined;
     }
 
-    if (openAPIResponseObject.content[contentType]) {
-        return openAPIResponseObject.content[contentType];
+    if (openAPIResponseObject.content[supportedContentType]) {
+        return openAPIResponseObject.content[supportedContentType];
     } else {
         return openAPIResponseObject.content["*/*"];
     }
