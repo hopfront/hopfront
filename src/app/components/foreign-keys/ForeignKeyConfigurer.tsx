@@ -1,11 +1,11 @@
+import { ForeignKeyConfigurerModal } from "@/app/components/foreign-keys/ForeignKeyConfigurerModal";
 import { ForeignKey } from "@/app/lib/dto/OpenApiExtensions";
-import React, { useState } from "react";
-import { schemaRefTuHumanLabel } from "@/app/lib/openapi/utils";
+import { schemaRefToHumanLabel } from "@/app/lib/openapi/utils";
 import { Add, Edit } from "@mui/icons-material";
+import Chip from "@mui/joy/Chip";
 import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
-import { ForeignKeyConfigurerModal } from "@/app/components/foreign-keys/ForeignKeyConfigurerModal";
-import Chip from "@mui/joy/Chip";
+import React, { useState } from "react";
 
 export interface ForeignKeyConfigurerProps {
     source: React.ReactNode
@@ -18,14 +18,14 @@ export interface ForeignKeyConfigurerProps {
 }
 
 export const ForeignKeyConfigurer = ({
-                                         source,
-                                         foreignKey,
-                                         inputWithoutForeignKeyPreview,
-                                         onForeignKeySelected,
-                                         onDelete,
-                                         readOnly,
-                                         foreignKeyIcon = <Edit/>
-                                     }: ForeignKeyConfigurerProps) => {
+    source,
+    foreignKey,
+    inputWithoutForeignKeyPreview,
+    onForeignKeySelected,
+    onDelete,
+    readOnly,
+    foreignKeyIcon = <Edit />
+}: ForeignKeyConfigurerProps) => {
     const [modalOpen, setModalOpen] = useState(false);
 
     return (
@@ -34,10 +34,10 @@ export const ForeignKeyConfigurer = ({
                 ?
                 <Chip size="md" onClick={() => setModalOpen(true)} disabled={readOnly}>
                     <Typography fontFamily="monospace">
-                        {schemaRefTuHumanLabel(foreignKey.schemaRef)}.{foreignKey.propertyName}
+                        {schemaRefToHumanLabel(foreignKey.schemaRef)}.{foreignKey.propertyName}
                     </Typography>
                 </Chip>
-                : <IconButton variant="outlined" size="sm" onClick={() => setModalOpen(true)} disabled={readOnly}><Add/></IconButton>}
+                : <IconButton variant="outlined" size="sm" onClick={() => setModalOpen(true)} disabled={readOnly}><Add /></IconButton>}
 
             <ForeignKeyConfigurerModal
                 open={modalOpen}
@@ -51,7 +51,7 @@ export const ForeignKeyConfigurer = ({
                 }}
                 onDelete={onDelete}
                 readOnly={readOnly}
-                foreignKeyIcon={foreignKeyIcon}/>
+                foreignKeyIcon={foreignKeyIcon} />
         </>
     );
 }

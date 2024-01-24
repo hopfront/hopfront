@@ -1,19 +1,20 @@
-import {ApiContext, SchemaOrReference} from "@/app/lib/model/ApiContext";
-import {ParameterWithValue} from "@/app/lib/model/ParameterWithValue";
-import {RequestBodyDefinition} from "@/app/lib/model/RequestBodyDefinition";
-import {StandaloneOperation} from "@/app/lib/model/StandaloneOperation";
-import {OperationInputs} from "@/app/lib/model/OperationInputs";
-import {ListItemButtonPropsColorOverrides} from "@mui/joy/ListItemButton/ListItemButtonProps";
-import {ColorPaletteProp} from "@mui/joy/styles/types";
-import {OverridableStringUnion} from "@mui/types";
-import {OpenAPIV3} from "openapi-types";
-import {ApiSpec} from "@/app/lib/dto/ApiSpec";
-import {RunnableOperationFromSchema} from "@/app/lib/model/RunnableOperationFromSchema";
-import {ParameterForeignKeyWithSource} from "@/app/lib/model/ParameterForeignKeyWithSource";
-import {OperationFromSchemaReason} from "@/app/lib/model/OperationFromSchemaReason";
-import {SchemaForeignKeySource} from "@/app/lib/model/SchemaForeignKeyWithSource";
-import {ResponseBodyDefinition} from "@/app/lib/model/ResponseBodyDefinition";
-import {SchemaProperty} from "@/app/components/foreign-keys/SchemaPropertyPicker/SchemaPropertyPicker";
+import { SchemaProperty } from "@/app/components/foreign-keys/SchemaPropertyPicker/SchemaPropertyPicker";
+import { ApiSpec } from "@/app/lib/dto/ApiSpec";
+import { ApiContext, SchemaOrReference } from "@/app/lib/model/ApiContext";
+import { OperationFromSchemaReason } from "@/app/lib/model/OperationFromSchemaReason";
+import { OperationInputs } from "@/app/lib/model/OperationInputs";
+import { ParameterForeignKeyWithSource } from "@/app/lib/model/ParameterForeignKeyWithSource";
+import { ParameterWithValue } from "@/app/lib/model/ParameterWithValue";
+import { RequestBodyDefinition } from "@/app/lib/model/RequestBodyDefinition";
+import { ResponseBodyDefinition } from "@/app/lib/model/ResponseBodyDefinition";
+import { RunnableOperationFromSchema } from "@/app/lib/model/RunnableOperationFromSchema";
+import { SchemaForeignKeySource } from "@/app/lib/model/SchemaForeignKeyWithSource";
+import { SecurityScheme } from "@/app/lib/model/SecurityScheme";
+import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
+import { ListItemButtonPropsColorOverrides } from "@mui/joy/ListItemButton/ListItemButtonProps";
+import { ColorPaletteProp } from "@mui/joy/styles/types";
+import { OverridableStringUnion } from "@mui/types";
+import { OpenAPIV3 } from "openapi-types";
 import OperationObject = OpenAPIV3.OperationObject;
 import PathsObject = OpenAPIV3.PathsObject;
 import PathItemObject = OpenAPIV3.PathItemObject;
@@ -31,7 +32,6 @@ import ArraySchemaObjectType = OpenAPIV3.ArraySchemaObjectType;
 import NonArraySchemaObjectType = OpenAPIV3.NonArraySchemaObjectType;
 import HttpMethods = OpenAPIV3.HttpMethods;
 import SecuritySchemeObject = OpenAPIV3.SecuritySchemeObject;
-import {SecurityScheme} from "@/app/lib/model/SecurityScheme";
 
 export const randomInternalId = (length: number) => {
     let result = '';
@@ -407,7 +407,7 @@ export const getPropertiesFromSchema = (schema: SchemaObject, document: OpenAPIV
     segments.pop(); // to get the schema name only
 
     const extraProperties = getSchemaByRef(segments.join('/'), document)['properties'];
-    const {'$ref': _, ...restProperties} = schema.properties; // remove not useful anymore $ref property
+    const { '$ref': _, ...restProperties } = schema.properties; // remove not useful anymore $ref property
 
     return {
         ...restProperties,
@@ -515,7 +515,7 @@ export const getOperationButtonColor = (operation: StandaloneOperation): Overrid
     }
 }
 
-export const schemaRefTuHumanLabel = (schemaRef: string): string => {
+export const schemaRefToHumanLabel = (schemaRef: string): string => {
     return schemaRef.replace('#/components/schemas/', '');
 }
 

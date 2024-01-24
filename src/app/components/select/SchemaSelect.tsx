@@ -1,20 +1,20 @@
-import {Box, Button, Input, List, ListDivider, ListItem, ListItemButton, ListItemContent, Stack} from "@mui/joy";
-import React, {useState} from "react";
+import { ResponsiveModal } from "@/app/components/modal/ResponsiveModal";
+import { OperationLabel } from "@/app/components/typography/OperationLabel";
+import { ApiSpec } from "@/app/lib/dto/ApiSpec";
+import { ApiContext } from "@/app/lib/model/ApiContext";
+import { SchemaOperationRelationship } from "@/app/lib/model/SchemaOperationRelationship";
 import {
     buildSchemaRef,
     getRequestBodyDefinitions, getResponseBodyDefinitions,
     getStandaloneOperations,
-    schemaRefTuHumanLabel
+    schemaRefToHumanLabel
 } from "@/app/lib/openapi/utils";
-import {SxProps} from "@mui/joy/styles/types";
-import {ResponsiveModal} from "@/app/components/modal/ResponsiveModal";
-import {Search, UnfoldMore} from "@mui/icons-material";
+import { Search, UnfoldMore } from "@mui/icons-material";
+import { Box, Button, Input, List, ListDivider, ListItem, ListItemButton, ListItemContent, Stack } from "@mui/joy";
 import Typography from "@mui/joy/Typography";
-import {ApiContext} from "@/app/lib/model/ApiContext";
-import {OperationLabel} from "@/app/components/typography/OperationLabel";
-import {ApiSpec} from "@/app/lib/dto/ApiSpec";
-import {SchemaOperationRelationship} from "@/app/lib/model/SchemaOperationRelationship";
-import {OpenAPIV3} from "openapi-types";
+import { SxProps } from "@mui/joy/styles/types";
+import { OpenAPIV3 } from "openapi-types";
+import { useState } from "react";
 import ReferenceObject = OpenAPIV3.ReferenceObject;
 
 const getSchemaRefs = (document: OpenAPIV3.Document): string[] => {
@@ -80,7 +80,7 @@ export interface SchemaSelectProps {
     sx?: SxProps
 }
 
-export const SchemaSelect = ({defaultSchemaRef, onSchemaRefSelected, schemaPredicate, disabled = false, apiContext, sx}: SchemaSelectProps) => {
+export const SchemaSelect = ({ defaultSchemaRef, onSchemaRefSelected, schemaPredicate, disabled = false, apiContext, sx }: SchemaSelectProps) => {
     const [open, setOpen] = useState(false);
     const [searchInput, setSearchInput] = useState<string | undefined>();
     const [selectedSchemaRef, setSelectedSchemaRef] = useState<string | undefined>(defaultSchemaRef);
@@ -112,10 +112,10 @@ export const SchemaSelect = ({defaultSchemaRef, onSchemaRefSelected, schemaPredi
                 color="neutral"
                 onClick={() => setOpen(true)}
                 disabled={disabled}
-                endDecorator={<UnfoldMore/>}>
+                endDecorator={<UnfoldMore />}>
                 {selectedSchemaRef
                     ? <Typography fontFamily="monospace"
-                                  fontWeight={1}>{schemaRefTuHumanLabel(selectedSchemaRef)}</Typography>
+                        fontWeight={1}>{schemaRefToHumanLabel(selectedSchemaRef)}</Typography>
                     : <Typography>Select a schema...</Typography>
                 }
             </Button>
@@ -125,12 +125,12 @@ export const SchemaSelect = ({defaultSchemaRef, onSchemaRefSelected, schemaPredi
                     value={searchInput}
                     onChange={event => setSearchInput(event.currentTarget.value)}
                     type="text"
-                    endDecorator={<Search/>}
-                    placeholder="Search a schema..."/>
+                    endDecorator={<Search />}
+                    placeholder="Search a schema..." />
                 <List>
                     {schemaRefs.flatMap(sr => {
                         const schemaOperationRelationships = findSchemaOperationRelationships(sr, apiContext.apiSpec);
-                        const schemaHumanLabel = schemaRefTuHumanLabel(sr);
+                        const schemaHumanLabel = schemaRefToHumanLabel(sr);
 
                         if (searchInput) {
                             const schemaLabelContainsSearch = schemaHumanLabel.toLowerCase().indexOf(searchInput.toLowerCase()) >= 0;
@@ -171,18 +171,18 @@ export const SchemaSelect = ({defaultSchemaRef, onSchemaRefSelected, schemaPredi
 
                                                                     {rel.isRequestBody &&
                                                                         <Typography level="body-xs"
-                                                                                    fontFamily="monospace"
-                                                                                    variant="outlined">{schemaHumanLabel} (in)
+                                                                            fontFamily="monospace"
+                                                                            variant="outlined">{schemaHumanLabel} (in)
                                                                             →</Typography>}
                                                                     <Typography level="body-xs" variant="plain"
-                                                                                sx={{ml: 1, mr: 1}}>
+                                                                        sx={{ ml: 1, mr: 1 }}>
                                                                         <OperationLabel operation={rel.operation}
-                                                                                        mode="technical"/>
+                                                                            mode="technical" />
                                                                     </Typography>
                                                                     {rel.isResponseBody &&
                                                                         <Typography level="body-xs"
-                                                                                    fontFamily="monospace"
-                                                                                    variant="outlined">→ {schemaHumanLabel} (out)</Typography>}
+                                                                            fontFamily="monospace"
+                                                                            variant="outlined">→ {schemaHumanLabel} (out)</Typography>}
                                                                 </Stack>
                                                             </li>
                                                         );
@@ -191,7 +191,7 @@ export const SchemaSelect = ({defaultSchemaRef, onSchemaRefSelected, schemaPredi
                                         </ListItemContent>
                                     </ListItemButton>
                                 </ListItem>
-                                <ListDivider inset="gutter"/>
+                                <ListDivider inset="gutter" />
                             </>
 
                         )];

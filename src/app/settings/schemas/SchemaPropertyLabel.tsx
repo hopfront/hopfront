@@ -1,6 +1,6 @@
-import {schemaRefTuHumanLabel} from "@/app/lib/openapi/utils";
-import Typography from "@mui/joy/Typography";
+import { schemaRefToHumanLabel } from "@/app/lib/openapi/utils";
 import Chip from "@mui/joy/Chip";
+import Typography from "@mui/joy/Typography";
 
 export interface SchemaPropertyLabelProps {
     schemaRef: string
@@ -8,9 +8,9 @@ export interface SchemaPropertyLabelProps {
     onClick?: () => void
 }
 
-export const SchemaPropertyLabel = ({schemaRef, propertyName, onClick}: SchemaPropertyLabelProps) => {
+export const SchemaPropertyLabel = ({ schemaRef, propertyName, onClick }: SchemaPropertyLabelProps) => {
     const typography = <><Typography fontFamily="monospace">
-        {schemaRefTuHumanLabel(schemaRef)}.{propertyName}
+        {schemaRefToHumanLabel(schemaRef)}.{propertyName}
     </Typography></>;
 
     if (onClick) {

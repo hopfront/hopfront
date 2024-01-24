@@ -1,8 +1,7 @@
-import {Monospace} from "@/app/components/typography/Monospace";
-import {Option, Select} from "@mui/joy";
-import * as React from "react";
-import {SxProps} from "@mui/joy/styles/types";
-import {schemaRefTuHumanLabel} from "@/app/lib/openapi/utils";
+import { Monospace } from "@/app/components/typography/Monospace";
+import { schemaRefToHumanLabel } from "@/app/lib/openapi/utils";
+import { Option, Select } from "@mui/joy";
+import { SxProps } from "@mui/joy/styles/types";
 
 export interface MonospaceSelectProps {
     schemaRefs: string[]
@@ -12,7 +11,7 @@ export interface MonospaceSelectProps {
     sx?: SxProps
 }
 
-export const SchemaRefSelect = ({value, schemaRefs, onChange, disabled = false, sx}: MonospaceSelectProps) => {
+export const SchemaRefSelect = ({ value, schemaRefs, onChange, disabled = false, sx }: MonospaceSelectProps) => {
     return (
         <Select
             disabled={disabled || (!!value && schemaRefs.length === 1)}
@@ -21,13 +20,13 @@ export const SchemaRefSelect = ({value, schemaRefs, onChange, disabled = false, 
                 const newValue = value === null ? undefined : value;
                 onChange(newValue);
             }}
-            renderValue={option => option && <Monospace>{schemaRefTuHumanLabel(option.value)}</Monospace>}
+            renderValue={option => option && <Monospace>{schemaRefToHumanLabel(option.value)}</Monospace>}
             sx={sx}>
             {schemaRefs.sort((a, b) => a.localeCompare(b)).map(value =>
                 <Option
                     key={value}
                     value={value}>
-                    <Monospace>{schemaRefTuHumanLabel(value)}</Monospace>
+                    <Monospace>{schemaRefToHumanLabel(value)}</Monospace>
                 </Option>)}
         </Select>
     );

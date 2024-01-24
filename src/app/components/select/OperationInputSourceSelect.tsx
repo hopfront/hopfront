@@ -1,12 +1,12 @@
-import {Select, Option, Button, Stack} from "@mui/joy";
-import React, {useState} from "react";
-import {SchemaPropertyPickerModal} from "@/app/components/foreign-keys/SchemaPropertyPickerModal";
-import {ApiContext, SchemaOrReference} from "@/app/lib/model/ApiContext";
-import {SchemaProperty} from "@/app/components/foreign-keys/SchemaPropertyPicker/SchemaPropertyPicker";
-import {SchemaPropertyLabel} from "@/app/settings/schemas/SchemaPropertyLabel";
+import { SchemaProperty } from "@/app/components/foreign-keys/SchemaPropertyPicker/SchemaPropertyPicker";
+import { SchemaPropertyPickerModal } from "@/app/components/foreign-keys/SchemaPropertyPickerModal";
+import { ApiContext, SchemaOrReference } from "@/app/lib/model/ApiContext";
+import { getReferenceObjectOrUndefined, getSchemaPropertyType, schemaRefToHumanLabel } from "@/app/lib/openapi/utils";
+import { SchemaPropertyLabel } from "@/app/settings/schemas/SchemaPropertyLabel";
+import { Button, Option, Select, Stack } from "@mui/joy";
 import Typography from "@mui/joy/Typography";
-import {SampleValue} from "../misc/SampleValue";
-import {getReferenceObjectOrUndefined, getSchemaPropertyType, schemaRefTuHumanLabel} from "@/app/lib/openapi/utils";
+import { useState } from "react";
+import { SampleValue } from "../misc/SampleValue";
 
 type InputSourceType = "user" | "foreignKey";
 
@@ -20,7 +20,7 @@ export interface OperationInputSourceSelectProps {
     apiContext: ApiContext
 }
 
-export const OperationInputSourceSelect = ({schema, sampleObject, inputType, onSchemaPropertySelected, onUserInputSelected, disabled, apiContext}: OperationInputSourceSelectProps) => {
+export const OperationInputSourceSelect = ({ schema, sampleObject, inputType, onSchemaPropertySelected, onUserInputSelected, disabled, apiContext }: OperationInputSourceSelectProps) => {
     const [selectedType, setSelectedType] = useState<InputSourceType>("user");
     const [propertyPickerOpen, setPropertyPickerOpen] = useState(false);
     const [schemaProperty, setSchemaProperty] = useState<SchemaProperty | undefined>();
@@ -43,16 +43,16 @@ export const OperationInputSourceSelect = ({schema, sampleObject, inputType, onS
                     }
                 }}>
                 <Option value="user">User Input</Option>
-                <Option value="foreignKey"><Typography>Pull value from {schemaReferenceObject && schemaRefTuHumanLabel(schemaReferenceObject.$ref)}</Typography></Option>
+                <Option value="foreignKey"><Typography>Pull value from {schemaReferenceObject && schemaRefToHumanLabel(schemaReferenceObject.$ref)}</Typography></Option>
             </Select>
             {(selectedType === "foreignKey") &&
                 (schemaProperty
                     ? <Stack direction="row">
-                        <Stack sx={{ml: 1}} direction="column" justifyContent="center">
+                        <Stack sx={{ ml: 1 }} direction="column" justifyContent="center">
                             <SchemaPropertyLabel
                                 schemaRef={schemaProperty.schemaRef}
                                 propertyName={schemaProperty.propertyName}
-                                onClick={() => setPropertyPickerOpen(true)}/>
+                                onClick={() => setPropertyPickerOpen(true)} />
                         </Stack>
                         <Stack direction="column" justifyContent="center">
                             <Typography level="body-xs">
@@ -60,13 +60,13 @@ export const OperationInputSourceSelect = ({schema, sampleObject, inputType, onS
                                     sampleObject={sampleObject}
                                     sampleObjectSchema={schema}
                                     schemaProperty={schemaProperty}
-                                    apiContext={apiContext}/>
+                                    apiContext={apiContext} />
                             </Typography>
                         </Stack>
                     </Stack>
                     : <Button
                         onClick={() => setPropertyPickerOpen(true)}
-                        sx={{ml: 1}}>
+                        sx={{ ml: 1 }}>
                         Pick a value
                     </Button>)}
             {(selectedType === "foreignKey" && schemaReferenceObject) && <SchemaPropertyPickerModal
@@ -84,7 +84,7 @@ export const OperationInputSourceSelect = ({schema, sampleObject, inputType, onS
                     setPropertyPickerOpen(false);
                     onSchemaPropertySelected(schemaPropertySelected);
                 }}
-                apiSpec={apiContext.apiSpec}/>}
+                apiSpec={apiContext.apiSpec} />}
         </Stack>
     );
 }

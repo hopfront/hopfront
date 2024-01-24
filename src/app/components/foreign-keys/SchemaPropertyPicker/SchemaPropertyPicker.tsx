@@ -1,21 +1,22 @@
+import "@/app/components/foreign-keys/SchemaPropertyPicker/styles.css";
+import { ApiSpec } from "@/app/lib/dto/ApiSpec";
 import {
     getSchemaByRef,
     getSchemaPropertySchemaRef, getSchemaPropertyType,
     resolveSchemaFromSchemaOrReference,
-    schemaRefTuHumanLabel
+    schemaRefToHumanLabel
 } from "@/app/lib/openapi/utils";
-import TreeView, {flattenTree} from "react-accessible-treeview";
-import {OpenAPIV3} from "openapi-types";
-import {ApiSpec} from "@/app/lib/dto/ApiSpec";
-import {ArrowDropDown, ArrowRight} from "@mui/icons-material";
-import {Radio, RadioGroup} from "@mui/joy";
-import React, {useState} from "react";
-import "@/app/components/foreign-keys/SchemaPropertyPicker/styles.css";
+import { ArrowDropDown, ArrowRight } from "@mui/icons-material";
+import { Radio, RadioGroup } from "@mui/joy";
 import Typography from "@mui/joy/Typography";
+import { OpenAPIV3 } from "openapi-types";
+import { useState } from "react";
+import TreeView, { flattenTree } from "react-accessible-treeview";
+import { NodeId } from "react-accessible-treeview/dist/TreeView/types";
+import { Monospace } from "../../typography/Monospace";
 import ReferenceObject = OpenAPIV3.ReferenceObject;
 import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
-import {Monospace} from "../../typography/Monospace";
-import {NodeId} from "react-accessible-treeview/dist/TreeView/types";
+import { generateRandomStringFromDateAndNumber } from "@/app/lib/utils";
 
 interface SchemaPropertyNode {
     id: NodeId;
@@ -45,8 +46,15 @@ const buildNodeFromProperty = (
     }
 }
 
+const buildNodeId = (property: SchemaProperty): string => {
+
+    const randomPart = generateRandomStringFromDateAndNumber();
+    return property.schemaRef + "." + property.propertyName + randomPart;
+}
+
 const buildEmptyNode = (property: SchemaProperty, propertiesByNodeId: Map<NodeId, SchemaProperty>): SchemaPropertyNode => {
-    const nodeId = property.schemaRef + "." + property.propertyName;
+
+    const nodeId = buildNodeId(property);
     propertiesByNodeId.set(nodeId, property);
 
     return {
@@ -62,8 +70,7 @@ const buildNodeFromSchemaRef = (
     propertiesByNodeId: Map<NodeId, SchemaProperty>,
     apiSpec: ApiSpec): SchemaPropertyNode => {
 
-    const nodeId = property.schemaRef + "." + property.propertyName;
-
+    const nodeId = buildNodeId(property);
     const schemaObject = getSchemaByRef(schemaRef, apiSpec.document);
     const childrenPropertyNames = Object.keys(schemaObject.properties || {});
 
@@ -74,9 +81,9 @@ const buildNodeFromSchemaRef = (
         name: nodeId,
         children: childrenPropertyNames.flatMap(childPropertyName => {
             return buildNodeFromProperty({
-                    schemaRef: schemaRef,
-                    propertyName: childPropertyName
-                },
+                schemaRef: schemaRef,
+                propertyName: childPropertyName
+            },
                 propertiesByNodeId,
                 apiSpec);
         })
@@ -88,8 +95,7 @@ const buildNodeFromObjectProperty = (
     propertiesByNodeId: Map<NodeId, SchemaProperty>,
     apiSpec: ApiSpec): SchemaPropertyNode => {
 
-    const nodeId = property.schemaRef + "." + property.propertyName;
-
+    const nodeId = buildNodeId(property);
     const propertySchemaRef = getSchemaPropertySchemaRef(property, apiSpec);
 
     if (!propertySchemaRef) {
@@ -152,13 +158,13 @@ export interface SchemaPropertyPickerProps {
 }
 
 export const SchemaPropertyPicker = ({
-                                         schemaRef,
-                                         defaultSchemaProperty,
-                                         schemaPropertyPredicate,
-                                         onSchemaPropertySelected,
-                                         disabled = false,
-                                         apiSpec
-                                     }: SchemaPropertyPickerProps) => {
+    schemaRef,
+    defaultSchemaProperty,
+    schemaPropertyPredicate,
+    onSchemaPropertySelected,
+    disabled = false,
+    apiSpec
+}: SchemaPropertyPickerProps) => {
 
     const [selectedSchemaProperty, setSelectedSchemaProperty] = useState(defaultSchemaProperty);
 
@@ -182,14 +188,14 @@ export const SchemaPropertyPicker = ({
                             defaultExpandedIds={Array.from(responseSchemaTree.propertiesByNodeId.keys())}
                             aria-label="Radio tree"
                             nodeRenderer={({
-                                               element,
-                                               isBranch,
-                                               isExpanded,
-                                               getNodeProps,
-                                               level,
-                                               handleSelect,
-                                               handleExpand,
-                                           }) => {
+                                element,
+                                isBranch,
+                                isExpanded,
+                                getNodeProps,
+                                level,
+                                handleSelect,
+                                handleExpand,
+                            }) => {
 
 
                                 const schemaProperty = responseSchemaTree.propertiesByNodeId.get(element.id);
@@ -206,7 +212,7 @@ export const SchemaPropertyPicker = ({
 
                                 const propertyName = schemaProperty.propertyName + (propertySchemaObject?.type === "array" ? "[]" : "");
 
-                                const opacitySx = {opacity: isSelectable ? 1 : 0.3};
+                                const opacitySx = { opacity: isSelectable ? 1 : 0.3 };
                                 const label = isBranch
                                     ? <Typography>
                                         {level > 1
@@ -216,10 +222,10 @@ export const SchemaPropertyPicker = ({
                                                 <Typography
                                                     fontFamily="monospace"
                                                     level="body-xs"
-                                                    sx={{ml: 1}}>({schemaRefTuHumanLabel(schemaProperty.schemaRef)})</Typography>
+                                                    sx={{ ml: 1 }}>({schemaRefToHumanLabel(schemaProperty.schemaRef)})</Typography>
                                             </Typography>
                                             : <Typography
-                                                sx={opacitySx}><Monospace>{schemaRefTuHumanLabel(schemaProperty.schemaRef)}</Monospace></Typography>}
+                                                sx={opacitySx}><Monospace>{schemaRefToHumanLabel(schemaProperty.schemaRef)}</Monospace></Typography>}
                                     </Typography>
                                     : <Typography
                                         level="body-md"
@@ -228,13 +234,13 @@ export const SchemaPropertyPicker = ({
 
                                 return (
                                     <div
-                                        {...getNodeProps({onClick: handleExpand})}
-                                        style={{marginLeft: 20 * (level - 1)}}
+                                        {...getNodeProps({ onClick: handleExpand })}
+                                        style={{ marginLeft: 20 * (level - 1) }}
                                     >
-                                        <Typography sx={{mt: 0.5}}>
+                                        <Typography sx={{ mt: 0.5 }}>
                                             {isBranch && (isExpanded
-                                                ? <Typography><ArrowDropDown/></Typography>
-                                                : <Typography><ArrowRight/></Typography>)}
+                                                ? <Typography><ArrowDropDown /></Typography>
+                                                : <Typography><ArrowRight /></Typography>)}
 
                                             {isSelectable
                                                 ? <Radio
