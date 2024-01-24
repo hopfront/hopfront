@@ -105,7 +105,7 @@ export const ProblemAlert = ({ problem, apiContext, onClose, sx }: HttpResponseA
                 <Box sx={{ mt: 1 }}>
                     <WarningAlert
                         title={
-                            <Typography>It seems we cannot reached your API</Typography>
+                            <Typography>It looks like we cannot reach your API</Typography>
                         }
                         headerActionButton={
                             <IconButton size="sm" onClick={onDoNotShowCorsWarningAgainClicked}>
