@@ -30,7 +30,7 @@ export const OAuth2AuthenticationGuard = ({securityScheme, postLogin, children}:
         return children;
     }
 
-    if (!propertiesLoading || !properties) {
+    if (propertiesLoading || !properties) {
         return <Box><LinearProgress/></Box>;
     }
 
