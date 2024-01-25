@@ -50,10 +50,14 @@ export const DashboardPanelGrid = ({
                 panel={panel}
                 variables={variables}
                 refreshObserverRegistry={refreshObserverRegistry}
-                onAuthRequired={apiContext => setAuthRequiredContext({
-                    operationId: panel.config.operationId!,
-                    apiContext: apiContext
-                })}
+                onAuthRequired={apiContext => {
+                    if (authRequiredContext?.apiContext.apiSpec.id !== apiContext.apiSpec.id) {
+                        setAuthRequiredContext({
+                            operationId: panel.config.operationId!,
+                            apiContext: apiContext
+                        });
+                    }
+                }}
                 onEditClick={() => onPanelEditClick(panel)}
                 onDeleteClick={() => onPanelDeleteClick(panel)}
                 onPanelTitleChanged={onPanelTitleChanged}/>
