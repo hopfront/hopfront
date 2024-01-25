@@ -14,7 +14,7 @@ import { Box, Button, Input, List, ListDivider, ListItem, ListItemButton, ListIt
 import Typography from "@mui/joy/Typography";
 import { SxProps } from "@mui/joy/styles/types";
 import { OpenAPIV3 } from "openapi-types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReferenceObject = OpenAPIV3.ReferenceObject;
 
 const getSchemaRefs = (document: OpenAPIV3.Document): string[] => {
@@ -87,23 +87,25 @@ export const SchemaSelect = ({ defaultSchemaRef, onSchemaRefSelected, schemaPred
     const schemaRefs = getSchemaRefs(apiContext.apiSpec.document)
         .filter(schemaRef => schemaPredicate === undefined || schemaPredicate(schemaRef));
 
-    if (schemaRefs.length > 0) {
-        const firstSchema = schemaRefs[0];
+    useEffect(() => {
+        if (schemaRefs.length > 0) {
+            const firstSchema = schemaRefs[0];
 
-        if (selectedSchemaRef) {
-            const existingSelectedSchemaRef = schemaRefs.find(sr => sr === selectedSchemaRef);
+            if (selectedSchemaRef) {
+                const existingSelectedSchemaRef = schemaRefs.find(sr => sr === selectedSchemaRef);
 
-            if (!existingSelectedSchemaRef) {
+                if (!existingSelectedSchemaRef) {
+                    setSelectedSchemaRef(firstSchema);
+                    onSchemaRefSelected(firstSchema);
+                }
+            } else {
                 setSelectedSchemaRef(firstSchema);
                 onSchemaRefSelected(firstSchema);
             }
-        } else {
-            setSelectedSchemaRef(firstSchema);
-            onSchemaRefSelected(firstSchema);
         }
-    }
 
-    schemaRefs.sort((a, b) => a.localeCompare(b));
+        schemaRefs.sort((a, b) => a.localeCompare(b));
+    }, [schemaRefs, selectedSchemaRef, setSelectedSchemaRef, onSchemaRefSelected])
 
     return (
         <Box sx={sx}>
