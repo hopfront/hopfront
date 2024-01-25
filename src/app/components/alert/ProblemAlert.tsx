@@ -118,9 +118,7 @@ export const ProblemAlert = ({ problem, apiContext, onClose, sx }: HttpResponseA
                             We recommend to configure your API to allow HopFront to query it, but if you&apos;d rather not modify your backend configuration, you can enable this option to route traffic through this HopFront instance&apos;s backend and bypass CORS issues. <br />
                         </Typography>
 
-                        <Box sx={{ mt: 1 }}>
-                            <CORSSwitch apiSpecId={apiContext.apiSpec.id} />
-                        </Box>
+                        <CORSSwitch apiSpecId={apiContext.apiSpec.id} sx={{ mt: 1 }} />
                     </WarningAlert>
                 </Box>}
         </>

@@ -1,24 +1,22 @@
 'use client'
 
-import {useApiContext} from "@/app/hooks/useApiContext";
-import {ApiConfigApi} from "@/app/lib/api/ApiConfigApi";
-import {fetcher} from "@/app/lib/api/utils";
-import {CircularProgress, Switch, Typography} from "@mui/joy";
-import {ChangeEvent, useEffect, useState} from "react";
-import useSWRMutation from 'swr/mutation';
-import {EventType, useSnackbar} from "@/app/hooks/useSnackbar";
+import { useApiContext } from "@/app/hooks/useApiContext";
+import { EventType, useSnackbar } from "@/app/hooks/useSnackbar";
+import { ApiConfigApi } from "@/app/lib/api/ApiConfigApi";
+import { CircularProgress, Stack, Switch, Typography } from "@mui/joy";
+import { ChangeEvent, useEffect, useState } from "react";
 
 type CorsSwitchProps = {
     apiSpecId: string,
     onSwitch?: (isChecked: boolean) => void,
+    sx?: {}
 }
 
-export default function CORSSwitch({ apiSpecId, onSwitch }: CorsSwitchProps) {
+export default function CORSSwitch({ apiSpecId, onSwitch, sx }: CorsSwitchProps) {
     const { data: context, error, isLoading: contextLoading } = useApiContext(apiSpecId);
-    const { trigger } = useSWRMutation(`/api/api-specs/${apiSpecId}/context`, fetcher);
     const [isCorsByPassed, setIsCorsByPassed] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const {showSnackbar, Snackbar} = useSnackbar();
+    const { showSnackbar, Snackbar } = useSnackbar();
 
     useEffect(() => {
         if (context?.config?.isCorsByPassed) {
@@ -31,7 +29,7 @@ export default function CORSSwitch({ apiSpecId, onSwitch }: CorsSwitchProps) {
         setIsCorsByPassed(isByPassed);
         setIsLoading(true);
 
-        ApiConfigApi.saveApiConfig(apiSpecId, {isCorsByPassed: isByPassed})
+        ApiConfigApi.saveApiConfig(apiSpecId, { isCorsByPassed: isByPassed })
             .then(() => {
                 showSnackbar(EventType.Success, 'CORS configuration updated successfully');
                 return onSwitch?.(isByPassed);
@@ -41,25 +39,24 @@ export default function CORSSwitch({ apiSpecId, onSwitch }: CorsSwitchProps) {
     }
 
     return (
-        <>
-            <Typography
-                startDecorator={<Switch
-                    color={isCorsByPassed ? 'warning' : undefined}
-                    checked={isCorsByPassed}
-                    disabled={contextLoading || isLoading}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                        handleCheckboxClick(event)
+        <Stack display={'flex'} direction={'row'} gap={1} sx={{ ...sx }}>
+            <Switch
+                color={isCorsByPassed ? 'warning' : undefined}
+                checked={isCorsByPassed}
+                disabled={contextLoading || isLoading}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                    handleCheckboxClick(event)
+                }
+                slotProps={{
+                    thumb: {
+                        children: isLoading ? <CircularProgress size='sm' /> : undefined
                     }
-                    slotProps={{
-                        thumb: {
-                            children: isLoading ? <CircularProgress size='sm' /> : undefined
-                        }
-                    }}
-                />}>
+                }}
+            />
+            <Typography level="body-sm" color="warning">
                 Bypass browser CORS
             </Typography>
             {Snackbar}
-        </>
-
+        </Stack>
     )
 }
