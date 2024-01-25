@@ -8,7 +8,6 @@ export interface ManualInputProps {
     type: HTMLInputTypeAttribute
     onFocus?: React.FocusEventHandler
     onBlur?: React.FormEventHandler
-    defaultValue?: ManualInputValueType
     updatableValue?: UpdatableValue<any>
     placeholder?: string | undefined
     required?: boolean
@@ -22,7 +21,6 @@ export interface ManualInputProps {
 
 export const ManualInput = ({
     type,
-    defaultValue,
     updatableValue,
     placeholder,
     onFocus,
@@ -43,7 +41,6 @@ export const ManualInput = ({
                 ...sx,
             }}
             type={type}
-            defaultValue={defaultValue}
             value={value}
             placeholder={placeholder}
             required={required}

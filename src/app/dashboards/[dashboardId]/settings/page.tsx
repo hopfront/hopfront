@@ -134,17 +134,16 @@ export default function Page() {
             <Typography level='h1' gutterBottom>Settings</Typography>
 
             <Typography level='h4' gutterBottom sx={{ mt: 2 }}>Title</Typography>
-            <FormControl>
+            {dashboard?.title && <FormControl>
                 <ManualInput
                     type="text"
-                    defaultValue={dashboard?.title}
                     updatableValue={{
                         value: dashboard?.title,
                         onValueUpdate: (value) => onTitleChanged(value)
                     }}
                     disabled={isLoading || isTitleLoading}
                     sx={{ mb: 1, maxWidth: '350px' }} />
-            </FormControl>
+            </FormControl>}
 
             <DashboardSettingsVariablesSection
                 dashboard={dashboard}
