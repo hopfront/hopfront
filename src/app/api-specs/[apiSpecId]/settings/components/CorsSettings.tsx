@@ -15,7 +15,6 @@ export default function CorsSettings({ specId, onSwitch }: CorsSettingsProps) {
         <>
             <Alert
                 sx={{
-                    mt: 1,
                     alignItems: 'flex-start'
                 }}
                 startDecorator={<Warning />}

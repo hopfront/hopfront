@@ -184,7 +184,7 @@ export default function Page() {
                         </ListItemContent>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <Box sx={{ mt: 2 }}>
+                        <Box sx={{ mt: 1 }}>
                             <CorsSettings specId={apiSpecId} />
                         </Box>
                     </AccordionDetails>
