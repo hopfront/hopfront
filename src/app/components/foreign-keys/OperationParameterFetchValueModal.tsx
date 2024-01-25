@@ -94,7 +94,7 @@ export const OperationParameterFetchValueModal = ({
             <Card sx={{mt: 2}}>
                 <Typography level="title-lg">2. Where does the injected value come from?</Typography>
                 <ApiSpecSelect defaultApiSpecId={apiSpec?.id}
-                               onApiSpecSelected={selectedApiSpec => setApiSpec(selectedApiSpec)}/>
+                               onApiSpecSelected={selectedApiSpec => {setForeignKeyOperation(undefined); setApiSpec(selectedApiSpec)}}/>
                 {apiSpec && <OperationSelect
                     onOperationSelected={selectedOperation => setForeignKeyOperation(selectedOperation)}
                     apiSpec={apiSpec}/>}

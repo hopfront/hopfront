@@ -94,7 +94,7 @@ export const SchemaPropertyFetchValueModal = ({
 
                 <ApiSpecSelect
                     defaultApiSpecId={apiSpec?.id}
-                    onApiSpecSelected={selectedApiSpec => setApiSpec(selectedApiSpec)}/>
+                    onApiSpecSelected={selectedApiSpec => {setForeignKeyOperation(undefined); setApiSpec(selectedApiSpec)}}/>
 
                 {apiSpec && <OperationSelect
                     onOperationSelected={selectedOperation => setForeignKeyOperation(selectedOperation)}
