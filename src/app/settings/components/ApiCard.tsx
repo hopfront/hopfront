@@ -8,7 +8,7 @@ import Stack from '@mui/joy/Stack';
 import Typography from '@mui/joy/Typography';
 import { useRouter } from 'next/navigation';
 import Chip from "@mui/joy/Chip";
-import {Monospace} from "@/app/components/typography/Monospace";
+import { Monospace } from "@/app/components/typography/Monospace";
 
 type ApiCardProps = {
     api: ApiSpec
@@ -46,28 +46,29 @@ export default function ApiCard({
                 spacing={1}
                 flex={1}
             >
-                <Box>
-                    <Typography sx={{mb: 1}}>
-                        <Chip color="primary">
-                            OAS <Monospace>{api.document.openapi}</Monospace>
-                        </Chip>
-                    </Typography>
+                <Stack direction={'column'} gap={1} alignItems={'baseline'}>
+                    <Chip color="primary">
+                        <Stack direction={'row'} alignItems={'baseline'} gap={1}>
+                            <Typography>OAS</Typography>
+                            <Monospace>{api.document.openapi}</Monospace>
+                        </Stack>
+                    </Chip>
                     <Link
                         fontSize="lg"
                         onClick={() => router.push(href)}
                         overlay
-                        sx={{color: 'text.primary'}}
+                        sx={{ color: 'text.primary' }}
                         underline="none"
                     >
                         {api.document.info.title || 'Untitled API'}
-                        <Chip sx={{ml: 1}}>
+                        <Chip sx={{ ml: 1 }}>
                             <Monospace>v{api.document.info.version === 'v0' ? '' : api.document.info.version}</Monospace>
                         </Chip>
                     </Link>
-                </Box>
+                </Stack>
 
                 {api.document.info.termsOfService &&
-                    <Link sx={{ width: 'fit-content' }} href={api.document.info.termsOfService}>
+                    <Link sx={{ width: 'fit-content'}} href={api.document.info.termsOfService}>
                         Terms of Service
                     </Link>}
 
