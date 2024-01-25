@@ -1,12 +1,12 @@
-import { Box, Button, Input, List, ListItem, ListItemButton } from "@mui/joy";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { getStandaloneOperations } from "@/app/lib/openapi/utils";
+import { ResponsiveModal } from "@/app/components/modal/ResponsiveModal";
+import { OperationLabel } from "@/app/components/typography/OperationLabel";
 import { ApiSpec } from "@/app/lib/dto/ApiSpec";
 import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
-import { SxProps } from "@mui/joy/styles/types";
-import { OperationLabel } from "@/app/components/typography/OperationLabel";
-import { ResponsiveModal } from "@/app/components/modal/ResponsiveModal";
+import { getStandaloneOperations } from "@/app/lib/openapi/utils";
 import { Search, UnfoldMore } from "@mui/icons-material";
+import { Box, Button, Input, List, ListItem, ListItemButton } from "@mui/joy";
+import { SxProps } from "@mui/joy/styles/types";
+import { useEffect, useState } from "react";
 
 export interface OperationSelectProps {
     defaultOperationId?: string
@@ -21,9 +21,11 @@ export const OperationSelect = ({ defaultOperationId, onOperationSelected, onCom
     const [operationId, setOperationId] = useState<string | undefined>(defaultOperationId);
     const [open, setOpen] = useState(false);
     const [searchInput, setSearchInput] = useState<string | undefined>();
+    const [standaloneOperations, setStandaloneOperations] = useState<StandaloneOperation[]>([])
+    const [selectedOperation, setSelectedOperation] = useState<StandaloneOperation | undefined>()
 
-    const standaloneOperations = useMemo(() => {
-        return getStandaloneOperations(apiSpec)
+    useEffect(() => {
+        const operations = getStandaloneOperations(apiSpec)
             .sort((a, b) => {
                 if (a.path === b.path) {
                     return a.method.localeCompare(b.method);
@@ -31,17 +33,24 @@ export const OperationSelect = ({ defaultOperationId, onOperationSelected, onCom
                     return a.path.localeCompare(b.path);
                 }
             });
-    }, [apiSpec.id]);
+        setStandaloneOperations(operations);
+    }, [])
 
-    const selectedOperation = standaloneOperations.find(op => op.getOperationId() === operationId) ?? standaloneOperations[0];
+    useEffect(() => {
+        setSelectedOperation(standaloneOperations.find(op => op.getOperationId() === operationId) ?? standaloneOperations[0]);
+    }, [standaloneOperations, operationId])
 
-    if (!operationId && standaloneOperations.length > 0) {
-        const firstOperation = standaloneOperations[0];
-        setOperationId(firstOperation.getOperationId());
-        onOperationSelected(firstOperation);
-    }
+    useEffect(() => {
+        if (!operationId && standaloneOperations.length > 0) {
+            const firstOperation = standaloneOperations[0];
+            setOperationId(firstOperation.getOperationId());
+            onOperationSelected(firstOperation);
+        }
 
-    onComponentLoaded?.(selectedOperation);
+        if (selectedOperation) {
+            onComponentLoaded?.(selectedOperation)
+        };
+    }, [operationId, standaloneOperations, selectedOperation, onComponentLoaded])
 
     return (
         <Box sx={sx}>
