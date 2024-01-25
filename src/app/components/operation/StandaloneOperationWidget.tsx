@@ -4,6 +4,7 @@ import {useApiContext} from "@/app/hooks/useApiContext";
 import Box from "@mui/joy/Box";
 import LinearProgress from "@mui/joy/LinearProgress";
 import {ErrorAlert} from "@/app/components/operation/response/ErrorAlert";
+import {AuthenticationGuard} from "@/app/components/authentication/AuthenticationGuard";
 
 export interface StandaloneOperationWidgetProps {
     operation: StandaloneOperation
@@ -20,5 +21,9 @@ export const StandaloneOperationWidget = ({operation}: StandaloneOperationWidget
         return <ErrorAlert error={error} apiContext={apiContext}/>;
     }
 
-    return <ApiOperationWidget operation={operation} apiContext={apiContext}/>;
+    return (
+        <AuthenticationGuard operationId={operation.getOperationId()} apiContext={apiContext}>
+            <ApiOperationWidget operation={operation} apiContext={apiContext}/>
+        </AuthenticationGuard>
+    );
 }

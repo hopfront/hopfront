@@ -3,12 +3,10 @@ import {
     AccessTokenAuthenticationGuard
 } from "@/app/components/authentication/access-token/AccessTokenAuthenticationGuard";
 import React, {useState} from "react";
-import BasicAuthAuthenticationGuard from "@/app/components/authentication/basic-auth/BasicAuthAuthenticationGuard";
-import StaticAuthenticationGuard from "@/app/components/authentication/static/StaticAuthenticationGuard";
 import {getSecurityScheme, getStandaloneOperation} from "@/app/lib/openapi/utils";
 import {
     SecuritySchemeAuthenticationGuard
-} from "@/app/components/authentication/security-requirements/SecuritySchemeAuthenticationGuard";
+} from "@/app/components/authentication/security-schemes/SecuritySchemeAuthenticationGuard";
 
 export interface AuthenticationGuardProps {
     operationId: string
@@ -47,10 +45,10 @@ export const AuthenticationGuard = ({
 
     if (securityScheme) {
         return <SecuritySchemeAuthenticationGuard
+            apiContext={apiContext}
             securityScheme={securityScheme}
             onAuthenticationHandled={onHandled}
             onAuthenticationIgnored={onIgnored}>
-
             {children}
         </SecuritySchemeAuthenticationGuard>
     }
@@ -62,20 +60,6 @@ export const AuthenticationGuard = ({
             onAuthenticationIgnored={onIgnored}>
             {children}
         </AccessTokenAuthenticationGuard>;
-    } else if (authenticationConfig?.authenticationType === "STATIC") {
-        return <StaticAuthenticationGuard
-            apiContext={apiContext}
-            onAuthenticationHandled={onHandled}
-            onAuthenticationIgnored={onIgnored}>
-            {children}
-        </StaticAuthenticationGuard>;
-    } else if (authenticationConfig?.authenticationType === "BASIC_AUTH") {
-        return <BasicAuthAuthenticationGuard
-            apiContext={apiContext}
-            onAuthenticationHandled={onHandled}
-            onAuthenticationIgnored={onIgnored}>
-            {children}
-        </BasicAuthAuthenticationGuard>;
     } else {
         return children;
     }

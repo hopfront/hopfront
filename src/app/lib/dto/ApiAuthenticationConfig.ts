@@ -19,4 +19,4 @@ export interface ApiAuthenticationConfig {
     data?: ApiAuthenticationAccessTokenData | ApiAuthenticationStaticParameterData,
 }
 
-export type AuthenticationType = 'STATIC' | 'BASIC_AUTH' | 'ACCESS_TOKEN' | 'NONE';
+export type AuthenticationType = 'ACCESS_TOKEN' | 'NONE';

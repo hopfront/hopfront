@@ -1,7 +1,7 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from "@mui/joy";
 import { SxProps } from "@mui/joy/styles/types";
 import { ReactNode } from "react";
-import { ApiAuthConfigWidget } from "../api-specs/[apiSpecId]/settings/components/ApiAuthConfigWidget";
+import { ApiAuthConfigWidget } from "../api-specs/[apiSpecId]/settings/components/global-auth/ApiAuthConfigWidget";
 import { ApiContext } from "../lib/model/ApiContext";
 
 export interface ApiAuthenticationOnboardingAccordionProps {

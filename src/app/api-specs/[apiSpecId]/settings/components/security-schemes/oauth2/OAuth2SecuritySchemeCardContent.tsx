@@ -3,16 +3,16 @@ import OAuth2SecurityScheme = OpenAPIV3.OAuth2SecurityScheme;
 import {CardContent} from "@mui/joy";
 import {
     OAuth2AuthorizationCodeFlowCard
-} from "@/app/api-specs/[apiSpecId]/settings/components/security-schemes/OAuth2AuthorizationCodeFlowCard";
+} from "@/app/api-specs/[apiSpecId]/settings/components/security-schemes/oauth2/OAuth2AuthorizationCodeFlowCard";
 import {
     OAuth2ImplicitFlowCard
-} from "@/app/api-specs/[apiSpecId]/settings/components/security-schemes/OAuth2ImplicitFlowCard";
+} from "@/app/api-specs/[apiSpecId]/settings/components/security-schemes/oauth2/OAuth2ImplicitFlowCard";
 import {
     OAuth2PasswordFlowCard
-} from "@/app/api-specs/[apiSpecId]/settings/components/security-schemes/OAuth2PasswordFlowCard";
+} from "@/app/api-specs/[apiSpecId]/settings/components/security-schemes/oauth2/OAuth2PasswordFlowCard";
 import {
     OAuth2ClientCredentialsFlowCard
-} from "@/app/api-specs/[apiSpecId]/settings/components/security-schemes/OAuth2ClientCredentialsFlowCard";
+} from "@/app/api-specs/[apiSpecId]/settings/components/security-schemes/oauth2/OAuth2ClientCredentialsFlowCard";
 
 export interface OAuth2SecuritySchemeCardContentProps {
     oauth2SecurityScheme: OAuth2SecurityScheme

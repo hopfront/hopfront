@@ -2,7 +2,7 @@ import {OpenAPIV3} from "openapi-types";
 import SecuritySchemeObject = OpenAPIV3.SecuritySchemeObject;
 import {
     OAuth2SecuritySchemeCardContent
-} from "@/app/api-specs/[apiSpecId]/settings/components/security-schemes/OAuth2SecuritySchemeCardContent";
+} from "@/app/api-specs/[apiSpecId]/settings/components/security-schemes/oauth2/OAuth2SecuritySchemeCardContent";
 import {
     NotImplementedSecuritySchemeCardContent
 } from "@/app/api-specs/[apiSpecId]/settings/components/security-schemes/NotImplementedSecuritySchemeCardContent";

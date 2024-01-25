@@ -1,6 +1,6 @@
 'use client';
 
-import { ApiAuthConfigWidget } from "@/app/api-specs/[apiSpecId]/settings/components/ApiAuthConfigWidget";
+import { ApiAuthConfigWidget } from "@/app/api-specs/[apiSpecId]/settings/components/global-auth/ApiAuthConfigWidget";
 import CorsSettings from "@/app/api-specs/[apiSpecId]/settings/components/CorsSettings";
 import { ButtonRow } from "@/app/components/button/ButtonRow";
 import { ResponsiveModal } from "@/app/components/modal/ResponsiveModal";
@@ -14,7 +14,7 @@ import {
     OperationsExtensionsConfigurerPage
 } from "@/app/settings/operations/OperationExtensionsConfigurerPage";
 import { SchemaExtensionsConfigurerPage } from "@/app/settings/schemas/SchemaExtensionsConfigurerPage";
-import { Cloud, Dangerous, DataObject, KeyboardArrowRight, Lock, PlayCircle, Security, Upgrade, Upload } from "@mui/icons-material";
+import { Cloud, Dangerous, DataObject, KeyboardArrowRight, Lock, PlayCircle, Security } from "@mui/icons-material";
 import {
     Accordion, AccordionDetails,
     AccordionGroup, AccordionSummary, Avatar,

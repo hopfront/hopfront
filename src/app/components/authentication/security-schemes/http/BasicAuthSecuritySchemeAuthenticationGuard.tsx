@@ -1,24 +1,23 @@
-import { ApiContext } from "@/app/lib/model/ApiContext";
-import { Box } from "@mui/joy";
-import { useMemo, useState } from "react";
-import BasicAuthModal from "./BasicAuthModal";
+import BasicAuthModal from "@/app/components/authentication/basic-auth/BasicAuthModal";
+import {ApiContext} from "@/app/lib/model/ApiContext";
+import React, {useMemo, useState} from "react";
 import {AuthLocalStorage} from "@/app/lib/localstorage/AuthLocalStorage";
+import {Box} from "@mui/joy";
 
-export interface BasicAuthFormProps {
-    apiContext: ApiContext,
-    onAuthenticationHandled: () => void,
-    onAuthenticationIgnored: () => void,
+export interface BasicAuthSecuritySchemeAuthenticationGuardProps {
+    apiContext: ApiContext
+    onAuthenticationHandled: () => void
+    onAuthenticationIgnored: () => void
     children: React.ReactNode
 }
 
-export default function BasicAuthAuthenticationGuard({ apiContext, onAuthenticationHandled, onAuthenticationIgnored, children }: BasicAuthFormProps) {
-    const apiAuthenticationConfig = apiContext.config.authenticationConfig;
+export const BasicAuthSecuritySchemeAuthenticationGuard = ({apiContext, onAuthenticationHandled, onAuthenticationIgnored, children}: BasicAuthSecuritySchemeAuthenticationGuardProps) => {
     const defaultCredentials = useMemo(() => {
         return AuthLocalStorage.getBasicAuthCredentials(apiContext);
     }, [apiContext.apiSpec.id]);
     const [open, setOpen] = useState<boolean>(true);
 
-    if (apiAuthenticationConfig?.authenticationType === "BASIC_AUTH" && !defaultCredentials?.username || !defaultCredentials?.password) {
+    if (!defaultCredentials?.username || !defaultCredentials?.password) {
         return (
             <Box>
                 <BasicAuthModal

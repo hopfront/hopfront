@@ -32,18 +32,6 @@ export class AuthService  {
             case "ACCESS_TOKEN": {
                 return this.getAccessTokenAuthenticationStatus(apiContext);
             }
-            case "STATIC": {
-                return {
-                    isAuthenticationRequired: true,
-                    isAuthenticated: !!AuthLocalStorage.getStaticAuthCredentials(apiContext)?.secret
-                };
-            }
-            case "BASIC_AUTH": {
-                return {
-                    isAuthenticationRequired: true,
-                    isAuthenticated: !!AuthLocalStorage.getBasicAuthCredentials(apiContext)?.username && !!AuthLocalStorage.getBasicAuthCredentials(apiContext)?.password
-                };
-            }
             default:
                 return {
                     isAuthenticationRequired: true,

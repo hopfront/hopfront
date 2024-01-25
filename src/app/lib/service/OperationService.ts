@@ -1,6 +1,5 @@
 import {
-    ApiAuthenticationConfig,
-    ApiAuthenticationStaticParameterData
+    ApiAuthenticationConfig
 } from "@/app/lib/dto/ApiAuthenticationConfig";
 import { XHRFrontRequestMethod } from "@/app/lib/dto/XHRFrontRequest";
 import { OperationInputs } from "@/app/lib/model/OperationInputs";
@@ -19,7 +18,6 @@ const buildUrl = (
     parameters: ParameterWithValue[],
     operation: StandaloneOperation,
     apiContext: ApiContext): string => {
-    const authentication = apiContext.config.authenticationConfig;
     const baseUrl = ServerLocalStorage.getApiServer(apiContext)?.url;
     let url = `${baseUrl}${operation.path}`
 
@@ -47,23 +45,7 @@ const buildUrl = (
 
     url = url + queryParams;
 
-    if (authentication && authentication.authenticationType === "STATIC") {
-        const staticData =
-            authentication.data as ApiAuthenticationStaticParameterData;
-
-        if (staticData.parameterLocation === "QUERY") {
-            let authenticatedUrl = new URL(url);
-            authenticatedUrl.searchParams.append(
-                staticData.parameterName,
-                AuthLocalStorage.getStaticAuthCredentials(apiContext)?.secret ?? ''
-            );
-            return authenticatedUrl.toString();
-        } else {
-            return url;
-        }
-    } else {
-        return url;
-    }
+    return url;
 }
 
 export class OperationService {
@@ -120,19 +102,17 @@ export class OperationService {
                     } else {
                         console.log('Failed to retrieve OAuth2 access token from localstorage');
                     }
+                } else if (securityScheme.object.type === "http") {
+                    if (securityScheme.object.scheme === "basic") {
+                        const credentials = AuthLocalStorage.getBasicAuthCredentials(apiContext);
+                        const base64credentials = btoa(`${credentials?.username}:${credentials?.password}`)
+                        headers['Authorization'] = `Basic ${base64credentials}`;
+                    } else if (securityScheme.object.scheme === "bearer") {
+                        headers['Authorization'] = 'Bearer ' + AuthLocalStorage.getStaticAuthCredentials(apiContext)?.secret ?? '';
+                    }
                 }
             } else if (authConfig) {
-                if (authConfig.authenticationType === "STATIC") {
-                    const staticData = authConfig.data as ApiAuthenticationStaticParameterData;
-
-                    if (staticData.parameterLocation === "HEADER") {
-                        headers[staticData.parameterName] = AuthLocalStorage.getStaticAuthCredentials(apiContext)?.secret ?? '';
-                    }
-                } else if (authConfig.authenticationType === "BASIC_AUTH") {
-                    const credentials = AuthLocalStorage.getBasicAuthCredentials(apiContext);
-                    const base64credentials = btoa(`${credentials?.username}:${credentials?.password}`)
-                    headers['Authorization'] = `Basic ${base64credentials}`;
-                } else if (authConfig.authenticationType === "ACCESS_TOKEN") {
+                if (authConfig.authenticationType === "ACCESS_TOKEN") {
                     headers['Authorization'] = `Bearer ${AuthLocalStorage.getAccessToken(apiContext)}`;
                 }
             }

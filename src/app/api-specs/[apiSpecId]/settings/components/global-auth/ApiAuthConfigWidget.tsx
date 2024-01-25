@@ -10,7 +10,7 @@ import Option from '@mui/joy/Option'
 import Select, {selectClasses} from "@mui/joy/Select"
 import {useEffect, useMemo, useState} from "react"
 import {useDebouncedCallback} from "use-debounce"
-import AuthenticationTypeComponent from "./AuthenticationTypeComponent"
+import AuthenticationTypeComponent from "../AuthenticationTypeComponent"
 import {SecuritySchemeList} from "@/app/api-specs/[apiSpecId]/settings/components/security-schemes/SecuritySchemeList";
 import FormControl from "@mui/joy/FormControl";
 
@@ -98,8 +98,6 @@ export const ApiAuthConfigWidget = ({apiContext, sx}: ApiAuthenticationProps) =>
                                 },
                             }}
                         >
-                            <Option value="STATIC">Static Header/Query Param</Option>
-                            <Option value="BASIC_AUTH">Basic Auth</Option>
                             <Option value="ACCESS_TOKEN">Access Token</Option>
                             <Option value="NONE">None</Option>
                         </Select>

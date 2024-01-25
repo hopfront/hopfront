@@ -2,7 +2,7 @@ import { ApiContext } from "../model/ApiContext";
 import { ServerLocalStorage } from "./ServerLocalStorage";
 import {
     buildSecuritySchemeLocalStorageKeyPrefix
-} from "@/app/components/authentication/oauth2/OAuth2AuthenticationGuard";
+} from "@/app/components/authentication/security-schemes/oauth2/OAuth2AuthenticationGuard";
 import { tryGetFromLocalStorage, trySetToLocalStorage } from "./utils";
 
 const buildAccessTokenLocalStorageKey = (apiSpecId: string, apiServerUrl: string) => {
