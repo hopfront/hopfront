@@ -16,6 +16,7 @@ import { SxProps } from "@mui/joy/styles/types";
 import { OpenAPIV3 } from "openapi-types";
 import { useEffect, useState } from "react";
 import ReferenceObject = OpenAPIV3.ReferenceObject;
+import React from "react";
 
 const getSchemaRefs = (document: OpenAPIV3.Document): string[] => {
     const schemaRefs: string[] = [];
@@ -152,7 +153,7 @@ export const SchemaSelect = ({ defaultSchemaRef, onSchemaRefSelected, schemaPred
                         }
 
                         return [(
-                            <>
+                            <React.Fragment key={sr}>
                                 <ListItem key={sr}>
                                     <ListItemButton onClick={() => {
                                         setSelectedSchemaRef(sr)
@@ -193,8 +194,8 @@ export const SchemaSelect = ({ defaultSchemaRef, onSchemaRefSelected, schemaPred
                                         </ListItemContent>
                                     </ListItemButton>
                                 </ListItem>
-                                <ListDivider inset="gutter" />
-                            </>
+                                <ListDivider inset="gutter" key={sr} />
+                            </React.Fragment>
 
                         )];
                     })}
