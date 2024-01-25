@@ -34,7 +34,7 @@ export const OperationSelect = ({ defaultOperationId, onOperationSelected, onCom
                 }
             });
         setStandaloneOperations(operations);
-    }, [])
+    }, [apiSpec])
 
     useEffect(() => {
         setSelectedOperation(standaloneOperations.find(op => op.getOperationId() === operationId) ?? standaloneOperations[0]);
