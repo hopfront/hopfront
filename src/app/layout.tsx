@@ -31,6 +31,12 @@ export default function RootLayout({ children }: {
         <html lang="en">
             <head>
                 <title>HopFront</title>
+                <script
+                    defer
+                    data-api="https://us-central1-witick-a8f14.cloudfunctions.net/ProxyPlausible/api/event"
+                    data-domain="app.hopfront.com"
+                    src="https://us-central1-witick-a8f14.cloudfunctions.net/ProxyPlausible/js/script.local.js">
+                </script>
             </head>
             <body>
                 <ThemeProvider>
