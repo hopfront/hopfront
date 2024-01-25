@@ -1,25 +1,25 @@
 'use client';
 
-import { useParams, useRouter } from "next/navigation";
-import { Breadcrumbs, Button, Divider, FormControl, Link, Skeleton } from "@mui/joy";
-import React, { useContext, useState } from "react";
-import { Dashboard, NEW_DASHBOARD_TITLE } from "@/app/lib/model/dashboard/Dashboard";
-import Box from "@mui/joy/Box";
-import { KeyboardArrowRight } from "@mui/icons-material";
-import Typography from "@mui/joy/Typography";
+import { ManualInput, ManualInputValueType } from "@/app/components/input/ManualInput";
+import { CenteredThreeDotsLoader } from "@/app/components/misc/CenteredThreeDotsLoader";
+import { ConfirmModal, ConfirmModalProps } from "@/app/components/modal/ConfirmModal";
+import { ErrorAlert } from "@/app/components/operation/response/ErrorAlert";
+import { AdminContext, shouldShowAdminContent } from "@/app/context/AdminContext";
 import {
     DashboardSettingsVariablesSection
 } from "@/app/dashboards/[dashboardId]/settings/components/DashboardSettingsVariablesSection";
-import { DashboardVariable } from "@/app/lib/model/dashboard/DashboardVariable";
-import { ManualInput, ManualInputValueType } from "@/app/components/input/ManualInput";
 import { useAnalytics } from "@/app/hooks/analytics/useAnalytics";
-import { DashboardApi } from "@/app/lib/api/DashboardApi";
 import { useDashboard } from "@/app/hooks/useDashboard";
-import { ConfirmModal, ConfirmModalProps } from "@/app/components/modal/ConfirmModal";
 import { EventType, useSnackbar } from "@/app/hooks/useSnackbar";
-import { AdminContext, shouldShowAdminContent } from "@/app/context/AdminContext";
-import { ErrorAlert } from "@/app/components/operation/response/ErrorAlert";
-import { CenteredThreeDotsLoader } from "@/app/components/misc/CenteredThreeDotsLoader";
+import { DashboardApi } from "@/app/lib/api/DashboardApi";
+import { Dashboard, NEW_DASHBOARD_TITLE } from "@/app/lib/model/dashboard/Dashboard";
+import { DashboardVariable } from "@/app/lib/model/dashboard/DashboardVariable";
+import { KeyboardArrowRight } from "@mui/icons-material";
+import { Breadcrumbs, Button, Divider, FormControl, Link, Skeleton } from "@mui/joy";
+import Typography from "@mui/joy/Typography";
+import { useParams, useRouter } from "next/navigation";
+import { useContext, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function Page() {
     const router = useRouter();
@@ -85,6 +85,10 @@ export default function Page() {
             return;
         }
 
+        debouncedTitleSaving(title);
+    }
+
+    const debouncedTitleSaving = useDebouncedCallback((title: ManualInputValueType) => {
         setTitleLoading(true);
         DashboardApi.updateDashboard({ ...dashboard, title: title } as Dashboard)
             .then(() => {
@@ -94,7 +98,7 @@ export default function Page() {
                 showSnackbar(EventType.Error, `Failed to update dashboard title: ${error.toLocaleString()}`);
             })
             .finally(() => setTitleLoading(false));
-    }
+    }, 500)
 
     if (adminContext.isLoading) {
         return <CenteredThreeDotsLoader />
@@ -134,7 +138,10 @@ export default function Page() {
                 <ManualInput
                     type="text"
                     defaultValue={dashboard?.title}
-                    onChange={onTitleChanged}
+                    updatableValue={{
+                        value: dashboard?.title,
+                        onValueUpdate: (value) => onTitleChanged(value)
+                    }}
                     disabled={isLoading || isTitleLoading}
                     sx={{ mb: 1, maxWidth: '350px' }} />
             </FormControl>

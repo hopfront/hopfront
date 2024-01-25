@@ -1,7 +1,6 @@
-import {FormControl, FormLabel} from "@mui/joy";
-import {ManualInput, ManualInputValueType} from "@/app/components/input/ManualInput";
-import React from "react";
-import {VariableWithValue} from "@/app/lib/model/dashboard/VariableWithValue";
+import { ManualInput, ManualInputValueType } from "@/app/components/input/ManualInput";
+import { VariableWithValue } from "@/app/lib/model/dashboard/VariableWithValue";
+import { FormControl, FormLabel } from "@mui/joy";
 
 export interface FormControlDashboardVariableManualProps {
     variable: VariableWithValue
@@ -9,7 +8,7 @@ export interface FormControlDashboardVariableManualProps {
     cacheKey?: string
 }
 
-export const FormControlDashboardVariableManual = ({variable, onValueChange, cacheKey}: FormControlDashboardVariableManualProps) => {
+export const FormControlDashboardVariableManual = ({ variable, onValueChange, cacheKey }: FormControlDashboardVariableManualProps) => {
     if (!variable.value && cacheKey) {
         const cachedValue = localStorage.getItem(cacheKey);
 
@@ -32,8 +31,11 @@ export const FormControlDashboardVariableManual = ({variable, onValueChange, cac
             <FormLabel>{variable.variable.label || variable.variable.name}</FormLabel>
             <ManualInput
                 type={variable.variable.type || 'text'}
-                defaultValue={variable.value}
-                onChange={onTextChange}/>
+                updatableValue={{
+                    value: variable.value,
+                    onValueUpdate: (value) => onTextChange(value)
+                }}
+            />
         </FormControl>
     );
 }

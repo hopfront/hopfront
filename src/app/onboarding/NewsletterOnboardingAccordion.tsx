@@ -76,11 +76,13 @@ export default function NewsletterOnboardingAccordion(
                         }}>
                         <ManualInput
                             type="email"
-                            defaultValue={newsletterEmail}
                             endDecorator={
                                 userSubscribedToNewsletter && <Check color='success' />
                             }
-                            onChange={value => setNewsletterEmail(value as string)}
+                            updatableValue={{
+                                value: newsletterEmail,
+                                onValueUpdate: (value) => setNewsletterEmail(value as string)
+                            }}
                             sx={{
                                 width: {
                                     xs: '250px',

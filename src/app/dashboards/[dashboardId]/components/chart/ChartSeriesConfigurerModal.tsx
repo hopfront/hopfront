@@ -1,24 +1,24 @@
-import {ResponsiveModal} from "@/app/components/modal/ResponsiveModal";
-import {useState} from "react";
-import {SchemaPropertyPicker} from "@/app/components/foreign-keys/SchemaPropertyPicker/SchemaPropertyPicker";
-import {getSchemaPropertyType} from "@/app/lib/openapi/utils";
-import {ApiSpec} from "@/app/lib/dto/ApiSpec";
+import { ButtonRow } from "@/app/components/button/ButtonRow";
+import { Chart } from "@/app/components/chart/Chart";
+import { ChartSeriesTypeIcon } from "@/app/components/chart/ChartSeriesTypeIcon";
+import { SchemaPropertyPicker } from "@/app/components/foreign-keys/SchemaPropertyPicker/SchemaPropertyPicker";
+import { ManualInput } from "@/app/components/input/ManualInput";
+import { ResponsiveModal } from "@/app/components/modal/ResponsiveModal";
+import { paletteKeyToColorFromMaterialTheme } from "@/app/dashboards/[dashboardId]/components/chart/utils";
+import { ApiSpec } from "@/app/lib/dto/ApiSpec";
+import { AreaSeriesProperties } from "@/app/lib/model/chart/AreaSeriesProperties";
+import { BarSeriesProperties } from "@/app/lib/model/chart/BarSeriesProperties";
+import { ChartSeries, ChartSeriesType } from "@/app/lib/model/chart/ChartSeries";
+import { LineSeriesProperties } from "@/app/lib/model/chart/LineSeriesProperties";
+import { ScatterSeriesProperties, ScatterSeriesShape } from "@/app/lib/model/chart/ScatterSeriesProperties";
+import { getSchemaPropertyType } from "@/app/lib/openapi/utils";
+import { PaletteRounded } from "@mui/icons-material";
+import { Box, Button, Option, Select, Stack, Switch } from "@mui/joy";
 import Card from "@mui/joy/Card";
-import Typography from "@mui/joy/Typography";
-import {Box, Button, Option, Select, Stack, Switch} from "@mui/joy";
-import {PaletteRounded} from "@mui/icons-material";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
-import {Chart} from "@/app/components/chart/Chart";
-import {paletteKeyToColorFromMaterialTheme} from "@/app/dashboards/[dashboardId]/components/chart/utils";
-import {ButtonRow} from "@/app/components/button/ButtonRow";
-import {ChartSeriesTypeIcon} from "@/app/components/chart/ChartSeriesTypeIcon";
-import {LineSeriesProperties} from "@/app/lib/model/chart/LineSeriesProperties";
-import {BarSeriesProperties} from "@/app/lib/model/chart/BarSeriesProperties";
-import {AreaSeriesProperties} from "@/app/lib/model/chart/AreaSeriesProperties";
-import {ScatterSeriesProperties, ScatterSeriesShape} from "@/app/lib/model/chart/ScatterSeriesProperties";
-import {ChartSeries, ChartSeriesType} from "@/app/lib/model/chart/ChartSeries";
-import {ManualInput} from "@/app/components/input/ManualInput";
+import Typography from "@mui/joy/Typography";
+import { useState } from "react";
 
 interface PreviewDataStructure {
     name: string
@@ -137,7 +137,7 @@ const SERIES_TYPES_OPTIONS: SeriesTypeOption[] = [
     }
 ]
 
-const ColorChoiceTypography = ({colorChoice}: ColorChoiceTypographyProps) => {
+const ColorChoiceTypography = ({ colorChoice }: ColorChoiceTypographyProps) => {
     return <>
         <Stack direction="row">
             <Typography>
@@ -146,10 +146,10 @@ const ColorChoiceTypography = ({colorChoice}: ColorChoiceTypographyProps) => {
                         return {
                             color: paletteKeyToColorFromMaterialTheme(colorChoice.paletteKey, theme),
                         };
-                    }}/>
+                    }} />
                 </Stack>
             </Typography>
-            <Typography sx={{ml: 1}}>
+            <Typography sx={{ ml: 1 }}>
                 {colorChoice.label}
             </Typography>
         </Stack>
@@ -161,21 +161,21 @@ const seriesTypeOptionLabel = (seriesTypeOption: SeriesTypeOption) => <>
         <Typography>
             <Stack justifyContent="center">
                 <ChartSeriesTypeIcon
-                    chartSeriesType={seriesTypeOption.seriesType}/>
+                    chartSeriesType={seriesTypeOption.seriesType} />
             </Stack>
         </Typography>
-        <Typography sx={{ml: 1}}>{seriesTypeOption.label}</Typography>
+        <Typography sx={{ ml: 1 }}>{seriesTypeOption.label}</Typography>
     </Stack>
 </>
 
 export const ChartSeriesConfigurerModal = ({
-                                               open,
-                                               onClose,
-                                               defaultSeries,
-                                               schemaRef,
-                                               onSeriesConfigured,
-                                               apiSpec
-                                           }: ChartSeriesConfigurerModalProps) => {
+    open,
+    onClose,
+    defaultSeries,
+    schemaRef,
+    onSeriesConfigured,
+    apiSpec
+}: ChartSeriesConfigurerModalProps) => {
 
     const [dataKey, setDataKey] = useState(defaultSeries?.dataKey);
     const [unit, setUnit] = useState<string | undefined>(defaultSeries?.unit);
@@ -218,7 +218,7 @@ export const ChartSeriesConfigurerModal = ({
 
     return (
         <ResponsiveModal open={open} onClose={onClose}>
-            <Typography level="title-lg" sx={{mb: 2}}>Series configuration</Typography>
+            <Typography level="title-lg" sx={{ mb: 2 }}>Series configuration</Typography>
             <Card>
                 <Typography level="title-md">Data Source</Typography>
                 <SchemaPropertyPicker
@@ -234,29 +234,35 @@ export const ChartSeriesConfigurerModal = ({
                     onSchemaPropertySelected={schemaPropertySelected => {
                         setDataKey(schemaPropertySelected.propertyName);
                     }}
-                    apiSpec={apiSpec}/>
+                    apiSpec={apiSpec} />
 
-                <FormControl sx={{mt: 2}}>
+                <FormControl sx={{ mt: 2 }}>
                     <FormLabel>Unit</FormLabel>
                     <ManualInput
                         type="text"
-                        defaultValue={unit}
+                        updatableValue={{
+                            value: unit,
+                            onValueUpdate: (value) => setUnit(value as string)
+                        }}
                         placeholder="€"
-                        onChange={value => setUnit(value as string)}/>
+                    />
                 </FormControl>
-                <FormControl sx={{mt: 2}}>
+                <FormControl sx={{ mt: 2 }}>
                     <FormLabel>Multiply by a number</FormLabel>
                     <ManualInput
                         type="number"
-                        defaultValue={valueMultiplier}
+                        updatableValue={{
+                            value: valueMultiplier,
+                            onValueUpdate: (value) => setValueMultiplier(value as number)
+                        }}
                         placeholder="1"
-                        onChange={value => setValueMultiplier(value as number)}/>
+                    />
                 </FormControl>
             </Card>
-            <Card sx={{mt: 2}}>
+            <Card sx={{ mt: 2 }}>
                 <Typography level="title-md">Style</Typography>
                 <Stack direction="row">
-                    <Box sx={{mr: 2, minWidth: 300}}>
+                    <Box sx={{ mr: 2, minWidth: 300 }}>
                         <FormControl>
                             <FormLabel>Type</FormLabel>
                             <Select
@@ -301,7 +307,7 @@ export const ChartSeriesConfigurerModal = ({
                                 )}
                             </Select>
                         </FormControl>
-                        <FormControl sx={{mt: 2}}>
+                        <FormControl sx={{ mt: 2 }}>
                             <FormLabel>Color Palette</FormLabel>
                             <Select
                                 value={paletteKey}
@@ -310,41 +316,41 @@ export const ChartSeriesConfigurerModal = ({
                                     const selectedColorChoice = COLOR_CHOICES.find(cc => cc.paletteKey === (option && option.value));
 
                                     if (selectedColorChoice) {
-                                        return <ColorChoiceTypography colorChoice={selectedColorChoice}/>;
+                                        return <ColorChoiceTypography colorChoice={selectedColorChoice} />;
                                     } else {
                                         return null;
                                     }
                                 }}>
                                 {COLOR_CHOICES.map(colorChoice => (
                                     <Option key={colorChoice.paletteKey}
-                                            value={colorChoice.paletteKey}>
-                                        <ColorChoiceTypography colorChoice={colorChoice}/>
+                                        value={colorChoice.paletteKey}>
+                                        <ColorChoiceTypography colorChoice={colorChoice} />
                                     </Option>
                                 ))}
                             </Select>
                         </FormControl>
-                        <FormControl sx={{mt: 2}}>
+                        <FormControl sx={{ mt: 2 }}>
                             <Typography
                                 startDecorator={<Switch
                                     checked={animationActive}
-                                    onChange={event => setAnimationActive(event.target.checked)}/>
+                                    onChange={event => setAnimationActive(event.target.checked)} />
                                 }>
                                 Show Animation
                             </Typography>
                         </FormControl>
-                        {seriesType === "line" && <FormControl sx={{mt: 2}}>
-                            <Typography startDecorator={<Switch checked={showDot} onChange={event => setShowDot(event.target.checked)}/>}>
+                        {seriesType === "line" && <FormControl sx={{ mt: 2 }}>
+                            <Typography startDecorator={<Switch checked={showDot} onChange={event => setShowDot(event.target.checked)} />}>
                                 Show Dot
                             </Typography>
                         </FormControl>}
-                        {seriesType === "scatter" && <FormControl sx={{mt: 2}}>
+                        {seriesType === "scatter" && <FormControl sx={{ mt: 2 }}>
                             <FormLabel>Shape</FormLabel>
                             <Select
                                 value={scatterShape || ScatterSeriesShape.Circle}
                                 onChange={(event, value) => setScatterShape(value || undefined)}>
                                 {Object.values(ScatterSeriesShape).map(scatterSeriesShapeValue => (
                                     <Option key={scatterSeriesShapeValue}
-                                            value={scatterSeriesShapeValue}>
+                                        value={scatterSeriesShapeValue}>
                                         {scatterSeriesShapeValue}
                                     </Option>
                                 ))}
@@ -358,18 +364,18 @@ export const ChartSeriesConfigurerModal = ({
                         showYAxis: false,
                         height: 200,
                     }} data={PREVIEW_DATA} xAxes={[]}
-                           series={[
-                               {
-                                   dataKey: "pv",
-                                   paletteKey: paletteKey,
-                                   unit: unit,
-                                   type: seriesType,
-                                   properties: buildSeriesProperties()
-                               }
-                           ]}/>
+                        series={[
+                            {
+                                dataKey: "pv",
+                                paletteKey: paletteKey,
+                                unit: unit,
+                                type: seriesType,
+                                properties: buildSeriesProperties()
+                            }
+                        ]} />
                 </Stack>
             </Card>
-            <ButtonRow align="right" sx={{mt: 2}}>
+            <ButtonRow align="right" sx={{ mt: 2 }}>
                 <Button color="primary" disabled={!dataKey} onClick={() => {
                     if (dataKey) {
                         onSeriesConfigured({

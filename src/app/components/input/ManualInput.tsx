@@ -1,12 +1,11 @@
 import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
 import Input from "@mui/joy/Input";
-import React, {HTMLInputTypeAttribute, useState} from "react";
+import React, { HTMLInputTypeAttribute, useState } from "react";
 
 export type ManualInputValueType = string | ReadonlyArray<string> | number | undefined;
 
 export interface ManualInputProps {
     type: HTMLInputTypeAttribute
-    onChange?: (value: ManualInputValueType) => void
     onFocus?: React.FocusEventHandler
     onBlur?: React.FormEventHandler
     defaultValue?: ManualInputValueType
@@ -26,7 +25,6 @@ export const ManualInput = ({
     defaultValue,
     updatableValue,
     placeholder,
-    onChange,
     onFocus,
     onBlur,
     required,
@@ -37,7 +35,7 @@ export const ManualInput = ({
     max,
     sx,
 }: ManualInputProps) => {
-    const [value, setValue] = useState(defaultValue);
+    const [value, setValue] = useState(updatableValue?.value);
 
     return (
         <Input
@@ -54,11 +52,7 @@ export const ManualInput = ({
             onChange={(event) => {
                 setValue(event.target.value);
                 const sanitizedValue = type === "number" ? event.target.valueAsNumber : event.target.value;
-                if (onChange) {
-                    onChange(sanitizedValue);
-                } else {
-                    updatableValue?.onValueUpdate(sanitizedValue);
-                }
+                updatableValue?.onValueUpdate(sanitizedValue);
             }}
             onFocus={onFocus}
             onBlur={onBlur}

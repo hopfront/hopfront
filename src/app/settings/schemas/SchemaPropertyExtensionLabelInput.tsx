@@ -24,13 +24,16 @@ export const SchemaPropertyExtensionLabelInput = ({
             <ManualInput
                 disabled={disabled}
                 type="text"
-                defaultValue={label}
                 placeholder={propertyExtension.propertyName}
-                onChange={value => {
-                    const newLabel = value as string;
-                    setLabel(newLabel);
-                    onLabelChange(newLabel);
-                }} />
+                updatableValue={{
+                    value: label,
+                    onValueUpdate: (value) => {
+                        const newLabel = value as string;
+                        setLabel(newLabel);
+                        onLabelChange(newLabel);
+                    }
+                }}
+            />
         </FormControl>
     )
 }

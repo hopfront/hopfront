@@ -94,8 +94,9 @@ export default function UrlApiSpecImport({
                         required={true}
                         type="url"
                         disabled={isLoading}
-                        onChange={value => {
-                            setUrl(value as string);
+                        updatableValue={{
+                            value: url,
+                            onValueUpdate: (value) => setUrl(value as string)
                         }}
                         placeholder="https://petstore3.swagger.io/api/v3/openapi.json" />
                     <FormHelperText>The URL of your OpenAPI specification file (JSON or YAML).</FormHelperText>

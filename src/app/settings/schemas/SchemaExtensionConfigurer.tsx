@@ -16,6 +16,7 @@ import FormHelperText from "@mui/joy/FormHelperText";
 import Table from "@mui/joy/Table";
 import Typography from "@mui/joy/Typography";
 import { useEffect, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
 export interface SchemaExtensionConfigurerProps {
     schemaRef: string
@@ -51,7 +52,7 @@ export const SchemaExtensionConfigurer = ({
         setSchemaExtension(getSchemaExtension(schemaRef, apiContext));
     }, [apiContext, schemaRef]);
 
-    const onPropertyExtensionChange = (propertyExtension: PropertyExtension) => {
+    const onPropertyExtensionChange = useDebouncedCallback((propertyExtension: PropertyExtension) => {
         setUpdating(true);
 
         const existingPropertyExtension = schemaExtension.properties.find(pe => pe.propertyName === propertyExtension.propertyName);
@@ -74,7 +75,7 @@ export const SchemaExtensionConfigurer = ({
                 showSnackbar(EventType.Error, `Failed to update configuration: ${reason.toLocaleString()}`);
                 setUpdating(false);
             });
-    };
+    }, 500);
 
     const schemaObject = getSchemaByRef(schemaRef, apiContext.apiSpec.document);
     const schemaProperties = getPropertiesFromSchema(schemaObject, apiContext.apiSpec.document);
