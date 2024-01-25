@@ -161,9 +161,11 @@ export const DashboardPanelGridItem = ({
         debounceOperationExecution(operation, apiContext);
     }, [apiContext, inputs, operation, refreshCount]);
 
-    if (apiContext && authStatus.isAuthenticationRequired && !authStatus.isAuthenticated) {
-        onAuthRequired(apiContext);
-    }
+    useEffect(() => {
+        if (apiContext && authStatus.isAuthenticationRequired && !authStatus.isAuthenticated) {
+            onAuthRequired(apiContext);
+        }
+    }, [apiContext, authStatus.isAuthenticationRequired, authStatus.isAuthenticated])
 
     const parameterWithoutRequiredValue = inputs.parameters.find(p => {
         return !p.value && p.parameter.required;
