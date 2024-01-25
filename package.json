@@ -1,6 +1,6 @@
 {
   "name": "hopfront",
-  "version": "0.4.0",
+  "version": "0.7.3",
   "private": true,
   "scripts": {
     "dev": "next dev",
