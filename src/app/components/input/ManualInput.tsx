@@ -43,8 +43,7 @@ export const ManualInput = ({
                 ...sx,
             }}
             type={type}
-            defaultValue={defaultValue}
-            value={value}
+            value={value || defaultValue || ''}
             placeholder={placeholder}
             required={required}
             endDecorator={endDecorator}
