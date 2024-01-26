@@ -6,17 +6,17 @@ import {
     resolveSchemaFromSchemaOrReference,
     schemaRefToHumanLabel
 } from "@/app/lib/openapi/utils";
+import { generateRandomStringFromDateAndNumber as generateRandomString } from "@/app/lib/utils";
 import { ArrowDropDown, ArrowRight } from "@mui/icons-material";
 import { Radio, RadioGroup } from "@mui/joy";
 import Typography from "@mui/joy/Typography";
 import { OpenAPIV3 } from "openapi-types";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import TreeView, { flattenTree } from "react-accessible-treeview";
 import { NodeId } from "react-accessible-treeview/dist/TreeView/types";
 import { Monospace } from "../../typography/Monospace";
 import ReferenceObject = OpenAPIV3.ReferenceObject;
 import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
-import { generateRandomStringFromDateAndNumber } from "@/app/lib/utils";
 
 interface SchemaPropertyNode {
     id: NodeId;
@@ -47,13 +47,11 @@ const buildNodeFromProperty = (
 }
 
 const buildNodeId = (property: SchemaProperty): string => {
-
-    const randomPart = generateRandomStringFromDateAndNumber();
-    return property.schemaRef + "." + property.propertyName + randomPart;
+    const randomPart = generateRandomString();
+    return `${property.schemaRef}.${property.propertyName}.${randomPart}`;
 }
 
 const buildEmptyNode = (property: SchemaProperty, propertiesByNodeId: Map<NodeId, SchemaProperty>): SchemaPropertyNode => {
-
     const nodeId = buildNodeId(property);
     propertiesByNodeId.set(nodeId, property);
 
@@ -168,7 +166,9 @@ export const SchemaPropertyPicker = ({
 
     const [selectedSchemaProperty, setSelectedSchemaProperty] = useState(defaultSchemaProperty);
 
-    const responseSchemaTree = getResponseSchemaTree(schemaRef, apiSpec);
+    const responseSchemaTree = useMemo(() => {
+        return getResponseSchemaTree(schemaRef, apiSpec)
+    }, [schemaRef, apiSpec]);
 
     const tree = {
         id: "root",
@@ -196,8 +196,6 @@ export const SchemaPropertyPicker = ({
                                 handleSelect,
                                 handleExpand,
                             }) => {
-
-
                                 const schemaProperty = responseSchemaTree.propertiesByNodeId.get(element.id);
 
                                 if (!schemaProperty) {
