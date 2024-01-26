@@ -19,7 +19,7 @@ export const OAuth2ImplicitFlowCard = ({oauth2SecurityScheme}: OAuth2ImplicitFlo
     return (
         <Card variant="soft">
             <Typography level="title-sm">Implicit Flow</Typography>
-            <WarningAlert title="This flow is not implemented by HopFront. Note that the Authorization Code flow (with PKCE) is a more secure solution."/>
+            <WarningAlert title="This flow is not supported by HopFront. Note that the Authorization Code flow (with PKCE) is a more secure solution (and supported by HopFront)."/>
             <Typography>Authorization URL: <SecuritySchemeURLTypography url={oauth2SecurityScheme.flows.implicit.authorizationUrl}/></Typography>
             <Typography>Refresh URL: <SecuritySchemeURLTypography url={oauth2SecurityScheme.flows.implicit.refreshUrl}/></Typography>
             <Typography>Scopes: {oauth2SecurityScheme.flows.implicit?.scopes && getScopesFromRecord(oauth2SecurityScheme.flows.implicit?.scopes).map(scope => {
