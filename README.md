@@ -1,7 +1,7 @@
 <br/>  
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/hopfront/hopfront/assets/2743541/f8722185-ebb1-434f-b9ba-52cfc1ba0941">
-  <img src="https://github.com/hopfront/hopfront/assets/2743541/48dc1776-3069-4aa5-96b2-79ae14cb2523" height="72">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/hopfront/hopfront/assets/2743541/f6f42573-d46c-4dcc-b23e-3933a207bf72">
+  <img src="https://github.com/hopfront/hopfront/assets/2743541/81b79ce7-7148-47bc-abd7-d4ca30ef20d2" height="60">
 </picture>
 
 ---
