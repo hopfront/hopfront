@@ -1,7 +1,7 @@
 'use client';
 
 import { Box, Button, ListDivider, Typography } from "@mui/joy";
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 
 import { PageHeader } from "@/app/components/typography/PageHeader";
 import { useAnalytics } from "@/app/hooks/analytics/useAnalytics";
@@ -79,7 +79,7 @@ export default function Page() {
             <List>
                 {(data?.dashboards || []).map((dashboard, index) => {
                     return (
-                        <>
+                        <React.Fragment key={dashboard.id}>
                             <ListItem onClick={() => null}>
                                 <ListItemButton
                                     onClick={() => router.push(`/dashboards/${dashboard.id}`)}>
@@ -88,7 +88,7 @@ export default function Page() {
                             </ListItem>
                             {index < (data?.dashboards?.length ?? 0) - 1 &&
                                 <ListDivider inset='gutter' />}
-                        </>
+                        </React.Fragment>
                     );
                 })}
             </List>
