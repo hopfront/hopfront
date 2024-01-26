@@ -73,33 +73,35 @@ const getUnpinnedOperations = (operations: StandaloneOperation[], pinnedOperatio
     return operations.filter(op => !pinnedOperations.find(operationEquals(op)));
 };
 
+const getCachedSelectedOperation = (): SerializableOperation | undefined => {
+    try {
+        const cachedSelectedOperationString = localStorage.getItem(SELECTED_OPERATION_LOCAL_STORAGE_KEY);
+        return cachedSelectedOperationString ? JSON.parse(cachedSelectedOperationString) as SerializableOperation : undefined;
+    } catch (e) {
+        return undefined;
+    }
+}
+
 export const OperationList = ({ operations, selectedOperation, onlyDisplayTechnicalName: onlyDisplayTechnicalNames, onOperationSelected }: OperationListProps) => {
-    const cachedSelectedOperation: SerializableOperation | undefined = useMemo(() => {
-        try {
-            const cachedSelectedOperationString = localStorage.getItem(SELECTED_OPERATION_LOCAL_STORAGE_KEY);
-            return cachedSelectedOperationString ? JSON.parse(cachedSelectedOperationString) as SerializableOperation : undefined;
-        } catch (error: any) {
-            return undefined;
-        }
-    }, []);
+    const [pinnedOperations, setPinnedOperations] = useState(getPinnedOperations(operations));
+    const [unpinnedOperations, setUnpinnedOperations] = useState(getUnpinnedOperations(operations, pinnedOperations));
 
     const distinctApiSpecIds = operations.map(op => op.apiSpec.id).filter(uniqueFilter);
     const shouldDisplayApiSpec = distinctApiSpecIds.length > 1;
 
-    if (!selectedOperation) {
-        if (cachedSelectedOperation) {
-            const existingCachedSelectedOperation = operations.find(op => op.apiSpec.id === cachedSelectedOperation.apiSpecId && op.getOperationId() === cachedSelectedOperation.operationId);
-
-            if (existingCachedSelectedOperation) {
-                onOperationSelected(existingCachedSelectedOperation);
+    useEffect(() => {
+        if (!selectedOperation) {
+            const cached = getCachedSelectedOperation();
+            if (cached) {
+                const existingCachedSelectedOperation = operations.find(op => op.apiSpec.id === cached.apiSpecId && op.getOperationId() === cached.operationId);
+                if (existingCachedSelectedOperation) {
+                    onOperationSelected(existingCachedSelectedOperation);
+                }
+            } else if (operations.length > 0) {
+                onOperationSelected(operations[0]);
             }
-        } else if (operations.length > 0) {
-            onOperationSelected(operations[0]);
         }
-    }
-
-    const [pinnedOperations, setPinnedOperations] = useState(getPinnedOperations(operations));
-    const [unpinnedOperations, setUnpinnedOperations] = useState(getUnpinnedOperations(operations, pinnedOperations));
+    }, [operations, selectedOperation])
 
     useEffect(() => {
         const newPinnedOperations = getPinnedOperations(operations);
