@@ -93,7 +93,7 @@ export default function Navigation({ children }: NavigationProps) {
                                     flex: 1,
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    minWidth: 0,
+                                    width: "90dvw",
                                     height: '100dvh',
                                     gap: 1,
                                     overflow: 'auto',
