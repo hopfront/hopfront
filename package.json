@@ -22,7 +22,7 @@
     "allotment": "^1.19.5",
     "bcrypt-ts": "^5.0.1",
     "eslint": "8.56.0",
-    "eslint-config-next": "14.0.4",
+    "eslint-config-next": "14.1.0",
     "i": "^0.3.7",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
