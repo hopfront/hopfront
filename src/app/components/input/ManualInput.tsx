@@ -1,6 +1,6 @@
 import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
 import Input from "@mui/joy/Input";
-import React, { HTMLInputTypeAttribute, useState } from "react";
+import React, { HTMLInputTypeAttribute, useEffect, useState } from "react";
 
 export type ManualInputValueType = string | ReadonlyArray<string> | number | undefined;
 
@@ -36,6 +36,12 @@ export const ManualInput = ({
     sx,
 }: ManualInputProps) => {
     const [value, setValue] = useState(updatableValue?.value);
+
+    useEffect(() => {
+        if (updatableValue?.value != value) {
+            setValue(updatableValue?.value)
+        }
+    }, [updatableValue?.value])
 
     return (
         <Input
