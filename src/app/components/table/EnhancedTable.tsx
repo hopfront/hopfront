@@ -29,6 +29,7 @@ import {
     OperationFromObjectModal
 } from "@/app/components/foreign-keys/OperationFromObjectModal/OperationFromObjectModal";
 import { AdminContext, shouldShowAdminContent } from "@/app/context/AdminContext";
+import { SingleRowScalarPropertyViewer } from "../property-viewer/SingleRowScalarPropertyViewer";
 
 interface HeadCell {
     id: keyof TableData;
@@ -71,7 +72,7 @@ function getHeadCells(array: object[], arraySchemaObject: ArraySchemaObject | un
                 }
             })
         } else {
-            uniqueKeys.add('?');
+            uniqueKeys.add('undefined header');
         }
     });
 
@@ -296,6 +297,11 @@ export const EnhancedTable = ({
                         {(rows || [])
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((rowData, index) => {
+                                if (!rowData) {
+                                    return (
+                                        <SingleRowScalarPropertyViewer property={null} />
+                                    )
+                                }
                                 const rowValues = headCells.map(headCell => {
                                     const objectPropertyValue = rowData[headCell.id];
                                     const objectPropertySchemaRef = arrayItemSchema?.properties
@@ -433,7 +439,7 @@ export const EnhancedTable = ({
                     loading={loading}
                     apiContext={apiContext} />
             </ResponsiveModal>
-            {schema?.items && <OperationFromObjectModal
+            {showAddOperationModal && schema?.items && <OperationFromObjectModal
                 open={showAddOperationModal}
                 onClose={() => setShowAddOperationModal(false)}
                 sampleObject={(rows || []).length > 0 && rows[0]}
