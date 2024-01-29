@@ -2,7 +2,6 @@ import CORSSwitch from "@/app/api-specs/[apiSpecId]/settings/components/CorsSwit
 import ShowMore from "@/app/components/typography/ShowMore";
 import { Problem } from "@/app/lib/dto/Problem";
 import { AuthLocalStorage } from "@/app/lib/localstorage/AuthLocalStorage";
-import { ApiAuthenticationStatus } from "@/app/lib/model/ApiAuthenticationStatus";
 import { ApiContext } from "@/app/lib/model/ApiContext";
 import { AuthService } from "@/app/lib/service/AuthService";
 import { Close, Dangerous, Info, KeyOff, Settings, Warning } from "@mui/icons-material";
@@ -38,11 +37,6 @@ const getColor = (status: number) => {
     }
 };
 
-export interface AuthenticationContext {
-    apiSpecId: string
-    authenticationStatus: ApiAuthenticationStatus
-}
-
 export interface HttpResponseAlertProps {
     problem: Problem
     apiContext?: ApiContext
@@ -75,7 +69,7 @@ export const ProblemAlert = ({ problem, apiContext, onClose, sx }: HttpResponseA
                 }}
                 startDecorator={getIcon(problem.status)}
                 variant="soft"
-                color="warning"
+                color={getColor(problem.status)}
                 endDecorator={onClose &&
                     <IconButton variant="soft" size="sm" color={getColor(problem.status)} onClick={() => onClose()}>
                         <CloseRoundedIcon />

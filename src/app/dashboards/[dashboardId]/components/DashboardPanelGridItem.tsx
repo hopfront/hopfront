@@ -26,6 +26,7 @@ import { ApiContext } from "@/app/lib/model/ApiContext";
 import { AuthService } from "@/app/lib/service/AuthService";
 import { DashboardPanelContent } from "@/app/dashboards/[dashboardId]/components/DashboardPanelContent";
 import { useDebouncedCallback } from "use-debounce";
+import {Problem} from "@/app/lib/dto/Problem";
 
 export interface OperationAsyncResponse {
     response: Response | undefined
@@ -178,7 +179,21 @@ export const DashboardPanelGridItem = ({
         });
     }
 
-    if (parameterWithoutRequiredValue) {
+    if (!apiContext && !isLoading) {
+      return (
+          <DashboardPanelContainer
+              title={panel.title}
+              loading={isLoading || operationResponse.loading}
+              onEditClick={onEditClick}
+              onDeleteClick={onDeleteClick}
+              onPanelTitleChanged={onPanelTitleEdited}>
+              <ErrorAlert error={{
+                  title: 'This panel is configured to use an API that has been removed from HopFront.',
+                  status: 500,
+              } as Problem} />
+          </DashboardPanelContainer>
+      );
+    } else if (parameterWithoutRequiredValue) {
         return (
             <DashboardPanelContainer title={panel.title} loading={isLoading || operationResponse.loading}
                 onEditClick={onEditClick} onDeleteClick={onDeleteClick} onPanelTitleChanged={onPanelTitleEdited}>
