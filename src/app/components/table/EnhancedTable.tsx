@@ -299,7 +299,7 @@ export const EnhancedTable = ({
                             .map((rowData, index) => {
                                 if (!rowData) {
                                     return (
-                                        <SingleRowScalarPropertyViewer property={null} />
+                                        <SingleRowScalarPropertyViewer key={index} property={null} />
                                     )
                                 }
                                 const rowValues = headCells.map(headCell => {
