@@ -32,7 +32,7 @@ export const ButtonModalObjectOperationExecutor = ({
                 variant="outlined"
                 color={getOperationButtonColor(operation)}
                 startDecorator={<OperationIcon operation={operation}/>}
-                onClick={() => setOpen(true)}>{operation.operation.summary}</Button>
+                onClick={() => setOpen(true)}>{operation.operation.summary || `${operation.method.toUpperCase()} ${operation.path}`}</Button>
 
             <ModalObjectOperationExecutor
                 key={operation.getOperationId()}
