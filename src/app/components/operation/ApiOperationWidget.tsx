@@ -18,7 +18,7 @@ export interface ApiOperationWidgetProps {
     onError?: (error: any) => void
     responseSchemaSelectedObserver?: ResponseSchemaSelectedObserver
     apiContext: ApiContext,
-    shouldGetOperationAutoSubmit: boolean
+    shouldGetOperationAutoSubmit?: boolean
 }
 
 export const ApiOperationWidget = ({

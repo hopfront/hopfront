@@ -18,8 +18,9 @@ const buildUrl = (
     parameters: ParameterWithValue[],
     operation: StandaloneOperation,
     apiContext: ApiContext): string => {
-    const baseUrl = ServerLocalStorage.getApiServer(apiContext)?.url;
-    let url = `${baseUrl}${operation.path}`
+    const baseUrl = ServerLocalStorage.getApiServer(apiContext)?.url?.replace(/\/*$/, ''); // Removing last trailing slashes
+    const path = operation.path.replace(/^\//, ''); // Removing first trailing slash
+    let url = `${baseUrl}/${path}`
 
     parameters
         .filter(p => p.value)
