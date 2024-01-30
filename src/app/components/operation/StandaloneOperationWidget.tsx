@@ -23,7 +23,7 @@ export const StandaloneOperationWidget = ({operation}: StandaloneOperationWidget
 
     return (
         <AuthenticationGuard operationId={operation.getOperationId()} apiContext={apiContext}>
-            <ApiOperationWidget operation={operation} apiContext={apiContext}/>
+            <ApiOperationWidget operation={operation} apiContext={apiContext} shouldGetOperationAutoSubmit={false}/>
         </AuthenticationGuard>
     );
 }

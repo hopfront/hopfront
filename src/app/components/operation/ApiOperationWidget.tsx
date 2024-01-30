@@ -17,7 +17,8 @@ export interface ApiOperationWidgetProps {
     onResponse?: (response: Response) => void
     onError?: (error: any) => void
     responseSchemaSelectedObserver?: ResponseSchemaSelectedObserver
-    apiContext: ApiContext
+    apiContext: ApiContext,
+    shouldGetOperationAutoSubmit: boolean
 }
 
 export const ApiOperationWidget = ({
@@ -27,6 +28,7 @@ export const ApiOperationWidget = ({
     onError,
     responseSchemaSelectedObserver,
     apiContext,
+    shouldGetOperationAutoSubmit = true
 }: ApiOperationWidgetProps) => {
 
     const getOperationWidget = () => {
@@ -39,7 +41,8 @@ export const ApiOperationWidget = ({
                     onResponse={onResponse}
                     onError={onError}
                     responseSchemaSelectedObserver={responseSchemaSelectedObserver}
-                    apiContext={apiContext} />;
+                    apiContext={apiContext}
+                    shouldAutoSubmit={shouldGetOperationAutoSubmit}/>;
             case HttpMethods.POST:
             case HttpMethods.PUT:
                 return <OperationPostPutWidget

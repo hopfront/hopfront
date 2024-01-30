@@ -18,7 +18,8 @@ export interface OperationGetWidgetProps {
     onResponse?: (response: Response) => void
     onError?: (error: any) => void
     responseSchemaSelectedObserver?: ResponseSchemaSelectedObserver
-    apiContext: ApiContext
+    apiContext: ApiContext,
+    shouldAutoSubmit: boolean
 }
 
 const buildOperationInputsCacheKey = (operation: StandaloneOperation) => {
@@ -40,7 +41,8 @@ export const OperationGetWidget = ({
     onResponse,
     onError,
     responseSchemaSelectedObserver,
-    apiContext
+    apiContext,
+    shouldAutoSubmit = true
 }: OperationGetWidgetProps) => {
 
     const { registerEvent } = useAnalytics();
@@ -57,6 +59,34 @@ export const OperationGetWidget = ({
     }
 
     const debounceExecution = useDebouncedCallback(() => {
+        submit()
+    }, 500)
+
+    useEffect(() => {
+        setOperationInputs(getOperationDefaultInputs(operation, defaultInputs || getCachedInputs(operation)));
+    }, [defaultInputs, operation]);
+
+    useEffect(() => {
+        if (hasEmptyRequiredParameter()) {
+            return;
+        }
+
+        if (shouldAutoSubmit) {
+            debounceExecution()
+        }
+    }, [apiContext.apiSpec, onError, onResponse, operation, operationInputs, refreshCounter]);
+
+    const hasEmptyRequiredParameter = (): boolean => {
+        return operationInputs.parameters.find(p => {
+            return !p.value && p.parameter.required;
+        }) !== undefined;
+    }
+
+    const submit = () => {
+        if (hasEmptyRequiredParameter()) {
+            return; // We don't execute the request if any parameter is missing its value.
+        }
+
         setLoading(true);
         setError(undefined);
 
@@ -78,23 +108,7 @@ export const OperationGetWidget = ({
                 setLoading(false);
                 onError && onError(reason);
             });
-    }, 500)
-
-    useEffect(() => {
-        setOperationInputs(getOperationDefaultInputs(operation, defaultInputs || getCachedInputs(operation)));
-    }, [defaultInputs, operation]);
-
-    useEffect(() => {
-        const parameterWithoutRequiredValue = operationInputs.parameters.find(p => {
-            return !p.value && p.parameter.required;
-        });
-
-        if (parameterWithoutRequiredValue) {
-            return; // We don't execute the request if any parameter is missing its value.
-        }
-
-        debounceExecution()
-    }, [apiContext.apiSpec, onError, onResponse, operation, operationInputs, refreshCounter]);
+    }
 
     return (
         <>
@@ -103,7 +117,8 @@ export const OperationGetWidget = ({
                 operationInputs={operationInputs}
                 loading={loading}
                 onChange={onOperationInputsChange}
-                apiContext={apiContext} />
+                apiContext={apiContext}
+                onSubmit={!shouldAutoSubmit ? submit : undefined}/>
             {response &&
                 <Card sx={{ mt: 2 }}>
                     <OperationResponse
