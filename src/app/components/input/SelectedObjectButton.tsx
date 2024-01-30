@@ -5,7 +5,7 @@ import {ObjectView} from "@/app/components/property-viewer/ObjectView";
 import {ResponsiveModal} from "@/app/components/modal/ResponsiveModal";
 import {useApiContext} from "@/app/hooks/useApiContext";
 import {SxProps} from "@mui/joy/styles/types";
-import {getSchemaByRef} from "@/app/lib/openapi/utils";
+import {getSchemaByRef, getSchemaExtension} from "@/app/lib/openapi/utils";
 
 export interface SelectedObjectButtonProps {
     selectedObject?: any
@@ -20,6 +20,7 @@ export const SelectedObjectButton = ({selectedObject, selectedSchemaRef, apiSpec
     const {data: apiContext, error, isLoading} = useApiContext(apiSpecId);
 
     const schema = (selectedSchemaRef && apiContext) && getSchemaByRef(selectedSchemaRef, apiContext.apiSpec.document);
+    const schemaExtension = (selectedSchemaRef && apiContext) ? getSchemaExtension(selectedSchemaRef, apiContext) : undefined;
 
     return (
         <>
@@ -29,7 +30,7 @@ export const SelectedObjectButton = ({selectedObject, selectedSchemaRef, apiSpec
                 disabled={disabled || !selectedObject || typeof selectedObject !== "object" || isLoading}
                 sx={{minWidth: '120px', display: 'flex', alignItems: 'center', justifyContent: 'start', ...sx}}>
                 {selectedObject
-                    ? <ObjectLabel object={selectedObject} />
+                    ? <ObjectLabel object={selectedObject} objectSchemaExtension={schemaExtension} />
                     : 'None'}
             </Button>
             <ResponsiveModal

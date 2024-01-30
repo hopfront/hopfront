@@ -12,6 +12,7 @@ import {
     RunnableOperationFromSchemaReasonsTableData
 } from "@/app/settings/schemas/RunnableOperationFromSchemaReasonsTableData";
 import { InfoTooltipIcon } from "@/app/components/misc/InfoTooltipIcon";
+import {Monospace} from "@/app/components/typography/Monospace";
 
 export interface SchemaExtensionsConfigurerPageProps {
     apiContext: ApiContext
@@ -32,10 +33,6 @@ export const SchemaExtensionsConfigurerPage = ({ apiContext, readOnly }: SchemaE
                 onSchemaRefSelected={schemaRef => setSelectedSchemaRef(schemaRef)}
                 apiContext={apiContext}
                 sx={{ mb: 4 }} />
-
-            <Typography level="title-lg" sx={{ mb: 2 }}>
-                Fields
-            </Typography>
 
             {selectedSchemaRef && <SchemaExtensionConfigurer
                 schemaRef={selectedSchemaRef}

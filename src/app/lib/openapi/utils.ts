@@ -32,6 +32,7 @@ import ArraySchemaObjectType = OpenAPIV3.ArraySchemaObjectType;
 import NonArraySchemaObjectType = OpenAPIV3.NonArraySchemaObjectType;
 import HttpMethods = OpenAPIV3.HttpMethods;
 import SecuritySchemeObject = OpenAPIV3.SecuritySchemeObject;
+import {SchemaExtension} from "@/app/lib/dto/OpenApiExtensions";
 
 export const randomInternalId = (length: number) => {
     let result = '';
@@ -426,7 +427,20 @@ export const getObjectPropertyNames = (object: any): string[] => {
     return Object.entries(object).map(entry => entry[0]);
 }
 
-export const getObjectHumanLabelValue = (object: any): string | undefined => {
+export const getSchemaExtension = (schemaRef: string, apiContext: ApiContext) => {
+    return apiContext.extension.schemas.find(s => s.schemaRef === schemaRef) || {
+        schemaRef: schemaRef,
+        properties: [],
+    };
+}
+
+export const getObjectHumanLabelProperty = (object: any, schemaExtension: SchemaExtension | undefined): string | undefined => {
+    if (schemaExtension?.labelProperty) {
+        if (object.hasOwnProperty(schemaExtension.labelProperty)) {
+            return schemaExtension.labelProperty;
+        }
+    }
+
     return ["label", "name", "title", "username", "lastName", "firstName", "email"]
         .find(p => getObjectPropertyNames(object)
             .find(propertyName => propertyName.toLowerCase() === p));

@@ -1,10 +1,12 @@
 import { ApiContext, SchemaOrReference } from "@/app/lib/model/ApiContext";
 import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
-import { getObjectHumanLabelValue } from "@/app/lib/openapi/utils";
+import {getObjectHumanLabelProperty, getSchemaExtension} from "@/app/lib/openapi/utils";
 import { ModalFormObject } from "@/app/components/modal/ModalFormObject";
 import { Create } from "@mui/icons-material";
 import { Button, Chip } from "@mui/joy";
 import { useState } from "react";
+import {OpenAPIV3} from "openapi-types";
+import ReferenceObject = OpenAPIV3.ReferenceObject;
 
 export interface ObjectInputProps {
     updatableValue: UpdatableValue<any>
@@ -26,7 +28,13 @@ export const ObjectInput = ({ updatableValue, schema, apiContext }: ObjectInputP
             // Sometimes an input will have the "object" type even though the value is a string (why?)
             objectName = updatableValue.value;
         } else {
-            const mainProperty = getObjectHumanLabelValue(updatableValue.value);
+            let schemaExtension = undefined;
+
+            if (schema.hasOwnProperty('$ref')) {
+                schemaExtension = getSchemaExtension((schema as ReferenceObject).$ref, apiContext)
+            }
+
+            const mainProperty = getObjectHumanLabelProperty(updatableValue.value, schemaExtension);
             objectName = mainProperty ? updatableValue.value[mainProperty] : undefined;
             Object.keys(updatableValue.value).forEach(key => {
                 if (objectName) {

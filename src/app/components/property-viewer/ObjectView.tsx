@@ -55,6 +55,7 @@ export const ObjectView = ({object, schemaRef, loading = false, apiContext, resp
         }
 
         const direction = Array.isArray(value) ? "column" : "row";
+
         return [(
             <Stack key={objectKey} direction={direction} sx={{mb: 1}}>
                 {key}

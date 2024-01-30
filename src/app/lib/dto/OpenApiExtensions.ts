@@ -7,6 +7,7 @@ export interface OpenAPIDocumentExtension {
 
 export interface SchemaExtension {
     schemaRef: string
+    labelProperty?: string
     properties: PropertyExtension[]
 }
 

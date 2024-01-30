@@ -1,11 +1,11 @@
 import {
-    getObjectHumanLabelValue,
+    getObjectHumanLabelProperty,
     getObjectPropertyNames,
 } from "@/app/lib/openapi/utils";
 import {Monospace} from "@/app/components/typography/Monospace";
 import { Skeleton } from "@mui/joy";
 import Typography from "@mui/joy/Typography";
-import {array} from "prop-types";
+import {SchemaExtension} from "@/app/lib/dto/OpenApiExtensions";
 
 interface ObjectIdentifier {
     key: string
@@ -31,24 +31,25 @@ const getObjectIdentifier = (object: any): ObjectIdentifier | undefined => {
 
 export interface ObjectLabelProps {
     object: any | undefined | null
+    objectSchemaExtension?: SchemaExtension
     loading?: boolean
 }
 
-export const ObjectLabel = ({object, loading = false}: ObjectLabelProps) => {
+export const ObjectLabel = ({object, objectSchemaExtension, loading = false}: ObjectLabelProps) => {
     if (typeof object !== "object") {
         return object;
     }
 
-    const humanLabelValue = getObjectHumanLabelValue(object);
+    const humanLabelProperty = getObjectHumanLabelProperty(object, objectSchemaExtension);
     const objectIdentifier = getObjectIdentifier(object);
     const firstKeyName = getObjectPropertyNames(object)[0];
     const firstValue = object ? object[firstKeyName] : undefined;
 
-    if (humanLabelValue) {
-        const objectHumanProperty = object[humanLabelValue];
+    if (humanLabelProperty) {
+        const objectHumanProperty = object[humanLabelProperty];
 
         if (typeof objectHumanProperty === "object") {
-            return <ObjectLabel object={objectHumanProperty}/>
+            return <ObjectLabel object={objectHumanProperty} objectSchemaExtension={objectSchemaExtension}/>
         } else {
             return <Typography><Skeleton loading={loading}>{objectHumanProperty}</Skeleton></Typography>;
         }

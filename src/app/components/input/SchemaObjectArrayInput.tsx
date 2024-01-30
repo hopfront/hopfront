@@ -1,13 +1,14 @@
 import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
-import { getObjectHumanLabelValue, getObjectPropertyNames } from "@/app/lib/openapi/utils";
+import {getObjectHumanLabelProperty, getObjectPropertyNames, getSchemaExtension} from "@/app/lib/openapi/utils";
 import { Add } from "@mui/icons-material";
 import { Box, Chip, ChipDelete, Typography } from "@mui/joy";
-import { OpenAPIV3 } from "openapi-types";
 import { useEffect, useState } from "react";
 import { MarkdownFormHelperText } from "./MarkdownFormHelperText";
 import { ModalFormObject } from "../modal/ModalFormObject";
-import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
 import {ApiContext} from "@/app/lib/model/ApiContext";
+import {OpenAPIV3} from "openapi-types";
+import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
+import ReferenceObject = OpenAPIV3.ReferenceObject;
 
 interface SchemaObjectArrayInputProps {
     sx?: {}
@@ -75,7 +76,13 @@ export const SchemaObjectArrayInput = ({ sx, arrayUpdatableValue, arraySchema, d
     }
 
     function getItemLabel(item: { [key: string]: any }): String {
-        const humanKey = getObjectHumanLabelValue(item);
+        let itemSchemaExtension = undefined;
+
+        if (arraySchema.items.hasOwnProperty('$ref')) {
+            itemSchemaExtension = getSchemaExtension((arraySchema.items as ReferenceObject).$ref, apiContext);
+        }
+
+        const humanKey = getObjectHumanLabelProperty(item, itemSchemaExtension);
         const humanLabel = humanKey ? item[humanKey] : undefined;
         const firstKey = getObjectPropertyNames(item)[0]
         const firstValue = item[firstKey];

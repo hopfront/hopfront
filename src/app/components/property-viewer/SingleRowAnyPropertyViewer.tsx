@@ -5,12 +5,17 @@ import {SingleRowScalarPropertyViewer} from "@/app/components/property-viewer/Si
 import React, {ReactNode, useState} from "react";
 import {ResponsiveModal} from "../modal/ResponsiveModal";
 import {ApiContext, SchemaOrReference} from "@/app/lib/model/ApiContext";
-import {getReferenceObjectOrUndefined, resolveSchemaFromSchemaOrReference} from "@/app/lib/openapi/utils";
+import {
+    getReferenceObjectOrUndefined,
+    getSchemaExtension,
+    resolveSchemaFromSchemaOrReference
+} from "@/app/lib/openapi/utils";
 import {OpenAPIV3} from "openapi-types";
 import {Box} from "@mui/joy";
 import {ResponseSchemaSelectedObserver} from "@/app/lib/model/ResponseSchemaSelectedObserver";
 import ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
 import NonArraySchemaObject = OpenAPIV3.NonArraySchemaObject;
+import ReferenceObject = OpenAPIV3.ReferenceObject;
 
 export interface SingleRowAnyPropertyViewerProps {
     propertyValue: any
@@ -56,8 +61,15 @@ export const SingleRowAnyPropertyViewer = ({
                 fromObjectView={fromObjectView}
             />;
         } else if (typeof propertyValue === 'object') {
+            let schemaRef = undefined;
+
+            if (propertySchema?.hasOwnProperty('$ref')) {
+                schemaRef = getSchemaExtension((propertySchema as ReferenceObject).$ref, apiContext);
+            }
+
             return <SingleRowObjectPropertyViewer
                 property={propertyValue}
+                propertySchemaExtension={schemaRef}
                 loading={loading}
                 onClick={(event) => {
                     showNextLevelOfData(event, propertyValue)
