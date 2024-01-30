@@ -7,6 +7,9 @@ import {DashboardPanel} from "@/app/lib/model/dashboard/DashboardPanel";
 import React, {useState} from "react";
 import {ApiContext} from "@/app/lib/model/ApiContext";
 import {AuthenticationGuard} from "@/app/components/authentication/AuthenticationGuard";
+import {
+    DashboardPanelInputSourceConfigDataVariable
+} from "@/app/lib/model/dashboard/DashboardPanelInputSourceConfigDataVariable";
 
 interface AuthRequiredContext {
     operationId: string
@@ -44,11 +47,24 @@ export const DashboardPanelGrid = ({
         </AspectRatio>
     }
 
-    const panels = (dashboard?.panels || []).map(panel =>
-        <Box key={panel.id} sx={{mb: 2}}>
+    const panels = (dashboard?.panels || []).map(panel => {
+        const relevantVariables = variables.filter(v => {
+            const inputsUsingThisVariable = panel.config.inputs.filter(input => {
+                if (input.sourceConfig.type === "variable") {
+                    const inputVariableData = input.sourceConfig.data as DashboardPanelInputSourceConfigDataVariable;
+                    return inputVariableData.variableName === v.variable.name;
+                } else {
+                    return false;
+                }
+            });
+
+            return inputsUsingThisVariable.length > 0;
+        });
+
+        return <Box key={'panel-' + panel.id} sx={{mb: 2}}>
             <DashboardPanelGridItem
                 panel={panel}
-                variables={variables}
+                variables={relevantVariables}
                 refreshObserverRegistry={refreshObserverRegistry}
                 onAuthRequired={apiContext => {
                     if (authRequiredContext?.apiContext.apiSpec.id !== apiContext.apiSpec.id) {
@@ -61,7 +77,8 @@ export const DashboardPanelGrid = ({
                 onEditClick={() => onPanelEditClick(panel)}
                 onDeleteClick={() => onPanelDeleteClick(panel)}
                 onPanelTitleChanged={onPanelTitleChanged}/>
-        </Box>);
+        </Box>;
+    });
 
     if (authRequiredContext) {
         return (

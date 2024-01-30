@@ -88,6 +88,19 @@ export interface DashboardPanelGridItemProps {
     onPanelTitleChanged: (panel: DashboardPanel) => void
 }
 
+const areSameVariables = (newVariables: VariableWithValue[], previousVariables: VariableWithValue[]): boolean => {
+    for (const newVariable of newVariables) {
+        const matchingPreviousVariable = previousVariables.find(previousVariable =>
+            previousVariable.variable.name === newVariable.variable.name);
+
+        if (!matchingPreviousVariable || matchingPreviousVariable.value !== newVariable.value) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 export const DashboardPanelGridItem = ({
     panel,
     variables,
@@ -117,6 +130,7 @@ export const DashboardPanelGridItem = ({
     });
 
     const [refreshCount, setRefreshCount] = useState(0);
+    const [lastVariablesUsedForOperation, setLastVariablesUsedForOperation] = useState<VariableWithValue[]>([]);
 
     refreshObserverRegistry.addObserver({
         onRefresh: () => setRefreshCount(refreshCount + 1)
@@ -159,8 +173,32 @@ export const DashboardPanelGridItem = ({
             return;
         }
 
+
         debounceOperationExecution(operation, apiContext);
-    }, [apiContext, inputs, operation, refreshCount]);
+    }, [apiContext, operation, refreshCount]);
+
+    useEffect(() => {
+        if (!operation || !apiContext) {
+            return;
+        }
+
+        const parameterWithoutRequiredValue = inputs.parameters.find(p => {
+            return !p.value && p.parameter.required;
+        });
+
+        if (parameterWithoutRequiredValue) {
+            return;
+        }
+
+        // We do this to avoid refreshing the panel if input variables did not change.
+        if (areSameVariables(variables, lastVariablesUsedForOperation)) {
+            return;
+        } else {
+            setLastVariablesUsedForOperation(variables);
+        }
+
+        debounceOperationExecution(operation, apiContext);
+    }, [inputs]);
 
     useEffect(() => {
         if (apiContext && authStatus.isAuthenticationRequired && !authStatus.isAuthenticated) {
