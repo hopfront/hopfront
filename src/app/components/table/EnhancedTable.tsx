@@ -6,7 +6,7 @@ import {
 import { ArrayItemActionsMenu } from "@/app/components/operation/ArrayItemActionsMenu";
 import { SingleRowAnyPropertyViewer } from "@/app/components/property-viewer/SingleRowAnyPropertyViewer";
 import { ArrayContext } from "@/app/context/ArrayContext";
-import { AddCircle, AutoFixHigh, KeyboardArrowLeft, KeyboardArrowRight, Settings } from "@mui/icons-material";
+import { AutoFixHigh, KeyboardArrowLeft, KeyboardArrowRight, Settings } from "@mui/icons-material";
 import { Dropdown, ListItemDecorator, Menu, MenuButton, MenuItem, Sheet, Stack, SvgIcon } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
@@ -444,7 +444,10 @@ export const EnhancedTable = ({
                 onClose={() => setShowAddOperationModal(false)}
                 sampleObject={(rows || []).length > 0 && rows[0]}
                 objectSchema={schema.items}
-                onConfigurationUpdate={onRefreshNeeded}
+                onConfigurationUpdate={() => {
+                    setShowAddOperationModal(false);
+                    onRefreshNeeded();
+                }}
                 apiContext={apiContext} />}
         </ArrayContext.Provider>
     );
