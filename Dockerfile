@@ -1,5 +1,7 @@
 FROM node:18-alpine AS base
 
+ENV NODE_ENV production
+
 ARG app_version
 ENV NEXT_PUBLIC_APP_VERSION=$app_version
 
@@ -34,6 +36,7 @@ RUN \
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
@@ -51,7 +54,6 @@ RUN yarn build
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 ENV NEXT_TELEMETRY_DISABLED 1
 
