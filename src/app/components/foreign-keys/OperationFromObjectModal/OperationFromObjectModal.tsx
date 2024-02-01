@@ -94,7 +94,7 @@ export const OperationFromObjectModal = ({
         }).catch(reason => {
             setError(reason);
             setSubmitting(false);
-            showSnackbar(EventType.Success, `Failed to update configuration: ${reason.toLocaleString()}`);
+            showSnackbar(EventType.Error, `Failed to update configuration: ${reason.toLocaleString()}`);
         })
     };
 
