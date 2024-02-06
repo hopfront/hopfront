@@ -19,7 +19,7 @@ export default function Page() {
 
     const dashboardId = params['dashboardId'];
 
-    usePageView("dashboard-page");
+    usePageView("/dashboards/:id");
 
     useEffect(() => {
         setLoading(true);

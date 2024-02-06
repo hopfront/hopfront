@@ -26,12 +26,11 @@ export default function Page() {
     const router = useRouter();
     const adminContext = useContext(AdminContext);
 
-    usePageView("dashboard-list-page");
+    usePageView("/dashboards");
 
     const onAddDashboardClick = () => {
         registerEvent({
-            category: "dashboard",
-            action: "dashboard-add-clicked"
+            name: "dashboard-add-clicked"
         });
 
         setAddDashboardLoading(true);

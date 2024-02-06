@@ -24,7 +24,7 @@ export default function Page() {
     const initialSizes = sizesCacheString ? (JSON.parse(sizesCacheString) as SerializableSizes).sizes : [33, 66];
     const [sizes, setSizes] = useState<number[]>(initialSizes);
 
-    usePageView("browse-page");
+    usePageView("/browse");
 
     const onSizesChange = useDebouncedCallback(
         (sizes: number[]) => {

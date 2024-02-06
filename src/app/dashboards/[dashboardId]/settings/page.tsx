@@ -34,7 +34,7 @@ export default function Page() {
     const { showSnackbar, Snackbar } = useSnackbar();
     const [confirmModalProps, setConfirmModalProps] = useState<ConfirmModalProps | undefined>();
 
-    usePageView("dashboard-settings-page");
+    usePageView("/dashboards/:id/settings");
 
     function redirectToVariablePage(variable: DashboardVariable) {
         router.push(`/dashboards/${dashboardId}/variables/${variable.name}`);

@@ -68,36 +68,40 @@ export const DashboardPage = ({ dashboard, loading, onSave }: DashboardPageProps
 
     const onSettingsClick = () => {
         registerEvent({
-            category: 'dashboard',
-            action: 'dashboard-settings-clicked',
-            name: dashboard?.id
+            name: 'dashboard-settings-clicked',
+            props: {
+                dashboardId: dashboard?.id || '?'
+            }
         });
         dashboard && router.push(`/dashboards/${dashboard.id}/settings`);
     };
 
     const onRefreshClick = () => {
         registerEvent({
-            category: 'dashboard',
-            action: 'dashboard-refresh-clicked',
-            name: dashboard?.id
+            name: 'dashboard-refresh-clicked',
+            props: {
+                dashboardId: dashboard?.id || '?'
+            }
         });
         refreshObserverRegistry.current.refreshAll();
     };
 
     const onNewPanelClick = () => {
         registerEvent({
-            category: 'dashboard',
-            action: 'dashboard-panel-add-clicked',
-            name: dashboard?.id
+            name: 'dashboard-panel-add-clicked',
+            props: {
+                dashboardId: dashboard?.id || '?'
+            }
         });
         setPanelConfigurationModalOpen({ isOpen: true, panelId: undefined });
     };
 
     const onPanelEditClick = (panel: DashboardPanel) => {
         registerEvent({
-            category: 'dashboard-panel',
-            action: 'dashboard-panel-edit-clicked',
-            name: panel.id
+            name: 'dashboard-panel-edit-clicked',
+            props: {
+                dashboardId: dashboard?.id || '?'
+            }
         });
         setPanelConfigurationModalOpen({ isOpen: true, panelId: panel.id });
     };
@@ -106,9 +110,10 @@ export const DashboardPage = ({ dashboard, loading, onSave }: DashboardPageProps
         if (!dashboard) return;
 
         registerEvent({
-            category: 'dashboard-panel',
-            action: 'dashboard-panel-delete-clicked',
-            name: panel.id,
+            name: 'dashboard-panel-delete-clicked',
+            props: {
+                dashboardId: dashboard?.id || '?'
+            }
         });
 
         setConfirmModalProps({
@@ -118,9 +123,10 @@ export const DashboardPage = ({ dashboard, loading, onSave }: DashboardPageProps
                 setConfirmModalProps(undefined);
 
                 registerEvent({
-                    category: 'dashboard-panel',
-                    action: 'dashboard-panel-deleted',
-                    name: panel.id
+                    name: 'dashboard-panel-deleted',
+                    props: {
+                        dashboardId: dashboard?.id || '?'
+                    }
                 });
             },
             onCancel: () => setConfirmModalProps(undefined),
@@ -143,9 +149,10 @@ export const DashboardPage = ({ dashboard, loading, onSave }: DashboardPageProps
     const onNewVariableClicked = () => {
         if (!dashboard) return;
         registerEvent({
-            category: 'dashboard',
-            action: 'dashboard-variable-add-clicked',
-            name: dashboard.id
+            name: 'dashboard-variable-add-clicked',
+            props: {
+                dashboardId: dashboard?.id || '?'
+            }
         });
         const variableName = buildNewVariableName(dashboard);
         router.push(`/dashboards/${dashboard.id}/variables/${variableName}`);
@@ -154,8 +161,10 @@ export const DashboardPage = ({ dashboard, loading, onSave }: DashboardPageProps
     const onSaveTitle = (title: string) => {
         if (!dashboard) return;
         registerEvent({
-            category: 'dashboard',
-            action: 'dashboard-title-saved',
+            name: 'dashboard-title-saved',
+            props: {
+                dashboardId: dashboard?.id || '?'
+            }
         });
         onSave({ ...dashboard, title: title });
     }
@@ -163,8 +172,10 @@ export const DashboardPage = ({ dashboard, loading, onSave }: DashboardPageProps
     const onPanelTitleChanged = (panel: DashboardPanel) => {
         if (!dashboard) return;
         registerEvent({
-            category: 'dashboard-panel',
-            action: 'dashboard-panel-title-saved',
+            name: 'dashboard-panel-title-saved',
+            props: {
+                dashboardId: dashboard?.id || '?'
+            }
         });
         onSave({ ...dashboard, panels: dashboard.panels.map(p => p.id === panel.id ? panel : p) });
     }
@@ -256,9 +267,10 @@ export const DashboardPage = ({ dashboard, loading, onSave }: DashboardPageProps
                     {showAdminContent ?
                         <PanelPlaceholder onClick={() => {
                             registerEvent({
-                                category: 'dashboard',
-                                action: 'dashboard-panel-placeholder-clicked',
-                                name: dashboard?.id
+                                name: 'dashboard-panel-placeholder-clicked',
+                                props: {
+                                    dashboardId: dashboard?.id || '?'
+                                }
                             });
                             setPanelConfigurationModalOpen({ isOpen: true, panelId: undefined });
                         }} /> :

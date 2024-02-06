@@ -58,12 +58,12 @@ export const OperationListSidebar = ({ selectedOperation, onOperationSelected }:
     );
 
     const onSearchOperation = debounce((event: ChangeEvent<HTMLInputElement>) => {
-        registerEvent({ category: 'browse', action: 'browse-search-operation' });
+        registerEvent({ name: 'browse-search-operation' });
         setSearch(event.target.value);
     }, 500);
 
     const onApiFilterSelected = (apiSpec: ApiSpec | undefined) => {
-        registerEvent({ category: 'browse', action: 'browse-filter-api' });
+        registerEvent({ name: 'browse-filter-api' });
         BrowseLocalStorage.setFilter(apiSpec?.id);
         setApiSpecFilter(apiSpec?.id);
     };

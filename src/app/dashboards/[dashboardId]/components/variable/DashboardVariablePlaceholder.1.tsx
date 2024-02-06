@@ -24,11 +24,7 @@ export default function DashboardVariablePlaceholder({ dashboardId, variables }:
     }
 
     const onVariablePlaceholderClicked = () => {
-        registerEvent({
-            category: 'dashboard',
-            action: 'dashboard-variable-placeholder-clicked',
-            name: dashboardId,
-        });
+        registerEvent({ name: 'dashboard-variable-placeholder-clicked' });
         router.push(`/dashboards/${dashboardId}/settings`);
     }
 

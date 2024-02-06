@@ -39,7 +39,7 @@ export default function Page() {
     const { dashboard, error: dashboardError, isLoading, mutate } = useDashboard(dashboardId);
     const [variable, setVariable] = useState<DashboardVariable>(dashboard?.variables.find(v => v.name === variableName) || { name: variableName } as DashboardVariable);
 
-    usePageView("dashboard-variable-page");
+    usePageView("/dashboards/:id/variables/:name");
 
     useEffect(() => {
         const variable = dashboard?.variables.find(v => v.name === variableName);

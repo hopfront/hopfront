@@ -1,62 +1,57 @@
-import {useMatomo} from "@jonkoops/matomo-tracker-react";
 import {getHopFrontVersion} from "@/app/lib/openapi/utils";
-import {TrackPageViewParams} from "@jonkoops/matomo-tracker/src/types";
 import {useEffect, useRef} from "react";
 import {useInstanceProperties} from "@/app/hooks/useInstanceProperties";
-
-type EventCategory = "browse" | "dashboard" | "dashboard-panel" | "onboarding" | "operation" | "settings";
+import Plausible from "plausible-tracker";
 
 export interface RegisterEventParams {
-    category: EventCategory
-    action: string
-    name?: string
+    name: string
+    props?: { readonly [propName: string]: string | number | boolean }
 }
 
 export const useAnalytics = () => {
-    const {trackEvent, trackPageView} = useMatomo();
+    // We keep the matomo env var to be backward compatible.
+    const telemetryDisabled = process.env.NEXT_PUBLIC_TELEMETRY_DISABLED === '1' || process.env.NEXT_PUBLIC_MATOMO_DISABLED;
+
+    const {trackPageview, trackEvent} = Plausible({
+        apiHost: 'https://us-central1-witick-a8f14.cloudfunctions.net/ProxyPlausible',
+        domain: 'app.hopfront.com',
+        trackLocalhost: true
+    })
+
     const {data: properties} = useInstanceProperties();
     const pageViewStateRef = useRef<Record<string, boolean>>({});
 
-    const usePageView = (documentTitle: string) => {
-        useEffect(() => {
-            if (!pageViewStateRef.current[documentTitle]) {
-                if (properties?.instanceId) {
-                    trackPageView({
-                        documentTitle: documentTitle,
-                        customDimensions: [
-                            {
-                                id: 1,
-                                value: properties.instanceId
-                            },
-                            {
-                                id: 2,
-                                value: getHopFrontVersion(),
-                            }
-                        ],
-                    } as TrackPageViewParams);
+    const usePageView = (path: string) => {
+        const url = new URL(window.location.href);
 
-                    pageViewStateRef.current[documentTitle] = true;
+        useEffect(() => {
+            if (telemetryDisabled) {
+                return;
+            }
+
+            if (!pageViewStateRef.current[path]) {
+                if (properties?.instanceId) {
+                    trackPageview({
+                        url: url.hostname + path,
+                    });
+                    pageViewStateRef.current[path] = true;
                 }
             }
-        }, [documentTitle]);
+        }, [path, url.hostname]);
     };
 
     const registerEvent = (params: RegisterEventParams) => {
+        if (telemetryDisabled) {
+            return;
+        }
+
         if (properties?.instanceId) {
-            trackEvent({
-                category: params.category,
-                name: params.name,
-                action: params.action,
-                customDimensions: [
-                    {
-                        id: 3,
-                        value: properties.instanceId
-                    },
-                    {
-                        id: 4,
-                        value: getHopFrontVersion(),
-                    }
-                ]
+            trackEvent(params.name, {
+                props: {
+                    ...params.props,
+                    instanceId: properties.instanceId,
+                    appVersion: getHopFrontVersion(),
+                }
             });
         }
     };

@@ -54,7 +54,8 @@ export default function Onboarding({steps: initialSteps, apiSpecs, onOnboardingC
     const {mutate: mutateProperties} = useInstanceProperties();
     const {usePageView, registerEvent} = useAnalytics();
     const adminContext = useContext(AdminContext);
-    usePageView('onboarding');
+
+    usePageView('/onboarding');
 
     const [steps, setSteps] = useState<OnBoardingStep[]>(initialSteps);
     const initialActiveStep = steps.find(step => step.status === 'TODO' || step.status === 'SEEN') ?? steps[0];
@@ -97,9 +98,10 @@ export default function Onboarding({steps: initialSteps, apiSpecs, onOnboardingC
 
     const onNextClicked = () => {
         registerEvent({
-            category: "onboarding",
-            action: "onboarding-next-clicked",
-            name: "onboarding-step-" + activeStep.code
+            name: "onboarding-next-clicked",
+            props: {
+                stepId: "onboarding-step-" + activeStep.code
+            }
         });
 
         if (activeStep.code !== 'api-connectivity' && activeStep.code != 'api-servers') {
@@ -116,9 +118,10 @@ export default function Onboarding({steps: initialSteps, apiSpecs, onOnboardingC
         e?.stopPropagation();
 
         registerEvent({
-            category: "onboarding",
-            action: "onboarding-skip-clicked",
-            name: "onboarding-step-" + activeStep.code
+            name: "onboarding-next-clicked",
+            props: {
+                stepId: "onboarding-step-" + activeStep.code
+            }
         });
 
         const skippedSteps: OnBoardingStepCode[] = [];
@@ -142,9 +145,10 @@ export default function Onboarding({steps: initialSteps, apiSpecs, onOnboardingC
         const step = steps.find(step => step.code === type);
 
         registerEvent({
-            category: "onboarding",
-            action: "onboarding-step-clicked",
-            name: "onboarding-step-" + step,
+            name: "onboarding-next-clicked",
+            props: {
+                stepId: "onboarding-step-" + step
+            }
         });
 
         if (step && ['SEEN', 'DONE', 'SKIPPED', 'FAILED'].includes(step.status)) {
@@ -155,10 +159,7 @@ export default function Onboarding({steps: initialSteps, apiSpecs, onOnboardingC
     const onOnboardingCompletedClicked = () => {
         setSubmitOnboardingLoading(true);
 
-        registerEvent({
-            category: "onboarding",
-            action: "onboarding-completed-clicked",
-        });
+        registerEvent({ name: "onboarding-completed-clicked" });
 
         if (apiContext) {
             closeOnboarding();

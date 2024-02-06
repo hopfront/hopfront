@@ -10,7 +10,7 @@ export default function Page() {
     const router = useRouter();
     const { usePageView } = useAnalytics();
 
-    usePageView("api-spec-import-page");
+    usePageView("/settings/apis/imports");
 
     const onSubmitSucceeded = (_: ImportMode, apiSpecId: string) => {
         router.push(`/api-specs/${apiSpecId}/settings`);

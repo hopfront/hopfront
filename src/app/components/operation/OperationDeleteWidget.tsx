@@ -46,11 +46,7 @@ export const OperationDeleteWidget = ({
             return; // We don't execute the request if any parameter is missing its value.
         }
 
-        registerEvent({
-            category: 'operation',
-            action: 'execute',
-            name: operation.method,
-        });
+        registerEvent({ name: 'operation-execute' });
 
         setError(undefined);
         setResponse(undefined);

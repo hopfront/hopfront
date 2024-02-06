@@ -20,7 +20,7 @@ export default function Page() {
     const { data, error, isLoading } = useApiSpecs();
     const adminContext = useContext(AdminContext);
 
-    usePageView("settings-page");
+    usePageView("/settings");
 
     if (isLoading || adminContext.isLoading) {
         return (<CenteredThreeDotsLoader />)

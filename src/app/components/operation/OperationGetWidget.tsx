@@ -90,11 +90,7 @@ export const OperationGetWidget = ({
         setLoading(true);
         setError(undefined);
 
-        registerEvent({
-            category: 'browse',
-            action: 'browse',
-            name: operation.method,
-        });
+        registerEvent({ name: 'browse' });
 
         OperationService.executeOperation(operationInputs, operation, apiContext)
             .then(response => {

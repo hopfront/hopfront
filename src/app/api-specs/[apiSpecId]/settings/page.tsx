@@ -45,7 +45,7 @@ export default function Page() {
     const [deleteApiLoading, setDeleteApiLoading] = useState(false);
     const [deleteError, setDeleteError] = useState<Problem | undefined>();
 
-    usePageView("api-spec-settings-page");
+    usePageView("/api-specs/:id/settings");
 
     if (adminContext.isLoading) {
         return <CenteredThreeDotsLoader />;

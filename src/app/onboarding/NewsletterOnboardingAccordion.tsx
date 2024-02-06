@@ -33,11 +33,7 @@ export default function NewsletterOnboardingAccordion(
 
     const onNewsletterEmailSubscribed = () => {
         if (isValidEmail(newsletterEmail)) {
-            registerEvent({
-                category: "onboarding",
-                action: "newsletter-subscribed",
-                name: newsletterEmail,
-            });
+            registerEvent({ name: 'newsletter-subscribed' });
             setUserSubscribedToNewsletter(true);
             onStepCompleted();
         }
