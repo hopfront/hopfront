@@ -38,12 +38,17 @@ export const OAuth2AuthenticationGuard = ({securityScheme, postLogin, children}:
         return <ErrorAlert error={propertiesError}/>;
     }
 
+    // We need to remove query params from the redirect_uri.
+    const redirectUri = window.location.href.indexOf('?') >= 0
+        ? window.location.href.split('?')[0]
+        : window.location.href;
+
     return (
         <AuthProvider authConfig={{
             clientId: `hopfront-${properties.instanceId}`,
             authorizationEndpoint: authorizationCodeFlow.authorizationUrl,
             tokenEndpoint: authorizationCodeFlow.tokenUrl,
-            redirectUri: window.location.href,
+            redirectUri: redirectUri,
             scope: Object.keys(authorizationCodeFlow.scopes).join(' '),
             storage: 'local',
             storageKeyPrefix: buildSecuritySchemeLocalStorageKeyPrefix(securityScheme.key),
