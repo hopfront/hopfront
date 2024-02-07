@@ -10,10 +10,13 @@ export interface RegisterEventParams {
 
 export const useAnalytics = () => {
     // We keep the matomo env var to be backward compatible.
-    const telemetryDisabled = process.env.NEXT_PUBLIC_TELEMETRY_DISABLED === '1' || process.env.NEXT_PUBLIC_MATOMO_DISABLED;
+    const telemetryDisabled = process.env.NEXT_PUBLIC_TELEMETRY_DISABLED === '1' || process.env.NEXT_PUBLIC_MATOMO_DISABLED === 'true';
+
+    const instanceUrl = new URL(window.location.href);
+    const eventApiHost = instanceUrl.protocol + '//' + instanceUrl.host;
 
     const {trackPageview, trackEvent} = Plausible({
-        apiHost: 'https://us-central1-witick-a8f14.cloudfunctions.net/ProxyPlausible',
+        apiHost: eventApiHost,
         domain: 'app.hopfront.com',
         trackLocalhost: true
     })
@@ -31,8 +34,9 @@ export const useAnalytics = () => {
 
             if (!pageViewStateRef.current[path]) {
                 if (properties?.instanceId) {
+                    const pageUrl = url.hostname + path;
                     trackPageview({
-                        url: url.hostname + path,
+                        url: pageUrl,
                     });
                     pageViewStateRef.current[path] = true;
                 }
