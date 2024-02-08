@@ -44,7 +44,7 @@ export const OperationParameterFormControlInput = ({
                         parameter: parameter.parameter,
                         value: value,
                         readonly: parameter.readonly,
-                    });
+                    } as ParameterWithValue);
                 }
             }}
             label={parameter.parameter.name}

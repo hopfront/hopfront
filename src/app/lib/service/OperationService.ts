@@ -41,7 +41,9 @@ const buildUrl = (
                 queryParams += '?'
             }
 
-            queryParams += `${p.parameter.name}=${p.value}`
+            const value = typeof p.value === "object" ? JSON.stringify(p.value) : p.value.toString();
+
+            queryParams += `${p.parameter.name}=${value}`
         });
 
     url = url + queryParams;
