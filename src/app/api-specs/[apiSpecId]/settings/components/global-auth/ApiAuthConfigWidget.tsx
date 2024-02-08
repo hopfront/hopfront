@@ -5,14 +5,15 @@ import {AuthLocalStorage} from "@/app/lib/localstorage/AuthLocalStorage"
 import {ApiContext} from "@/app/lib/model/ApiContext"
 import {UpdatableValue} from "@/app/lib/model/UpdatableValue"
 import {KeyboardArrowDown} from "@mui/icons-material"
-import {Box, CircularProgress, Typography} from "@mui/joy"
+import {Box, CircularProgress, Link, Typography} from "@mui/joy"
 import Option from '@mui/joy/Option'
 import Select, {selectClasses} from "@mui/joy/Select"
-import {useEffect, useMemo, useState} from "react"
+import React, {useEffect, useMemo, useState} from "react"
 import {useDebouncedCallback} from "use-debounce"
 import AuthenticationTypeComponent from "../AuthenticationTypeComponent"
 import {SecuritySchemeList} from "@/app/api-specs/[apiSpecId]/settings/components/security-schemes/SecuritySchemeList";
 import FormControl from "@mui/joy/FormControl";
+import {InfoAlert} from "@/app/components/alert/InfoAlert";
 
 interface ApiAuthenticationProps {
     apiContext: ApiContext,
@@ -67,6 +68,13 @@ export const ApiAuthConfigWidget = ({apiContext, sx}: ApiAuthenticationProps) =>
 
     return (
         <Box sx={{...sx}}>
+            <InfoAlert title="Need help configuring your API's authentication?" sx={{mb: 2}}>
+                <Typography level="body-sm">
+                    You can either:<br/>
+                    - create a <Link href="https://github.com/hopfront/hopfront/issues/" target="_blank">GitHub issue</Link>,<br/>
+                    - send an email at:<Link href="mailto:support@hopfront.com">support@hopfront.com</Link>.<br/>
+                </Typography>
+            </InfoAlert>
             <SecuritySchemeList apiContext={apiContext}/>
             <form style={{marginTop: '24px'}}>
                 <Box sx={{display: 'flex', alignItems: 'center', pb: 1}}>
