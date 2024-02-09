@@ -1,34 +1,34 @@
-import { OperationParameterFetchValueModal } from "@/app/components/foreign-keys/OperationParameterFetchValueModal";
-import { InputMenu } from "@/app/components/input/InputMenu";
-import { SchemaFormControlInput } from "@/app/components/input/SchemaFormControlInput";
-import { ParameterExtension } from "@/app/lib/dto/OpenApiExtensions";
-import { ApiContext } from "@/app/lib/model/ApiContext";
-import { ParameterWithValue } from "@/app/lib/model/ParameterWithValue";
-import { StandaloneOperation } from "@/app/lib/model/StandaloneOperation";
-import { AutoFixHigh, Settings } from "@mui/icons-material";
-import { Box } from "@mui/joy";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import {OperationParameterFetchValueModal} from "@/app/components/foreign-keys/OperationParameterFetchValueModal";
+import {InputMenu} from "@/app/components/input/InputMenu";
+import {SchemaFormControlInput} from "@/app/components/input/SchemaFormControlInput";
+import {ParameterExtension} from "@/app/lib/dto/OpenApiExtensions";
+import {ApiContext} from "@/app/lib/model/ApiContext";
+import {ParameterWithValue} from "@/app/lib/model/ParameterWithValue";
+import {StandaloneOperation} from "@/app/lib/model/StandaloneOperation";
+import {AutoFixHigh, Settings} from "@mui/icons-material";
+import {Box} from "@mui/joy";
+import {useRouter} from "next/navigation";
+import {useState} from "react";
 
 export interface OperationParameterFormControlInputProps {
     operation: StandaloneOperation
     parameter: ParameterWithValue
     parameterExtensions?: ParameterExtension[]
     onValueChanged: (value: ParameterWithValue) => void
-    disabled?: boolean
+    readonly: boolean
     apiContext: ApiContext
 }
 
 const INPUT_MARGIN_BOTTOM = 2;
 
 export const OperationParameterFormControlInput = ({
-    operation,
-    parameter,
-    parameterExtensions = [],
-    onValueChanged,
-    disabled,
-    apiContext
-}: OperationParameterFormControlInputProps) => {
+                                                       operation,
+                                                       parameter,
+                                                       parameterExtensions = [],
+                                                       onValueChanged,
+                                                       readonly,
+                                                       apiContext
+                                                   }: OperationParameterFormControlInputProps) => {
 
     const router = useRouter();
     const [fetchValueModalOpen, setFetchValueModalOpen] = useState(false);
@@ -50,16 +50,15 @@ export const OperationParameterFormControlInput = ({
             label={parameter.parameter.name}
             schema={parameter.parameter.schema}
             required={parameter.parameter.required || false}
-            disabled={disabled}
             menu={menu}
             foreignKeys={parameterExtension?.foreignKeys ?? []}
-            apiContext={apiContext} />;
+            apiContext={apiContext}/>;
     }
 
     return (
         <Box
             key={`${operation.path}:${parameter.parameter.name}`}
-            sx={{ mb: INPUT_MARGIN_BOTTOM }}>
+            sx={{mb: INPUT_MARGIN_BOTTOM}}>
             {buildSchemaFormControlInput({
                 icon: Settings,
                 items: [{
@@ -78,7 +77,7 @@ export const OperationParameterFormControlInput = ({
                     router.refresh();
                 }}
                 inputWithoutForeignKeyPreview={buildSchemaFormControlInput(undefined)}
-                apiContext={apiContext} />
+                apiContext={apiContext}/>
         </Box>
     );
 }

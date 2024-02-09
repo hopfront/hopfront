@@ -105,7 +105,7 @@ export const OperationInputForm = ({
                 parameters={operationInputs.parameters || []}
                 extensions={operationExtension?.parameters || []}
                 onValueChanged={onParametersChanged}
-                disabled={loading}
+                readonly={loading}
                 apiContext={apiContext} />
 
             {arraySchemaObject &&

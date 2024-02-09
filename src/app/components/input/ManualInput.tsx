@@ -53,7 +53,7 @@ export const ManualInput = ({
             placeholder={placeholder}
             required={required}
             endDecorator={endDecorator}
-            disabled={disabled || readOnly}
+            disabled={disabled}
             onChange={(event) => {
                 setValue(event.target.value);
                 const sanitizedValue = type === "number" ? event.target.valueAsNumber : event.target.value;

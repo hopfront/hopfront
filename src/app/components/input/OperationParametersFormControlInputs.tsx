@@ -10,7 +10,7 @@ export interface ParametersFormControlInputsProps {
     parameters: ParameterWithValue[],
     extensions: ParameterExtension[],
     onValueChanged: (parameter: ParameterWithValue) => void,
-    disabled: boolean,
+    readonly: boolean,
     apiContext: ApiContext
 }
 
@@ -19,7 +19,7 @@ export const OperationParametersFormControlInputs = ({
                                                          parameters,
                                                          extensions,
                                                          onValueChanged,
-                                                         disabled,
+                                                         readonly,
                                                          apiContext
                                                      }: ParametersFormControlInputsProps) => {
     return (
@@ -31,7 +31,7 @@ export const OperationParametersFormControlInputs = ({
                     parameter={param}
                     parameterExtensions={extensions}
                     onValueChanged={onValueChanged}
-                    disabled={disabled}
+                    readonly={readonly}
                     apiContext={apiContext}/>
             })}
         </Stack>
