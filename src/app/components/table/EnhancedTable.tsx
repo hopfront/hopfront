@@ -50,7 +50,7 @@ function getHeadCells(array: object[], arraySchemaObject: ArraySchemaObject | un
     const arrayItemsSchemaReferenceObject =
         arraySchemaObject && getReferenceObjectOrUndefined(arraySchemaObject.items);
 
-    const arrayItemsSchemaExtension = apiContext.extension.schemas
+    const arrayItemsSchemaExtension = (apiContext.extension?.schemas || [])
         .find(schemaExtension => schemaExtension.schemaRef === arrayItemsSchemaReferenceObject?.$ref);
 
     // We only want to "scan" the first X elements to avoid performance issues (at the moment).

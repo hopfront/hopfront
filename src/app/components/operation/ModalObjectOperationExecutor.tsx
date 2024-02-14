@@ -30,7 +30,7 @@ export const ModalObjectOperationExecutor = ({
                                                  apiContext
                                              }: ModalObjectOperationExecutorProps) => {
 
-    const operationExtension = apiContext.extension.operations.find(op =>
+    const operationExtension = (apiContext.extension?.operations || []).find(op =>
         op.operationId === operation.getOperationId());
 
     const schemaReference = getReferenceObjectOrUndefined(objectSchema);
@@ -80,7 +80,7 @@ export const ModalObjectOperationExecutor = ({
             const body: any = {};
             const readonlyProperties: string[] = [];
 
-            apiContext.extension.schemas
+            (apiContext.extension?.schemas || [])
                 .filter(schemaExtension => schemaExtension.schemaRef === schemaReference?.$ref)
                 .flatMap(objectSchemaExtension => objectSchemaExtension.properties)
                 .forEach(objectSchemaExtensionProperty => {
@@ -92,7 +92,7 @@ export const ModalObjectOperationExecutor = ({
                         });
                 });
 
-            apiContext.extension.schemas
+            (apiContext.extension?.schemas || [])
                 .filter(schemaExtension => schemaExtension.schemaRef === requestBodyMainSchemaReference?.$ref)
                 .flatMap(requestBodySchemaExtension => requestBodySchemaExtension.properties)
                 .forEach(requestBodySchemaExtensionProperty => {

@@ -23,7 +23,7 @@ export const ObjectView = ({object, schemaRef, loading = false, apiContext, resp
     }
 
     const schemaObject = schemaRef && getSchemaByRef(schemaRef, apiContext.apiSpec.document);
-    const schemaExtension = apiContext.extension.schemas.find(se => se.schemaRef === schemaRef);
+    const schemaExtension = (apiContext.extension?.schemas || []).find(se => se.schemaRef === schemaRef);
 
     const rows: ReactNode[] = Object.keys(object).flatMap(objectKey => {
         const propertySchema = (schemaObject && schemaObject.properties)

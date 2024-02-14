@@ -13,6 +13,7 @@ export default function Page() {
     const [updateSucceededModal, setUpdateSucceededModal] = useState(false);
 
     const onSubmitSucceeded = () => {
+        console.log(`Successfully updated API spec with id=${apiSpecId}`);
         setUpdateSucceededModal(true);
     }
 

@@ -39,6 +39,11 @@ export class OpenAPIRepository {
 
     public saveSchemaExtension(apiSpecId: string, newSchemaExtension: SchemaExtension) {
         const existingExtension = this.getExtension(apiSpecId);
+
+        if (!existingExtension) {
+            throw new Error('Operation extension is not ready to be modified');
+        }
+
         const updateSchemaExtensions = existingExtension.schemas
             .map(existingSchemaExtension => existingSchemaExtension.schemaRef === newSchemaExtension.schemaRef
                 ? newSchemaExtension
@@ -58,6 +63,10 @@ export class OpenAPIRepository {
         foreignKey: ForeignKey) {
 
         const apiExtension = this.getExtension(apiSpecId);
+
+        if (!apiExtension) {
+            throw new Error('Operation extension is not ready to be modified');
+        }
 
         const existingOperationExtension = apiExtension.operations
             .find(operationExtension => operationExtension.operationId === operationId);
@@ -104,6 +113,10 @@ export class OpenAPIRepository {
 
         const apiExtension = this.getExtension(apiSpecId);
 
+        if (!apiExtension) {
+            throw new Error('Operation extension is not ready to be modified');
+        }
+
         const existingSchemaExtension = apiExtension.schemas.find(schemaExtension => schemaExtension.schemaRef === schemaRef);
 
         if (existingSchemaExtension) {
@@ -140,6 +153,11 @@ export class OpenAPIRepository {
 
     saveOperationExtension(apiSpecId: string, newOperationExtension: OperationExtension) {
         const existingExtension = this.getExtension(apiSpecId);
+
+        if (!existingExtension) {
+            throw new Error('Operation extension is not ready to be modified');
+        }
+
         const updatedOperationExtensions = existingExtension.operations
             .map(operation => operation.operationId === newOperationExtension.operationId
                 ? newOperationExtension
@@ -155,6 +173,10 @@ export class OpenAPIRepository {
     saveServersExtension(apiSpecId: string, servers: ServerObject[]) {
         const existingExtension = this.getExtension(apiSpecId);
 
+        if (!existingExtension) {
+            throw new Error('Operation extension is not ready to be modified');
+        }
+
         this.saveExtension(apiSpecId, {
             servers: servers,
             schemas: existingExtension.schemas,
@@ -166,17 +188,13 @@ export class OpenAPIRepository {
         writeFile(`${API_SPECS_DIRECTORY}/${id}`, SPEC_EXTENSION_FILE_NAME, JSON.stringify(extension));
     }
 
-    public getExtension(id: string): OpenAPIDocumentExtension {
+    public getExtension(id: string): OpenAPIDocumentExtension | undefined {
         try {
             const fileContentBuffer = readFile(`${API_SPECS_DIRECTORY}/${id}`, SPEC_EXTENSION_FILE_NAME);
             return JSON.parse(fileContentBuffer.toString());
         } catch (error: any) {
             console.log(`Failed to get extension for api spec with id=${id}`, error);
-            return {
-                servers: [],
-                schemas: [],
-                operations: [],
-            };
+            return undefined;
         }
     }
 

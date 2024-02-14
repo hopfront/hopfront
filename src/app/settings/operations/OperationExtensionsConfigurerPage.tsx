@@ -28,7 +28,7 @@ export const OperationsExtensionsConfigurerPage = ({apiContext, readOnly}: Opera
         <>
             <OperationSelect
                 onOperationSelected={operation => {
-                    const selectedOperationExtension = apiContext.extension.operations
+                    const selectedOperationExtension = (apiContext.extension?.operations || [])
                         .find(op => op.operationId === operation?.getOperationId());
 
                     setOperationExtension(selectedOperationExtension);

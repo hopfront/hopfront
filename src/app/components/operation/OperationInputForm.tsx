@@ -96,7 +96,7 @@ export const OperationInputForm = ({
     };
 
     const operationExtension =
-        apiContext.extension.operations.find(ext => ext.operationId === operation.getOperationId());
+        (apiContext.extension?.operations || []).find(ext => ext.operationId === operation.getOperationId());
 
     return (
         <form onSubmit={event => onFormSubmit(event)}>

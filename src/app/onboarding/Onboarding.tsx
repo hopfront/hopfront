@@ -61,7 +61,7 @@ export default function Onboarding({steps: initialSteps, apiSpecs, onOnboardingC
     const initialActiveStep = steps.find(step => step.status === 'TODO' || step.status === 'SEEN') ?? steps[0];
     const [activeStep, setActiveStep] = useState<OnBoardingStep>(initialActiveStep);
     const [apiSpecId, setApiSpecId] = useState<string>('');
-    const {data: apiContext, error, isLoading} = useApiContext(apiSpecId);
+    const {data: apiContext, error, isLoading, mutate} = useApiContext(apiSpecId);
     const [submitOnboardingLoading, setSubmitOnboardingLoading] = useState<boolean>(false);
     const [showImportSuccessAlert, setShowImportSuccessAlert] = useState(false);
     const [defaultServer, setDefaultServer] = useState<OpenAPIV3.ServerObject | undefined>(undefined);
@@ -184,6 +184,7 @@ export default function Onboarding({steps: initialSteps, apiSpecs, onOnboardingC
     }
 
     const onApiImportSucceeded = (_: ImportMode, apiSpecId: string) => {
+        console.log(`Successfully imported API spec with id=${apiSpecId}, next step...`);
         setShowImportSuccessAlert(true);
         setApiSpecId(apiSpecId);
         onNextClicked();

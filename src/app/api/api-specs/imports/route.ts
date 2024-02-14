@@ -1,7 +1,5 @@
 import { OpenAPIRepository } from "@/app/api/lib/repository/OpenAPIRepository";
 import OpenAPIParser from "@readme/openapi-parser";
-
-import { OpenAPIExtensionService } from "@/app/api/lib/service/OpenAPIExtensionService";
 import { problemResponse } from "@/app/api/lib/utils/utils";
 import { ApiSpec } from "@/app/lib/dto/ApiSpec";
 import { ApiSpecImportRequestBody } from "@/app/lib/dto/ApiSpecImportRequestBody";
@@ -42,10 +40,6 @@ const saveApiSpecFromUrl = async (
         const existingApiSpecs = OpenAPIRepository.getInstance().getApiSpecs();
         const apiSpecId = buildApiSpecId(existingApiSpecs);
         OpenAPIRepository.getInstance().saveApiSpec(apiSpecId, normalizedSpecText);
-        OpenAPIExtensionService.createDocumentExtension({
-            id: apiSpecId,
-            document: api
-        });
         return NextResponse.json({ 'apiSpecId': apiSpecId }, { status: 201, statusText: 'Created' });
     } else {
         return problemResponse(specValidationProblem);
@@ -63,10 +57,6 @@ const saveApiSpecFromPlainText = async (apiSpecPlainText: string, skipSpecImport
         const existingApiSpecs = OpenAPIRepository.getInstance().getApiSpecs();
         const apiSpecId = buildApiSpecId(existingApiSpecs);
         OpenAPIRepository.getInstance().saveApiSpec(apiSpecId, normalizedPlainText);
-        OpenAPIExtensionService.createDocumentExtension({
-            id: apiSpecId,
-            document: parsedOpenApi
-        });
         return NextResponse.json({ 'apiSpecId': apiSpecId }, { status: 201, statusText: 'Created' });
     } else {
         return problemResponse(specValidationProblem);

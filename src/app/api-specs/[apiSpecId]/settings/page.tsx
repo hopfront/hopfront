@@ -108,7 +108,10 @@ export default function Page() {
                         </ListItemContent>
                     </AccordionSummary>
                     <AccordionDetails>
-                        {apiContext && <ServerConfiguration apiContext={apiContext} defaultServer={defaultServer} sx={{ mt: 1 }} />}
+                        {apiContext && <ServerConfiguration
+                            apiContext={apiContext}
+                            defaultServer={defaultServer}
+                            sx={{ mt: 1 }} />}
                     </AccordionDetails>
                 </Accordion>
                 <Accordion>

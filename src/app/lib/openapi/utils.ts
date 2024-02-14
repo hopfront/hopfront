@@ -176,7 +176,7 @@ const getOperationFromSchemaReasonsFromSchema = (operation: OperationObject, sch
                     }
                 } as OperationFromSchemaReason];
             } else {
-                return apiContext.extension.schemas
+                return (apiContext.extension?.schemas || [])
                     .filter(schemaExtension => schemaExtension.schemaRef === operationRequestBodySchemaReference.$ref)
                     .flatMap(schemaExtension => {
                         return schemaExtension.properties.flatMap(propertyExtension => {
@@ -214,7 +214,7 @@ export const findRunnableOperationsFromSchema = (schemaRef: string, apiContext: 
 
     return getStandaloneOperations(apiContext.apiSpec)
         .flatMap(operation => {
-            const operationExtensions = apiContext.extension.operations.filter(
+            const operationExtensions = (apiContext.extension?.operations || []).filter(
                 operationExtension => operationExtension.operationId === operation.getOperationId());
 
             const parameterForeignKeys = operationExtensions
@@ -428,7 +428,7 @@ export const getObjectPropertyNames = (object: any): string[] => {
 }
 
 export const getSchemaExtension = (schemaRef: string, apiContext: ApiContext) => {
-    return apiContext.extension.schemas.find(s => s.schemaRef === schemaRef) || {
+    return (apiContext.extension?.schemas || []).find(s => s.schemaRef === schemaRef) || {
         schemaRef: schemaRef,
         properties: [],
     };

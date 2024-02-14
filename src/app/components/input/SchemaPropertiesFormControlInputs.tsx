@@ -21,7 +21,7 @@ export const SchemaPropertiesFormControlInputs = ({ schema, propertiesUpdatableV
     const schemaReferenceObject = getReferenceObjectOrUndefined(schema);
     const schemaObject = resolveSchemaFromSchemaOrReference(schema, apiContext.apiSpec.document);
     const schemaExtension = schemaReferenceObject &&
-        apiContext.extension.schemas.find(ext => ext.schemaRef === schemaReferenceObject.$ref);
+        (apiContext.extension?.schemas || []).find(ext => ext.schemaRef === schemaReferenceObject.$ref);
 
     const properties = getPropertiesFromSchema(schemaObject, apiContext.apiSpec.document);
 

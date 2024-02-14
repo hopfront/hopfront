@@ -20,8 +20,11 @@ export const ServerSelect = ({ defaultServer, apiContext, onServerSelected }: Se
             ServerLocalStorage.setApiServer(apiContext.apiSpec.id, selectedServer);
             onServerSelected?.(selectedServer);
         }
-    }, [selectedServer, apiContext.apiSpec.id])
-    const servers = getApiServers(apiContext.apiSpec.document).concat(apiContext.extension.servers);
+    }, [selectedServer, apiContext.apiSpec.id]);
+
+    const extensionServers = apiContext.extension?.servers || [];
+
+    const servers = getApiServers(apiContext.apiSpec.document).concat(extensionServers);
 
     return (
         <>

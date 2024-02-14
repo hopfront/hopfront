@@ -13,6 +13,7 @@ export default function Page() {
     usePageView("/settings/apis/imports");
 
     const onSubmitSucceeded = (_: ImportMode, apiSpecId: string) => {
+        console.log(`Successfully imported API spec with id=${apiSpecId}, redirecting...`);
         router.push(`/api-specs/${apiSpecId}/settings`);
     }
 

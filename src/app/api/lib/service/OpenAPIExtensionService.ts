@@ -81,7 +81,7 @@ function findForeignKeys(propertyParentObjectName: string, propertyName: string,
 
 export class OpenAPIExtensionService {
 
-    static createDocumentExtension(apiSpec: ApiSpec) {
+    static initializeDocumentExtension(apiSpec: ApiSpec) {
         const extension: OpenAPIDocumentExtension = {
             servers: [],
             schemas: this.createSchemaExtensions(apiSpec),

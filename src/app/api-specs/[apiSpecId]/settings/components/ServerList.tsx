@@ -1,7 +1,6 @@
-import {OpenAPIDocumentExtension} from "@/app/lib/dto/OpenApiExtensions";
 import {getApiServers, resolveApiBaseUrl} from "@/app/lib/openapi/utils";
 import {Delete} from "@mui/icons-material";
-import {Box, Button, IconButton, Input, List, ListDivider, ListItem, ListItemButton} from "@mui/joy";
+import {Box, Button, IconButton, Input, List, ListItem} from "@mui/joy";
 import Typography from "@mui/joy/Typography";
 import {OpenAPIV3} from "openapi-types";
 import {ChangeEvent, Fragment, useState} from "react";
@@ -11,6 +10,8 @@ import {EventType, useSnackbar} from "@/app/hooks/useSnackbar";
 import Document = OpenAPIV3.Document;
 import ServerObject = OpenAPIV3.ServerObject;
 import { Monospace } from "@/app/components/typography/Monospace";
+import {WarningAlert} from "@/app/components/alert/WarningAlert";
+import {InfoAlert} from "@/app/components/alert/InfoAlert";
 
 interface ServerListProps {
     apiContext: ApiContext
@@ -18,7 +19,7 @@ interface ServerListProps {
 
 export const ServerList = ({ apiContext }: ServerListProps) => {
     const apiSpecId = apiContext.apiSpec.id;
-    const extension = apiContext.extension as OpenAPIDocumentExtension;
+    const extension = apiContext.extension;
     const document = apiContext.apiSpec.document as Document;
     const {showSnackbar, Snackbar} = useSnackbar();
     const [saving, setSaving] = useState(false);
@@ -27,12 +28,14 @@ export const ServerList = ({ apiContext }: ServerListProps) => {
     const specUrls = getApiServers(document)
         .map((server) => resolveApiBaseUrl(server));
 
+    const extensionServers = extension?.servers || [];
+
     const onNewCustomUrlSubmit = (event: ChangeEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         if (baseUrl && baseUrl.length > 0) {
             setSaving(true);
-            const updated = [...extension.servers, { url: baseUrl }];
+            const updated = [...extensionServers, { url: baseUrl }];
             ExtensionApi.updateExtensionServers(apiSpecId, updated)
                 .then(() => showSnackbar(EventType.Success, 'Server added successfully'))
                 .finally(() => {
@@ -44,7 +47,7 @@ export const ServerList = ({ apiContext }: ServerListProps) => {
 
     const onCustomUrlDeleted = (server: ServerObject) => {
         setSaving(true);
-        const updated = extension.servers.filter((extServer) => extServer !== server);
+        const updated = extensionServers.filter((extServer) => extServer !== server);
         ExtensionApi.updateExtensionServers(apiSpecId, updated)
             .then(() => showSnackbar(EventType.Success, 'Deleted server successfully'))
             .finally(() => setSaving(false));
@@ -65,9 +68,8 @@ export const ServerList = ({ apiContext }: ServerListProps) => {
                     return (
                         <Fragment key={'specUrls-' + url}>
                             <ListItem sx={{mx: 1, px: 0}}>
-                                <Typography><Monospace>{url}</Monospace></Typography>
+                                <Typography>- <Monospace>{url}</Monospace></Typography>
                             </ListItem>
-                            {index < specUrls.length - 1 && <ListDivider inset='gutter' />}
                         </Fragment>
                     )
                 })}
@@ -77,11 +79,14 @@ export const ServerList = ({ apiContext }: ServerListProps) => {
                     textTransform="uppercase"
                     fontWeight="lg"
                     gutterBottom
-                    sx={{ mt: 1, ml: 1 }}>
+                    sx={{ mt: 2, ml: 1 }}>
                     Custom Servers
                 </Typography>
-                {extension.servers.length === 0 && <ListItem><Typography sx={{mx: 1, px: 0}} level="body-sm">No custom server urls</Typography></ListItem>}
-                {extension.servers.map((server, index) => {
+                <InfoAlert>
+                    You can enrich the OpenAPI specification by providing custom servers.
+                </InfoAlert>
+                {extensionServers.length === 0 && <ListItem><Typography sx={{mx: 1, px: 0}} level="body-sm">- None</Typography></ListItem>}
+                {extensionServers.map((server, index) => {
                     return (
                         <Fragment key={'extensionUrls-' + server.url}>
                             <ListItem
@@ -91,9 +96,8 @@ export const ServerList = ({ apiContext }: ServerListProps) => {
                                     <IconButton disabled={saving} size="sm" color="danger" onClick={() => onCustomUrlDeleted(server)}>
                                         <Delete />
                                     </IconButton>}>
-                                <Monospace>{server.url}</Monospace>
+                                <Monospace>- {server.url}</Monospace>
                             </ListItem>
-                            {index < extension.servers.length - 1 && <ListDivider inset='gutter' />}
                         </Fragment>
                     )
                 })}
@@ -110,16 +114,31 @@ export const ServerList = ({ apiContext }: ServerListProps) => {
                     <Input
                         sx={{ mt: 1 }}
                         value={baseUrl}
+                        disabled={!apiContext.extension}
                         onChange={(event) => {
                             setBaseUrl(event.target.value);
                         }} />
                     <Button
                         sx={{ mt: 1 }}
-                        disabled={((baseUrl?.length ?? 0) === 0) || saving}
+                        disabled={((baseUrl?.length ?? 0) === 0) || saving || !apiContext.extension}
                         type="submit">
                         Add
                     </Button>
                 </form>
+
+                {!apiContext.extension && <>
+                    <WarningAlert title="Your API specification is still being processed.">
+                        <Typography>
+                            <Typography>
+                                You will be able to add custom servers later in HopFront settings, when your API is done being processed.
+                            </Typography>
+                            <br/>
+                            <Typography>This might take a few minutes.</Typography>
+                        </Typography>
+                        <br/>
+                    </WarningAlert>
+                </>}
+
 
                 {Snackbar}
             </List>

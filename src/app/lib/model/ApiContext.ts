@@ -7,7 +7,7 @@ import SchemaObject = OpenAPIV3.SchemaObject;
 
 export interface ApiContext {
     apiSpec: ApiSpec
-    extension: OpenAPIDocumentExtension
+    extension: OpenAPIDocumentExtension | undefined
     config: ApiConfig
 }
 
