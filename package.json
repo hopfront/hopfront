@@ -39,7 +39,7 @@
     "react-oauth2-code-pkce": "^1.16.1",
     "recharts": "^2.11.0",
     "slugify": "^1.6.6",
-    "swr": "^2.2.4",
+    "swr": "^2.2.5",
     "typescript": "5.3.3",
     "use-debounce": "^10.0.0"
   }
