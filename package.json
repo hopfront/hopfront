@@ -12,7 +12,7 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@fontsource/public-sans": "^5.0.16",
-    "@mui/icons-material": "^5.15.9",
+    "@mui/icons-material": "^5.15.10",
     "@mui/joy": "^5.0.0-beta.28",
     "@readme/openapi-parser": "^2.5.0",
     "@types/jsonwebtoken": "^9.0.5",
