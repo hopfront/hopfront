@@ -14,6 +14,8 @@ import AuthenticationTypeComponent from "../AuthenticationTypeComponent"
 import {SecuritySchemeList} from "@/app/api-specs/[apiSpecId]/settings/components/security-schemes/SecuritySchemeList";
 import FormControl from "@mui/joy/FormControl";
 import {InfoAlert} from "@/app/components/alert/InfoAlert";
+import {WarningAlert} from "@/app/components/alert/WarningAlert";
+import {SecurityScheme} from "@/app/lib/model/SecurityScheme";
 
 interface ApiAuthenticationProps {
     apiContext: ApiContext,
@@ -66,6 +68,15 @@ export const ApiAuthConfigWidget = ({apiContext, sx}: ApiAuthenticationProps) =>
         }
     }, [currentAuth, initialAuth, apiContext.apiSpec.id])
 
+    const securitySchemeComponents = (apiContext.apiSpec.document.components?.securitySchemes || {});
+
+    const securitySchemes = Object.keys(securitySchemeComponents).map(securitySchemeKey => {
+        return {
+            key: securitySchemeKey,
+            object: securitySchemeComponents[securitySchemeKey]
+        } as SecurityScheme
+    });
+
     return (
         <Box sx={{...sx}}>
             <InfoAlert title="Need help configuring your API's authentication?" sx={{mb: 2}}>
@@ -75,12 +86,15 @@ export const ApiAuthConfigWidget = ({apiContext, sx}: ApiAuthenticationProps) =>
                     - send an email at:<Link href="mailto:support@hopfront.com">support@hopfront.com</Link>.<br/>
                 </Typography>
             </InfoAlert>
-            <SecuritySchemeList apiContext={apiContext}/>
-            <form style={{marginTop: '24px'}}>
+            <SecuritySchemeList securitySchemes={securitySchemes} apiContext={apiContext}/>
+            {securitySchemes.length === 0 && <form style={{marginTop: '24px'}}>
                 <Box sx={{display: 'flex', alignItems: 'center', pb: 1}}>
                     <FormControl>
-                        <Typography level="title-lg">Global Authentication</Typography>
-                        <Typography level="body-sm" sx={{mb: 1}}>Below is the authentication which is a applied globally to the API.</Typography>
+                        <Typography level="title-lg"></Typography>
+                        <WarningAlert title="Global Authentication">
+                            <Typography>Your OpenAPI specification does not specify any authentication method, you can declare a globally applied one bellow.</Typography><br/>
+                            <Typography>Please not that specifying your authentication within your OpenAPI spec is the preferred method.</Typography>
+                        </WarningAlert>
                         <Select
                             onChange={(_, value) => {
                                 setAuthType(value as AuthenticationType);
@@ -96,6 +110,7 @@ export const ApiAuthConfigWidget = ({apiContext, sx}: ApiAuthenticationProps) =>
                             endDecorator={saving && <CircularProgress size="sm"/>}
                             disabled={saving}
                             sx={{
+                                mt: 2,
                                 width: '15%',
                                 minWidth: '250px',
                                 [`& .${selectClasses.indicator}`]: {
@@ -117,7 +132,7 @@ export const ApiAuthConfigWidget = ({apiContext, sx}: ApiAuthenticationProps) =>
                     disabled={saving}
                     apiSpec={apiContext.apiSpec}
                 />
-            </form>
+            </form>}
             {Snackbar}
         </Box>
     )

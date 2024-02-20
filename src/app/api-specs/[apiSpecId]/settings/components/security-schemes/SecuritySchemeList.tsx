@@ -8,19 +8,11 @@ import {Monospace} from "@/app/components/typography/Monospace";
 import {Lock} from "@mui/icons-material";
 
 export interface SecuritySchemeListProps {
+    securitySchemes: SecurityScheme[]
     apiContext: ApiContext
 }
 
-export const SecuritySchemeList = ({apiContext}: SecuritySchemeListProps) => {
-    const securitySchemeComponents = (apiContext.apiSpec.document.components?.securitySchemes || {});
-
-    const securitySchemes = Object.keys(securitySchemeComponents).map(securitySchemeKey => {
-        return {
-            key: securitySchemeKey,
-            object: securitySchemeComponents[securitySchemeKey]
-        } as SecurityScheme
-    });
-
+export const SecuritySchemeList = ({securitySchemes, apiContext}: SecuritySchemeListProps) => {
     if (securitySchemes.length === 0) {
         return null;
     }
