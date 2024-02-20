@@ -1,4 +1,9 @@
-import {ForeignKey, OperationExtension, SchemaExtension} from "@/app/lib/dto/OpenApiExtensions";
+import {
+    ForeignKey,
+    OperationExtension,
+    SchemaExtension,
+    SecuritySchemeExtension
+} from "@/app/lib/dto/OpenApiExtensions";
 import {OpenAPIV3} from "openapi-types";
 import ServerObject = OpenAPIV3.ServerObject;
 import {mutateApiContext} from "@/app/lib/api/utils";
@@ -13,6 +18,13 @@ export class ExtensionApi {
         return fetch(`/api/api-specs/${apiSpecId}/extension/operations`, {
             method: 'PUT',
             body: JSON.stringify(operationExtension),
+        }).then(() => mutateApiContext(apiSpecId));
+    }
+
+    static async saveSecuritySchemeExtension(apiSpecId: string, securitySchemeExtension: SecuritySchemeExtension) {
+        return fetch(`/api/api-specs/${apiSpecId}/extension/security-schemes/${securitySchemeExtension.securitySchemeKey}`, {
+            method: 'PUT',
+            body: JSON.stringify(securitySchemeExtension),
         }).then(() => mutateApiContext(apiSpecId));
     }
 

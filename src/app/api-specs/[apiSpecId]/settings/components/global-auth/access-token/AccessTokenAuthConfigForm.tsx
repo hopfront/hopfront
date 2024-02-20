@@ -1,5 +1,5 @@
 import { OperationSelect } from "@/app/components/select/OperationSelect";
-import { ApiAuthenticationAccessTokenData, ApiAuthenticationConfig } from "@/app/lib/dto/ApiAuthenticationConfig";
+import { ApiAuthenticationAccessTokenConfigData, ApiAuthenticationConfig } from "@/app/lib/dto/ApiAuthenticationConfig";
 import { ApiSpec } from "@/app/lib/dto/ApiSpec";
 import { UpdatableValue } from "@/app/lib/model/UpdatableValue";
 import {
@@ -25,13 +25,13 @@ type FormData = {
 }
 
 export interface AccessTokenAuthenticationFormProps {
-    auth: UpdatableValue<ApiAuthenticationConfig>
+    config: UpdatableValue<ApiAuthenticationAccessTokenConfigData>
     disabled: boolean
     apiSpec: ApiSpec
 }
 
-export default function AccessTokenAuthConfigForm({ auth, apiSpec }: AccessTokenAuthenticationFormProps) {
-    const accessTokenData = auth.value?.data as ApiAuthenticationAccessTokenData | undefined
+export default function AccessTokenAuthConfigForm({ config, apiSpec }: AccessTokenAuthenticationFormProps) {
+    const accessTokenData = config.value as ApiAuthenticationAccessTokenConfigData | undefined
 
     const initialValues = useMemo(() => {
         return {
@@ -49,18 +49,15 @@ export default function AccessTokenAuthConfigForm({ auth, apiSpec }: AccessToken
     const [selectedOperation, setSelectedOperation] = useState<StandaloneOperation | undefined>(undefined);
 
     useEffect(() => {
-        auth.onValueUpdate({
-            authenticationType: "ACCESS_TOKEN",
-            data: {
-                apiSpecId: formData.apiSpecId,
-                operationId: formData.operationId,
-                responseStatus: formData.responseStatus,
-                responseContentType: formData.responseContentType,
-                responseSchemaRef: formData.responseSchemaRef,
-                responseAccessTokenPropertyName: formData.responseAccessTokenPropertyName,
-            } as ApiAuthenticationAccessTokenData,
-        } as ApiAuthenticationConfig);
-    }, [formData, auth])
+        config.onValueUpdate({
+            apiSpecId: formData.apiSpecId,
+            operationId: formData.operationId,
+            responseStatus: formData.responseStatus,
+            responseContentType: formData.responseContentType,
+            responseSchemaRef: formData.responseSchemaRef,
+            responseAccessTokenPropertyName: formData.responseAccessTokenPropertyName,
+        } as ApiAuthenticationAccessTokenConfigData);
+    }, [formData])
 
     const formControlCommonSx = { mb: 1.5 };
 

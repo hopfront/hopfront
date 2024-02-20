@@ -13,8 +13,12 @@ const buildBasicAuthLocalStorageKey = (apiSpecId: string, apiServerUrl: string) 
     return `com.hopfront.api.${apiSpecId}.${apiServerUrl}.basic-auth`;
 }
 
-const buildStaticAuthLocalStorageKey = (apiSpecId: string, apiServerUrl: string) => {
-    return `com.hopfront.api.${apiSpecId}.${apiServerUrl}.static-auth`;
+const buildBearerAuthLocalStorageKey = (apiSpecId: string, apiServerUrl: string) => {
+    return `com.hopfront.api.${apiSpecId}.${apiServerUrl}.bearer`;
+}
+
+const buildApiKeyAuthLocalStorageKey = (apiSpecId: string, apiServerUrl: string) => {
+    return `com.hopfront.api.${apiSpecId}.${apiServerUrl}.api-key`;
 }
 
 const buildDoNotShowAgainCorsWarningLocalStorageKey = (apiSpecId: string) => {
@@ -26,11 +30,15 @@ export interface BasicAuthCredentials {
     password: string
 }
 
-export interface StaticAuthCredentials {
-    secret: string
+export interface BearerAuthCredentials {
+    bearer: string
 }
 
-type AuthType = string | BasicAuthCredentials | StaticAuthCredentials;
+export interface ApiKeyAuthCredentials {
+    apiKey: string
+}
+
+type AuthType = string | BasicAuthCredentials | BearerAuthCredentials | ApiKeyAuthCredentials;
 
 export class AuthLocalStorage {
     private static setAuth(apiContext: ApiContext, callback: (specId: string, apiServerUrl: string) => void) {
@@ -85,16 +93,28 @@ export class AuthLocalStorage {
         }) as BasicAuthCredentials | undefined;
     }
 
-    public static setStaticAuthCredentials(apiContext: ApiContext, credentials: StaticAuthCredentials) {
+    public static setBearerAuthCredentials(apiContext: ApiContext, credentials: BearerAuthCredentials) {
         this.setAuth(apiContext, (specId, apiServerUrl) => {
-            trySetToLocalStorage(buildStaticAuthLocalStorageKey(specId, apiServerUrl), JSON.stringify(credentials));
+            trySetToLocalStorage(buildBearerAuthLocalStorageKey(specId, apiServerUrl), JSON.stringify(credentials));
         });
     }
 
-    public static getStaticAuthCredentials(apiContext: ApiContext): StaticAuthCredentials | undefined {
+    public static getBearerAuthCredentials(apiContext: ApiContext): BearerAuthCredentials | undefined {
         return this.getAuth(apiContext, (specId, apiServerUrl) => {
-            return tryGetFromLocalStorage<StaticAuthCredentials>(buildStaticAuthLocalStorageKey(specId, apiServerUrl));
-        }) as StaticAuthCredentials | undefined;
+            return tryGetFromLocalStorage<BearerAuthCredentials>(buildBearerAuthLocalStorageKey(specId, apiServerUrl));
+        }) as BearerAuthCredentials | undefined;
+    }
+
+    public static getApiKeyAuthCredentials(apiContext: ApiContext): ApiKeyAuthCredentials | undefined {
+        return this.getAuth(apiContext, (specId, apiServerUrl) => {
+            return tryGetFromLocalStorage<ApiKeyAuthCredentials>(buildApiKeyAuthLocalStorageKey(specId, apiServerUrl));
+        }) as ApiKeyAuthCredentials | undefined;
+    }
+
+    public static setApiKeyAuthCredentials(apiContext: ApiContext, credentials: ApiKeyAuthCredentials) {
+        this.setAuth(apiContext, (specId, apiServerUrl) => {
+            trySetToLocalStorage(buildApiKeyAuthLocalStorageKey(specId, apiServerUrl), JSON.stringify(credentials));
+        });
     }
 
     public static getDoNotShowAgainCorsWarning(apiSpecId: string): boolean | undefined {

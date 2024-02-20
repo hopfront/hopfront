@@ -1,34 +1,34 @@
 import React, {useMemo, useState} from "react";
-import {ApiContext} from "@/app/lib/model/ApiContext";
 import {AuthLocalStorage} from "@/app/lib/localstorage/AuthLocalStorage";
+import {ApiContext} from "@/app/lib/model/ApiContext";
 import {ResponsiveModal} from "@/app/components/modal/ResponsiveModal";
 import {Button, FormControl, FormLabel} from "@mui/joy";
 import {ManualInput} from "@/app/components/input/ManualInput";
 import {ButtonRow} from "@/app/components/button/ButtonRow";
 
-export interface ApiKeySecuritySchemeAuthenticationGuardProps {
+export interface BearerStaticSecuritySchemeAuthenticationGuardProps {
     apiContext: ApiContext
-    onAuthenticationHandled: () => void
+    onAuthenticationHandled: () => void,
     onAuthenticationIgnored: () => void
     children: React.ReactNode
 }
 
-export const ApiKeySecuritySchemeAuthenticationGuard = ({
+export const BearerStaticSecuritySchemeAuthenticationGuard = ({
                                                             apiContext,
                                                             onAuthenticationHandled,
                                                             onAuthenticationIgnored,
                                                             children
-                                                        }: ApiKeySecuritySchemeAuthenticationGuardProps) => {
+                                                        }: BearerStaticSecuritySchemeAuthenticationGuardProps) => {
 
     const [open, setOpen] = useState<boolean>(true);
 
-    const defaultApiKeyCredentials = useMemo(() => {
-        return AuthLocalStorage.getApiKeyAuthCredentials(apiContext);
+    const defaultBearerAuth = useMemo(() => {
+        return AuthLocalStorage.getBearerAuthCredentials(apiContext);
     }, [apiContext.apiSpec.id]);
 
-    const [apiKey, setApiKey] = useState<string | undefined>(defaultApiKeyCredentials?.apiKey);
+    const [bearer, setBearer] = useState<string | undefined>(defaultBearerAuth?.bearer);
 
-    if (!defaultApiKeyCredentials?.apiKey) {
+    if (!defaultBearerAuth?.bearer) {
         return (
             <ResponsiveModal
                 open={open}
@@ -38,11 +38,11 @@ export const ApiKeySecuritySchemeAuthenticationGuard = ({
                 }}>
 
                 <FormControl>
-                    <FormLabel>API Key</FormLabel>
+                    <FormLabel>Bearer</FormLabel>
                     <ManualInput type="text" updatableValue={{
-                        value: defaultApiKeyCredentials?.apiKey,
-                        onValueUpdate: newApiKey => {
-                            setApiKey(newApiKey);
+                        value: defaultBearerAuth?.bearer,
+                        onValueUpdate: newBearer => {
+                            setBearer(newBearer);
                         }
                     }}/>
                 </FormControl>
@@ -54,14 +54,14 @@ export const ApiKeySecuritySchemeAuthenticationGuard = ({
                         Cancel
                     </Button>
                     <Button
-                        disabled={!apiKey}
+                        disabled={!bearer}
                         onClick={() => {
-                            if (!apiKey) {
+                            if (!bearer) {
                                 // This should never happen because of the condition in the "disabled" property
                                 return;
                             }
 
-                            AuthLocalStorage.setApiKeyAuthCredentials(apiContext, {apiKey: apiKey});
+                            AuthLocalStorage.setBearerAuthCredentials(apiContext, {bearer: bearer});
                             setOpen(false);
                             onAuthenticationHandled();
                         }}>

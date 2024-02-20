@@ -3,6 +3,7 @@ import React from "react";
 import {ApiContext} from "@/app/lib/model/ApiContext";
 import {AuthLocalStorage} from "@/app/lib/localstorage/AuthLocalStorage";
 import {AuthService} from "@/app/lib/service/AuthService";
+import {ApiAuthenticationAccessTokenConfigData} from "@/app/lib/dto/ApiAuthenticationConfig";
 
 export interface AccessTokenAuthenticationGuard {
     apiContext: ApiContext,
@@ -18,6 +19,7 @@ export const AccessTokenAuthenticationGuard = ({apiContext, onAuthenticationHand
         return <AccessTokenAuthenticationModal
             open={true}
             onClose={onAuthenticationIgnored}
+            accessTokenConfig={apiContext.config.authenticationConfig?.data as ApiAuthenticationAccessTokenConfigData}
             onAccessToken={newAccessToken => {
                 AuthLocalStorage.setAccessToken(apiContext, newAccessToken);
                 onAuthenticationHandled();

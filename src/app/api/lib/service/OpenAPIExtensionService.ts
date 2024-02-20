@@ -85,7 +85,8 @@ export class OpenAPIExtensionService {
         const extension: OpenAPIDocumentExtension = {
             servers: [],
             schemas: this.createSchemaExtensions(apiSpec),
-            operations: this.createOperationExtensions(apiSpec)
+            operations: this.createOperationExtensions(apiSpec),
+            securitySchemes: [],
         };
 
         OpenAPIRepository.getInstance().saveExtension(apiSpec.id, extension);

@@ -39,10 +39,11 @@ export const SecuritySchemeAuthenticationGuard = ({
             </OAuth2AuthenticationGuard>;
         case "http":
             const httpSecurityScheme =
-                securityScheme as unknown as HttpSecurityScheme;
+                securityScheme.object as HttpSecurityScheme;
 
             return <HttpSecuritySchemeAuthenticationGuard
                 apiContext={apiContext}
+                securitySchemeKey={securityScheme.key}
                 securityScheme={httpSecurityScheme}
                 onAuthenticationHandled={onAuthenticationHandled}
                 onAuthenticationIgnored={onAuthenticationIgnored}>

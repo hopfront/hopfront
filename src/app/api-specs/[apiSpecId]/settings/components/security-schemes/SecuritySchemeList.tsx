@@ -38,7 +38,10 @@ export const SecuritySchemeList = ({apiContext}: SecuritySchemeListProps) => {
                             endDecorator={<Chip color="primary"><Monospace>{securityScheme.object.type}</Monospace></Chip>}>
                             {securityScheme.key}
                         </Typography>
-                        <SecuritySchemeCardContent securitySchemeObject={securityScheme.object}/>
+                        <SecuritySchemeCardContent
+                            securitySchemeKey={securityScheme.key}
+                            securitySchemeObject={securityScheme.object}
+                            apiContext={apiContext}/>
                     </Card>
                 );
             })}

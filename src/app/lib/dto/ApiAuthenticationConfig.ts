@@ -1,4 +1,4 @@
-export interface ApiAuthenticationAccessTokenData {
+export interface ApiAuthenticationAccessTokenConfigData {
     apiSpecId: string
     operationId: string
     responseStatus: string
@@ -9,14 +9,14 @@ export interface ApiAuthenticationAccessTokenData {
 
 export type StaticParamLocation = 'HEADER' | 'QUERY';
 
-export interface ApiAuthenticationStaticParameterData {
+export interface ApiAuthenticationStaticParameterConfigData {
     parameterName: string,
     parameterLocation: StaticParamLocation,
 }
 
 export interface ApiAuthenticationConfig {
     authenticationType: AuthenticationType,
-    data?: ApiAuthenticationAccessTokenData | ApiAuthenticationStaticParameterData,
+    data?: ApiAuthenticationAccessTokenConfigData | ApiAuthenticationStaticParameterConfigData,
 }
 
 export type AuthenticationType = 'ACCESS_TOKEN' | 'NONE';

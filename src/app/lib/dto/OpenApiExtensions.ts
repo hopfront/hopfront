@@ -1,8 +1,10 @@
 import {OpenAPIV3} from "openapi-types";
+import {ApiAuthenticationAccessTokenConfigData} from "@/app/lib/dto/ApiAuthenticationConfig";
 export interface OpenAPIDocumentExtension {
     servers: OpenAPIV3.ServerObject[]
     schemas: SchemaExtension[]
     operations: OperationExtension[]
+    securitySchemes: SecuritySchemeExtension[] | undefined // undefined is here to be backward compatible.
 }
 
 export interface SchemaExtension {
@@ -34,4 +36,13 @@ export interface OperationExtension {
 export interface ParameterExtension {
     parameterName: string
     foreignKeys: ForeignKey[]
+}
+
+export interface SecuritySchemeExtension {
+    securitySchemeKey: string
+    httpBearerExtension?: HttpBearerSecuritySchemeExtension
+}
+
+export interface HttpBearerSecuritySchemeExtension {
+    accessTokenConfig: ApiAuthenticationAccessTokenConfigData
 }

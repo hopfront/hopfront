@@ -5,15 +5,16 @@ import {ApiContext} from "@/app/lib/model/ApiContext";
 import {OperationInputForm} from "@/app/components/operation/OperationInputForm";
 import {OperationInputs} from "@/app/lib/model/OperationInputs";
 import {OperationService} from "@/app/lib/service/OperationService";
-import { Typography } from "@mui/joy";
+import {Typography} from "@mui/joy";
 import {buildSuccessBodyOrProblem} from "@/app/components/operation/response/utils";
 import {Problem} from "@/app/lib/dto/Problem";
-import { ProblemAlert } from "../../alert/ProblemAlert";
-import {ApiAuthenticationAccessTokenData} from "@/app/lib/dto/ApiAuthenticationConfig";
+import {ProblemAlert} from "../../alert/ProblemAlert";
+import {ApiAuthenticationAccessTokenConfigData} from "@/app/lib/dto/ApiAuthenticationConfig";
 
 export interface AccessTokenAuthenticationModalProps {
     open: boolean
     onClose: () => void
+    accessTokenConfig: ApiAuthenticationAccessTokenConfigData
     onAccessToken: (accessToken: string) => void
     apiContext: ApiContext
 }
@@ -21,11 +22,10 @@ export interface AccessTokenAuthenticationModalProps {
 export const AccessTokenAuthenticationModal = ({
                                                    open,
                                                    onClose,
+                                                   accessTokenConfig,
                                                    onAccessToken,
                                                    apiContext
                                                }: AccessTokenAuthenticationModalProps) => {
-
-    const accessTokenConfig = apiContext.config.authenticationConfig?.data as ApiAuthenticationAccessTokenData;
 
     const operation =
         getStandaloneOperation(accessTokenConfig.operationId, apiContext.apiSpec);
@@ -63,7 +63,7 @@ export const AccessTokenAuthenticationModal = ({
 
                 response.text()
                     .then(responseText => {
-                        const { body, problem } = buildSuccessBodyOrProblem(response.status, responseText);
+                        const {body, problem} = buildSuccessBodyOrProblem(response.status, responseText);
 
                         if (problem) {
                             setProblem(problem);
@@ -89,7 +89,8 @@ export const AccessTokenAuthenticationModal = ({
         <>
             <ResponsiveModal open={open} onClose={onClose}>
                 <Typography level="title-lg">Authentication</Typography>
-                <Typography level="title-md" sx={{mb: 2}}>{apiContext.apiSpec.document.info.title || 'Untitled API'}</Typography>
+                <Typography level="title-md"
+                            sx={{mb: 2}}>{apiContext.apiSpec.document.info.title || 'Untitled API'}</Typography>
                 <OperationInputForm
                     operation={operation}
                     operationInputs={operationInputs}

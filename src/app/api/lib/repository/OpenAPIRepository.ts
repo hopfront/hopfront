@@ -12,7 +12,7 @@ import {
     ForeignKey,
     OpenAPIDocumentExtension,
     OperationExtension,
-    SchemaExtension
+    SchemaExtension, SecuritySchemeExtension
 } from "@/app/lib/dto/OpenApiExtensions";
 import ServerObject = OpenAPIV3.ServerObject;
 import {ApiSpec} from "@/app/lib/dto/ApiSpec";
@@ -53,6 +53,7 @@ export class OpenAPIRepository {
             servers: existingExtension.servers,
             schemas: updateSchemaExtensions,
             operations: existingExtension.operations,
+            securitySchemes: existingExtension.securitySchemes
         });
     }
 
@@ -167,6 +168,7 @@ export class OpenAPIRepository {
             servers: existingExtension.servers,
             schemas: existingExtension.schemas,
             operations: updatedOperationExtensions,
+            securitySchemes: existingExtension.securitySchemes
         });
     }
 
@@ -180,8 +182,41 @@ export class OpenAPIRepository {
         this.saveExtension(apiSpecId, {
             servers: servers,
             schemas: existingExtension.schemas,
-            operations: existingExtension.operations
+            operations: existingExtension.operations,
+            securitySchemes: existingExtension.securitySchemes
         });
+    }
+
+    saveSecuritySchemeExtension(apiSpecId: string, newSecuritySchemeExtension: SecuritySchemeExtension) {
+        const existingExtension = this.getExtension(apiSpecId);
+
+        if (!existingExtension) {
+            throw new Error('Security scheme extension is not ready to be modified');
+        }
+
+        const existingSecuritySchemeExtension = (existingExtension.securitySchemes || [])
+            .find(sc => sc.securitySchemeKey === newSecuritySchemeExtension.securitySchemeKey);
+
+        if (existingSecuritySchemeExtension) {
+            const updatedSecuritySchemeExtensions = (existingExtension.securitySchemes || [])
+                .map(securityScheme => securityScheme.securitySchemeKey === newSecuritySchemeExtension.securitySchemeKey
+                    ? newSecuritySchemeExtension
+                    : securityScheme);
+
+            this.saveExtension(apiSpecId, {
+                servers: existingExtension.servers,
+                schemas: existingExtension.schemas,
+                operations: existingExtension.operations,
+                securitySchemes: updatedSecuritySchemeExtensions
+            });
+        } else {
+            this.saveExtension(apiSpecId, {
+                servers: existingExtension.servers,
+                schemas: existingExtension.schemas,
+                operations: existingExtension.operations,
+                securitySchemes: [newSecuritySchemeExtension]
+            });
+        }
     }
 
     public saveExtension(id: string, extension: OpenAPIDocumentExtension) {

@@ -1,4 +1,4 @@
-import {AuthenticationType} from "@/app/lib/dto/ApiAuthenticationConfig";
+import {ApiAuthenticationAccessTokenConfigData, AuthenticationType} from "@/app/lib/dto/ApiAuthenticationConfig";
 import {LockOpenOutlined, LockOutlined} from "@mui/icons-material";
 import {useState} from "react";
 import {ApiContext} from "@/app/lib/model/ApiContext";
@@ -65,6 +65,7 @@ export const AuthenticationBadge = ({apiContext}: AuthenticationBadgeProps) => {
                     apiContext={apiContext}
                     open={open}
                     onClose={onClose}
+                    accessTokenConfig={apiContext.config.authenticationConfig?.data as ApiAuthenticationAccessTokenConfigData}
                     onAccessToken={(accessToken: string) => {
                         AuthLocalStorage.setAccessToken(apiContext, accessToken);
                         setOpen(false);

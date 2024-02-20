@@ -19,18 +19,16 @@ export const BasicAuthSecuritySchemeAuthenticationGuard = ({apiContext, onAuthen
 
     if (!defaultCredentials?.username || !defaultCredentials?.password) {
         return (
-            <Box>
-                <BasicAuthModal
-                    apiContext={apiContext}
-                    open={open}
-                    onClose={() => { setOpen(false); onAuthenticationIgnored(); }}
-                    onBasicAuthSubmit={(credentials) => {
-                        AuthLocalStorage.setBasicAuthCredentials(apiContext, credentials);
-                        setOpen(false);
-                        onAuthenticationHandled();
-                    }}
-                />
-            </Box>
+            <BasicAuthModal
+                apiContext={apiContext}
+                open={open}
+                onClose={() => { setOpen(false); onAuthenticationIgnored(); }}
+                onBasicAuthSubmit={(credentials) => {
+                    AuthLocalStorage.setBasicAuthCredentials(apiContext, credentials);
+                    setOpen(false);
+                    onAuthenticationHandled();
+                }}
+            />
         )
     } else {
         return children;

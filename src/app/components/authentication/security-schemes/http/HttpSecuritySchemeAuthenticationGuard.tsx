@@ -11,6 +11,7 @@ import {
 
 export interface HttpSecuritySchemeAuthenticationGuardProps {
     apiContext: ApiContext
+    securitySchemeKey: string
     securityScheme: HttpSecurityScheme
     onAuthenticationHandled: () => void
     onAuthenticationIgnored: () => void
@@ -19,6 +20,7 @@ export interface HttpSecuritySchemeAuthenticationGuardProps {
 
 export const HttpSecuritySchemeAuthenticationGuard = ({
                                                           apiContext,
+                                                          securitySchemeKey,
                                                           securityScheme,
                                                           onAuthenticationHandled,
                                                           onAuthenticationIgnored,
@@ -33,6 +35,7 @@ export const HttpSecuritySchemeAuthenticationGuard = ({
         </BasicAuthSecuritySchemeAuthenticationGuard>;
     } else if (securityScheme.scheme === "bearer") {
         return <BearerSecuritySchemeAuthenticationGuard
+            securitySchemeKey={securitySchemeKey}
             apiContext={apiContext}
             onAuthenticationHandled={onAuthenticationHandled}
             onAuthenticationIgnored={onAuthenticationIgnored}>

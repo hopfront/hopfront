@@ -1,9 +1,16 @@
-import React, {useMemo, useState} from "react";
+import React from "react";
 import {AuthLocalStorage} from "@/app/lib/localstorage/AuthLocalStorage";
-import StaticAuthenticationModal from "@/app/components/authentication/static/StaticAuthenticationModal";
 import {ApiContext} from "@/app/lib/model/ApiContext";
+import {
+    BearerStaticSecuritySchemeAuthenticationGuard
+} from "@/app/components/authentication/security-schemes/http/BearerStaticSecuritySchemeAuthenticationGuard";
+import {
+    AccessTokenAuthenticationModal
+} from "@/app/components/authentication/access-token/AccessTokenAuthenticationModal";
+import {AuthService} from "@/app/lib/service/AuthService";
 
 export interface BearerSecuritySchemeAuthenticationGuardProps {
+    securitySchemeKey: string
     apiContext: ApiContext
     onAuthenticationHandled: () => void,
     onAuthenticationIgnored: () => void
@@ -11,31 +18,37 @@ export interface BearerSecuritySchemeAuthenticationGuardProps {
 }
 
 export const BearerSecuritySchemeAuthenticationGuard = ({
+                                                            securitySchemeKey,
                                                             apiContext,
                                                             onAuthenticationHandled,
                                                             onAuthenticationIgnored,
                                                             children
                                                         }: BearerSecuritySchemeAuthenticationGuardProps) => {
 
-    const [open, setOpen] = useState<boolean>(true);
+    const securitySchemeExtension = (apiContext.extension?.securitySchemes || []).find(sc => sc.securitySchemeKey === securitySchemeKey);
 
-    const defaultAuthentication = useMemo(() => {
-        return AuthLocalStorage.getStaticAuthCredentials(apiContext);
-    }, [apiContext.apiSpec.id]);
+    if (securitySchemeExtension?.httpBearerExtension?.accessTokenConfig) {
+        const apiAuthenticationStatus = AuthService.getAccessTokenAuthenticationStatus(apiContext);
 
-    if (!defaultAuthentication?.secret) {
-        return (
-            <StaticAuthenticationModal
-                apiContext={apiContext}
-                open={open}
-                onClose={() => { setOpen(false); onAuthenticationIgnored(); }}
-                onStaticAuthenticationSubmit={(credentials) => {
-                    AuthLocalStorage.setStaticAuthCredentials(apiContext, credentials);
-                    setOpen(false);
+        if (apiAuthenticationStatus.isAuthenticationRequired && !apiAuthenticationStatus.isAuthenticated) {
+            return <AccessTokenAuthenticationModal
+                open={true}
+                onClose={onAuthenticationIgnored}
+                accessTokenConfig={securitySchemeExtension?.httpBearerExtension?.accessTokenConfig}
+                onAccessToken={newAccessToken => {
+                    AuthLocalStorage.setAccessToken(apiContext, newAccessToken);
                     onAuthenticationHandled();
-                }} />
-        )
+                }}
+                apiContext={apiContext}/>
+        } else {
+            return children;
+        }
     } else {
-        return children;
+        return <BearerStaticSecuritySchemeAuthenticationGuard
+            apiContext={apiContext}
+            onAuthenticationHandled={onAuthenticationHandled}
+            onAuthenticationIgnored={onAuthenticationIgnored}>
+            {children}
+        </BearerStaticSecuritySchemeAuthenticationGuard>
     }
 }
