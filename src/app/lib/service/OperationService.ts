@@ -111,7 +111,8 @@ export class OperationService {
                         const base64credentials = btoa(`${credentials?.username}:${credentials?.password}`)
                         headers['Authorization'] = `Basic ${base64credentials}`;
                     } else if (securityScheme.object.scheme === "bearer") {
-                        headers['Authorization'] = 'Bearer ' + AuthLocalStorage.getBearerAuthCredentials(apiContext)?.bearer ?? '';
+                        const bearer = AuthLocalStorage.getBearerAuthCredentials(apiContext)?.bearer ?? '';
+                        headers['Authorization'] = 'Bearer ' + bearer;
                     }
                 }
             } else if (authConfig) {

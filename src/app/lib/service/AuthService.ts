@@ -40,14 +40,22 @@ export class AuthService  {
         }
     }
 
+    public static getHttpBearerAuthenticationStatus(apiContext: ApiContext): ApiAuthenticationStatus {
+        const accessToken = AuthLocalStorage.getBearerAuthCredentials(apiContext);
+        return this.buildJwtAuthenticationStatus(accessToken?.bearer || '');
+    }
+
     public static getAccessTokenAuthenticationStatus(apiContext: ApiContext): ApiAuthenticationStatus {
         const accessToken = AuthLocalStorage.getAccessToken(apiContext);
+        return this.buildJwtAuthenticationStatus(accessToken || '');
+    }
 
+    static buildJwtAuthenticationStatus(jwtString: string): ApiAuthenticationStatus {
         let isAuthenticated = false;
 
-        if (accessToken) {
+        if (jwtString) {
             try {
-                const jwt: any = jwtDecode(accessToken);
+                const jwt: any = jwtDecode(jwtString);
 
                 if (jwt && jwt.exp) {
                     const jwtExpirationDate = new Date(jwt.exp * 1000);
@@ -56,9 +64,11 @@ export class AuthService  {
                     }
                 }
             } catch (error: any) {
+                console.log('Failed to parse access token');
+
                 return {
                     isAuthenticationRequired: true,
-                    isAuthenticated: false
+                    isAuthenticated: true
                 }
             }
         }
@@ -68,5 +78,4 @@ export class AuthService  {
             isAuthenticated: isAuthenticated,
         };
     }
-
 }
