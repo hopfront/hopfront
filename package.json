@@ -16,7 +16,7 @@
     "@mui/joy": "^5.0.0-beta.28",
     "@readme/openapi-parser": "^2.5.0",
     "@types/jsonwebtoken": "^9.0.5",
-    "@types/node": "20.11.24",
+    "@types/node": "20.11.25",
     "@types/react": "18.2.63",
     "@types/react-dom": "18.2.21",
     "allotment": "^1.20.0",
