@@ -18,7 +18,7 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "20.11.24",
     "@types/react": "18.2.63",
-    "@types/react-dom": "18.2.19",
+    "@types/react-dom": "18.2.21",
     "allotment": "^1.20.0",
     "bcrypt-ts": "^5.0.2",
     "eslint": "8.57.0",
