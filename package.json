@@ -11,7 +11,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
-    "@fontsource/public-sans": "^5.0.16",
+    "@fontsource/public-sans": "^5.0.17",
     "@mui/icons-material": "^5.15.10",
     "@mui/joy": "^5.0.0-beta.28",
     "@readme/openapi-parser": "^2.5.0",
